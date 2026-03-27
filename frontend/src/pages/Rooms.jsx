@@ -22,29 +22,28 @@ const Rooms = () => {
       </div>
 
       {/* Stats */}
-      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4'>
         {statsRoom.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div
               key={index}
-              className='bg-white rounded-lg border border-gray-200 p-6'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <p className='text-sm text-gray-500 mb-1'>{stat.label}</p>
-                  <p className='text-3xl font-semibold text-gray-900'>
-                    {stat.value}
-                  </p>
-                </div>
-                <div className={`${stat.color} p-3 rounded-lg`}>
-                  <Icon className='w-6 h-6 text-white' />
-                </div>
+              className='flex items-center justify-between bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow'>
+              {/* Text */}
+              <div>
+                <p className='text-sm text-gray-500'>{stat.label}</p>
+                <p className='text-2xl font-bold text-gray-900'>{stat.value}</p>
+              </div>
+
+              {/* Icon */}
+              <div
+                className={`${stat.color} p-3 rounded-lg flex items-center justify-center`}>
+                <Icon className='w-6 h-6 text-white' />
               </div>
             </div>
           );
         })}
       </div>
-
       {/* Search & Filter */}
       <div className='flex items-center gap-4'>
         <div className='flex-1 relative'>
