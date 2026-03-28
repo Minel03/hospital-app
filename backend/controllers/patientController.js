@@ -2,7 +2,19 @@ import patientModel from '../models/patientModel.js';
 
 export const addPatient = async (req, res) => {
   try {
-    const { name, age, gender, phone, email, lastVisit, status } = req.body;
+    const {
+      name,
+      age,
+      gender,
+      phone,
+      email,
+      bloodType,
+      address,
+      allergies,
+      medicalHistory,
+      lastVisit,
+      status,
+    } = req.body;
 
     const patientData = {
       name,
@@ -10,6 +22,10 @@ export const addPatient = async (req, res) => {
       gender,
       phone,
       email,
+      bloodType,
+      address,
+      allergies,
+      medicalHistory,
       lastVisit,
       status,
     };
@@ -45,5 +61,22 @@ export const getPatientById = async (req, res) => {
     res.json({ success: true, patient });
   } catch (error) {
     res.json({ success: false, message: error.message });
+  }
+};
+
+export const deletePatient = async (req, res) => {
+  try {
+    const { patientId } = req.body;
+    await patientModel.findByIdAndDelete(patientId);
+
+    res.json({
+      success: true,
+      message: 'Patient deleted successfully',
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };
