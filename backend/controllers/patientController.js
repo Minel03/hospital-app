@@ -39,6 +39,69 @@ export const addPatient = async (req, res) => {
   }
 };
 
+export const updatePatient = async (req, res) => {
+  try {
+    const { patientId } = req.body; // read from body
+
+    if (!patientId) {
+      return res.json({ success: false, message: 'Patient ID is required' });
+    }
+
+    const {
+      name,
+      age,
+      gender,
+      phone,
+      email,
+      bloodType,
+      address,
+      allergies,
+      medicalHistory,
+      lastVisit,
+      status,
+    } = req.body;
+
+    const patientData = {
+      name,
+      age,
+      gender,
+      phone,
+      email,
+      bloodType,
+      address,
+      allergies,
+      medicalHistory,
+      lastVisit,
+      status,
+    };
+
+    const updatedPatient = await patientModel.findByIdAndUpdate(
+      patientId,
+      patientData,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!updatedPatient) {
+      return res.json({ success: false, message: 'Patient not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Patient updated successfully',
+      patient: updatedPatient,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export const getAllPatients = async (req, res) => {
   try {
     const patients = await patientModel.find();

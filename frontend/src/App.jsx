@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import Dashboard from './pages/Dashboard';
 import Rooms from './pages/Rooms';
-import Patients from './pages/Patients';
+import Patients from './pages/Patients/Patients';
 import Sidebar from './components/Sidebar';
 import Doctors from './pages/Doctors';
 import Appointments from './pages/Appointments';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons } from '../../context/AppContext';
+import { Icons } from '../../../context/AppContext';
 
 const PatientSearchFilter = ({
   searchQuery,
