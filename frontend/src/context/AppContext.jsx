@@ -34,6 +34,8 @@ import {
   Eye,
   Edit,
   Trash,
+  Stethoscope,
+  Activity,
 } from 'lucide-react';
 
 // Recharts components

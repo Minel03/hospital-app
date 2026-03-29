@@ -5,10 +5,11 @@ import Dashboard from './pages/Dashboard';
 import Rooms from './pages/Rooms';
 import Patients from './pages/Patients/Patients';
 import Sidebar from './components/Sidebar';
-import Doctors from './pages/Doctors';
+import Doctors from './pages/Doctors/Doctors';
 import Appointments from './pages/Appointments';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
+import Departments from './pages/Departments/Deparments';
 
 const App = () => {
   // Track active tab if you want to highlight the sidebar item
@@ -41,6 +42,10 @@ const App = () => {
           <Route
             path='/doctors'
             element={<Doctors />}
+          />
+          <Route
+            path='/departments'
+            element={<Departments />}
           />
           <Route
             path='/rooms'
