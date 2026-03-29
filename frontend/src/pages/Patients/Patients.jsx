@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
@@ -15,6 +15,14 @@ const Patients = () => {
   const [mode, setMode] = useState('add');
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filters, setFilters] = useState({
+    gender: [],
+    bloodType: [],
+    status: [],
+  });
+  const [showFilterPopover, setShowFilterPopover] = useState(false);
+  const filterRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -120,14 +128,67 @@ const Patients = () => {
     }
   };
 
+  const toggleFilter = (type, value) => {
+    setFilters((prev) => {
+      const updated = { ...prev };
+      if (updated[type].includes(value)) {
+        updated[type] = updated[type].filter((v) => v !== value);
+      } else {
+        updated[type].push(value);
+      }
+      return updated;
+    });
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      gender: [],
+      bloodType: [],
+      status: [],
+    });
+  };
+  // Filter and search patients before passing to table
+  const filteredPatients = patients.filter((patient) => {
+    // Search filter
+    const query = searchQuery.toLowerCase();
+    const matchesSearch =
+      patient.name?.toLowerCase().includes(query) ||
+      patient.phone?.toLowerCase().includes(query) ||
+      patient._id?.toLowerCase().includes(query);
+
+    // Gender filter
+    const matchesGender =
+      filters.gender.length === 0 || filters.gender.includes(patient.gender);
+
+    // Blood Type filter
+    const matchesBlood =
+      filters.bloodType.length === 0 ||
+      filters.bloodType.includes(patient.bloodType);
+
+    // Status filter
+    const matchesStatus =
+      filters.status.length === 0 || filters.status.includes(patient.status);
+
+    return matchesSearch && matchesGender && matchesBlood && matchesStatus;
+  });
+
   return (
     <div className='p-8 space-y-6'>
       <PatientHeader onAddPatient={handleAddPatient} />
 
-      <PatientSearchFilter />
+      <PatientSearchFilter
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        filters={filters}
+        toggleFilter={toggleFilter}
+        resetFilters={resetFilters}
+        showFilterPopover={showFilterPopover}
+        setShowFilterPopover={setShowFilterPopover}
+        filterRef={filterRef}
+      />
 
       <PatientTable
-        patients={patients}
+        patients={filteredPatients}
         onView={handleViewPatient}
         onEdit={handleEditPatient}
         onDelete={deletePatient}
