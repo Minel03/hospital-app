@@ -1,56 +1,65 @@
 import React from 'react';
-import { rooms, statsRoom } from '../data/dummyData';
-import Title from '../components/Title';
-import { Icons } from '../context/AppContext';
+import { invoices, statsBilling } from '../../data/dummyData';
+import { Icons } from '../../context/AppContext';
+import Title from '../../components/Title';
 
-const Rooms = () => {
-  const { Search, Filter, Plus } = Icons;
+const Billing = () => {
+  const { Search, Filter, Plus, Download } = Icons;
   return (
     <div className='p-8 space-y-6'>
       {/* Header */}
       <div className='flex items-center justify-between'>
         <div>
           <Title
-            title='Rooms & Beds'
-            subtitle='Manage hospital rooms and bed allocation'
+            title='Billing'
+            subtitle='Manage payments and financial records'
           />
         </div>
-        <button className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
-          <Plus className='w-5 h-5' />
-          <span className='hidden sm:inline'>Add Room</span>
-        </button>
+        <div className='flex items-center gap-3'>
+          <button className='flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors'>
+            <Download className='w-5 h-5' />
+            <span className='hidden sm:inline'>Export</span>
+          </button>
+          <button className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
+            <Plus className='w-5 h-5' />
+            <span className='hidden sm:inline'>New Invoice</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4'>
-        {statsRoom.map((stat, index) => {
+      <div className='grid grid-cols-1 md:grid-cols-4 gap-4'>
+        {statsBilling.map((stat, index) => {
           const Icon = stat.icon;
           return (
             <div
               key={index}
-              className='flex items-center justify-between bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow'>
-              {/* Text */}
-              <div>
-                <p className='text-sm text-gray-500'>{stat.label}</p>
-                <p className='text-2xl font-bold text-gray-900'>{stat.value}</p>
+              className='bg-white rounded-lg border border-gray-200 p-6'>
+              <div className='flex items-center justify-between mb-4'>
+                <div className={`${stat.color} p-3 rounded-lg`}>
+                  <Icon className='w-6 h-6 text-white' />
+                </div>
+                <span
+                  className={`text-sm font-medium ${stat.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                  {stat.change}
+                </span>
               </div>
-
-              {/* Icon */}
-              <div
-                className={`${stat.color} p-3 rounded-lg flex items-center justify-center`}>
-                <Icon className='w-6 h-6 text-white' />
-              </div>
+              <p className='text-sm text-gray-500 mb-1'>{stat.label}</p>
+              <p className='text-3xl font-semibold text-gray-900'>
+                {stat.value}
+              </p>
             </div>
           );
         })}
       </div>
+
       {/* Search & Filter */}
       <div className='flex items-center gap-4'>
         <div className='flex-1 relative'>
           <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400' />
           <input
             type='text'
-            placeholder='Search rooms by number or type...'
+            placeholder='Search invoices by patient or ID...'
             className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
@@ -60,32 +69,29 @@ const Rooms = () => {
         </button>
       </div>
 
-      {/* Rooms Table */}
+      {/* Invoices Table */}
       <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
         <div className='overflow-x-auto'>
           <table className='w-full'>
             <thead className='bg-gray-50 border-b border-gray-200'>
               <tr>
                 <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Room
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Type
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Floor
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Department
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Capacity
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Occupied
+                  Invoice ID
                 </th>
                 <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Patient
+                </th>
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  Service
+                </th>
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  Date
+                </th>
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  Due Date
+                </th>
+                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  Amount
                 </th>
                 <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
                   Status
@@ -96,49 +102,46 @@ const Rooms = () => {
               </tr>
             </thead>
             <tbody className='bg-white divide-y divide-gray-200'>
-              {rooms.map((room) => (
+              {invoices.map((invoice) => (
                 <tr
-                  key={room.id}
+                  key={invoice.id}
                   className='hover:bg-gray-50'>
-                  <td className='px-6 py-4 whitespace-nowrap font-medium text-gray-900'>
-                    {room.id}
+                  <td className='px-6 py-4 whitespace-nowrap font-medium text-blue-600'>
+                    {invoice.id}
+                  </td>
+                  <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
+                    {invoice.patient}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.type}
+                    {invoice.service}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.floor}
+                    {invoice.date}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.department}
+                    {invoice.dueDate}
                   </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.capacity}
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.occupied}
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-600'>
-                    {room.patient || '-'}
+                  <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900'>
+                    ${invoice.amount.toLocaleString()}
                   </td>
                   <td className='px-6 py-4 whitespace-nowrap'>
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        room.status === 'Available'
+                        invoice.status === 'Paid'
                           ? 'bg-green-100 text-green-700'
-                          : room.status === 'Occupied' ||
-                              room.status === 'In Use'
-                            ? 'bg-blue-100 text-blue-700'
-                            : room.status === 'Partially Occupied'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
+                          : invoice.status === 'Pending'
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : 'bg-red-100 text-red-700'
                       }`}>
-                      {room.status}
+                      {invoice.status}
                     </span>
                   </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-sm'>
+                  <td className='px-6 py-4 whitespace-nowrap text-sm space-x-2'>
                     <button className='text-blue-600 hover:text-blue-800'>
-                      View Details
+                      View
+                    </button>
+                    <button className='text-gray-600 hover:text-gray-800'>
+                      Download
                     </button>
                   </td>
                 </tr>
@@ -151,4 +154,4 @@ const Rooms = () => {
   );
 };
 
-export default Rooms;
+export default Billing;

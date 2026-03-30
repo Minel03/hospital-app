@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import Dashboard from './pages/Dashboard';
-import Rooms from './pages/Rooms';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Rooms from './pages/Rooms/Rooms';
 import Patients from './pages/Patients/Patients';
 import Sidebar from './components/Sidebar';
 import Doctors from './pages/Doctors/Doctors';
 import Appointments from './pages/Appointments/Appointments';
-import Billing from './pages/Billing';
-import Settings from './pages/Settings';
+import Billing from './pages/Billing/Billing';
+import Settings from './pages/Settings/Settings';
 import Departments from './pages/Departments/Deparments';
 
 const App = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Icons } from '../context/AppContext';
-import { settingsSections } from '../data/dummyData';
+import { Icons } from '../../context/AppContext';
+import { settingsSections } from '../../data/dummyData';
 
 const Settings = () => {
   const {

@@ -1,12 +1,12 @@
 import React from 'react';
-import Title from '../components/Title';
-import StatsCard from '../components/StatsCard';
+import Title from '../../components/Title';
+import StatsCard from '../../components/StatsCard';
 import {
   patientData,
   departmentData,
   recentAppointments,
-} from '../data/dummyData';
-import { Icons, Charts } from '../context/AppContext';
+} from '../../data/dummyData';
+import { Icons, Charts } from '../../context/AppContext';
 
 // Destructure icons and charts
 const { Clock } = Icons;
