@@ -4,6 +4,8 @@ import 'dotenv/config';
 import connectDB from './config/mongodb.js';
 import patientRouter from './routes/patientRoute.js';
 import doctorRouter from './routes/doctorRoute.js';
+import appointmentRouter from './routes/appointmentRoute.js';
+import departmentRouter from './routes/departmentRoute.js';
 
 // App Config
 const app = express();
@@ -16,7 +18,9 @@ app.use(cors());
 
 // API Endpoints
 app.use('/api/patient', patientRouter);
+app.use('/api/appointment', appointmentRouter);
 app.use('/api/doctor', doctorRouter);
+app.use('/api/department', departmentRouter);
 
 app.get('/', (req, res) => {
   res.send('API Working');

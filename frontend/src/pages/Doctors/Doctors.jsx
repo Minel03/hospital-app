@@ -37,6 +37,13 @@ const Doctors = () => {
 
   useEffect(() => {
     fetchDoctors();
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilterPopover(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Add / Edit doctor

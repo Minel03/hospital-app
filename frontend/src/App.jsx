@@ -6,7 +6,7 @@ import Rooms from './pages/Rooms';
 import Patients from './pages/Patients/Patients';
 import Sidebar from './components/Sidebar';
 import Doctors from './pages/Doctors/Doctors';
-import Appointments from './pages/Appointments';
+import Appointments from './pages/Appointments/Appointments';
 import Billing from './pages/Billing';
 import Settings from './pages/Settings';
 import Departments from './pages/Departments/Deparments';
