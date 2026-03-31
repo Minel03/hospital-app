@@ -30,13 +30,14 @@ const appointmentSchema = new mongoose.Schema({
     default: 'Check-up',
   },
   department: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
     required: true,
   },
 });
 
 const appointmentModel =
-  mongoose.models.appointment ||
-  mongoose.model('appointment', appointmentSchema);
+  mongoose.models.Appointment ||
+  mongoose.model('Appointment', appointmentSchema);
 
 export default appointmentModel;

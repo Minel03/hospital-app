@@ -9,7 +9,7 @@ export const createAppointment = async (req, res) => {
       doctor,
       date,
       time,
-      department,
+      department, // now expects an ObjectId string from frontend
       status,
       type,
     });
@@ -21,10 +21,7 @@ export const createAppointment = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -66,24 +63,12 @@ export const updateAppointment = async (req, res) => {
 
     const updatedAppointment = await appointmentModel.findByIdAndUpdate(
       appointmentId,
-      {
-        patient,
-        doctor,
-        date,
-        time,
-        department,
-        status,
-        type,
-      },
+      { patient, doctor, date, time, department, status, type },
       { new: true },
     );
 
-    if (!updatedAppointment) {
-      return res.json({
-        success: false,
-        message: 'Appointment not found',
-      });
-    }
+    if (!updatedAppointment)
+      return res.json({ success: false, message: 'Appointment not found' });
 
     res.json({
       success: true,
@@ -92,10 +77,7 @@ export const updateAppointment = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    res.json({ success: false, message: error.message });
   }
 };
 
@@ -104,7 +86,8 @@ export const getAllAppointments = async (req, res) => {
     const appointments = await appointmentModel
       .find()
       .populate('patient')
-      .populate('doctor');
+      .populate('doctor')
+      .populate('department');
 
     res.json({
       success: true,
@@ -125,23 +108,15 @@ export const getAppointmentById = async (req, res) => {
     const appointment = await appointmentModel
       .findById(appointmentId)
       .populate('patient')
-      .populate('doctor');
+      .populate('doctor')
+      .populate('department'); // ← add this
 
-    if (!appointment) {
-      return res.json({
-        success: false,
-        message: 'Appointment not found',
-      });
-    }
+    if (!appointment)
+      return res.json({ success: false, message: 'Appointment not found' });
 
-    res.json({
-      success: true,
-      appointment,
-    });
+    console.log(JSON.stringify(appointment[0], null, 2));
+    res.json({ success: true, appointment });
   } catch (error) {
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    res.json({ success: false, message: error.message });
   }
 };

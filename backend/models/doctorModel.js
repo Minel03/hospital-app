@@ -40,9 +40,14 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     default: 'Available',
   },
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
+    required: true,
+  },
 });
 
 const doctorModel =
-  mongoose.models.doctor || mongoose.model('Doctor', doctorSchema);
+  mongoose.models.Doctor || mongoose.model('Doctor', doctorSchema);
 
 export default doctorModel;

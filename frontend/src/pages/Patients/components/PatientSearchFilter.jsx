@@ -38,66 +38,63 @@ const PatientSearchFilter = ({
         </button>
 
         {showFilterPopover && (
-          <div className='absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 space-y-4'>
+          <div className='absolute mt-2 right-0 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-64 z-50'>
             {/* Gender */}
-            <div>
-              <p className='text-sm font-semibold mb-1'>Gender</p>
-              {['Male', 'Female', 'Other'].map((g) => (
-                <label
-                  key={g}
-                  className='flex items-center gap-2 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={filters.gender.includes(g)}
-                    onChange={() => toggleFilter('gender', g)}
-                    className='h-4 w-4'
-                  />
-                  {g}
-                </label>
-              ))}
-            </div>
+            <h4 className='font-semibold mb-2'>Gender</h4>
+            {['Male', 'Female', 'Other'].map((g) => (
+              <label
+                key={g}
+                className='flex items-center gap-2 mb-1'>
+                <input
+                  type='checkbox'
+                  checked={filters.gender.includes(g)}
+                  onChange={() => toggleFilter('gender', g)}
+                  className='h-4 w-4'
+                />
+                {g}
+              </label>
+            ))}
 
             {/* Blood Type */}
-            <div>
-              <p className='text-sm font-semibold mb-1'>Blood Type</p>
-              {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bt) => (
-                <label
-                  key={bt}
-                  className='flex items-center gap-2 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={filters.bloodType.includes(bt)}
-                    onChange={() => toggleFilter('bloodType', bt)}
-                    className='h-4 w-4'
-                  />
-                  {bt}
-                </label>
-              ))}
-            </div>
+            <h4 className='font-semibold mt-3 mb-2'>Blood Type</h4>
+            {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((bt) => (
+              <label
+                key={bt}
+                className='flex items-center gap-2 mb-1'>
+                <input
+                  type='checkbox'
+                  checked={filters.bloodType.includes(bt)}
+                  onChange={() => toggleFilter('bloodType', bt)}
+                  className='h-4 w-4'
+                />
+                {bt}
+              </label>
+            ))}
 
             {/* Status */}
-            <div>
-              <p className='text-sm font-semibold mb-1'>Status</p>
-              {['Active', 'Inactive'].map((s) => (
-                <label
-                  key={s}
-                  className='flex items-center gap-2 text-sm'>
-                  <input
-                    type='checkbox'
-                    checked={filters.status.includes(s)}
-                    onChange={() => toggleFilter('status', s)}
-                    className='h-4 w-4'
-                  />
-                  {s}
-                </label>
-              ))}
-            </div>
+            <h4 className='font-semibold mt-3 mb-2'>Status</h4>
+            {['Active', 'Inactive'].map((s) => (
+              <label
+                key={s}
+                className='flex items-center gap-2 mb-1'>
+                <input
+                  type='checkbox'
+                  checked={filters.status.includes(s)}
+                  onChange={() => toggleFilter('status', s)}
+                  className='h-4 w-4'
+                />
+                {s}
+              </label>
+            ))}
 
-            <button
-              onClick={resetFilters}
-              className='w-full text-center text-sm text-blue-600 hover:underline mt-2'>
-              Reset Filters
-            </button>
+            {/* Reset Button */}
+            <div className='flex justify-end gap-2 mt-3'>
+              <button
+                onClick={resetFilters}
+                className='w-full bg-gray-100 text-gray-700 py-1 rounded-lg hover:bg-gray-200 text-sm'>
+                Reset Filters
+              </button>
+            </div>
           </div>
         )}
       </div>

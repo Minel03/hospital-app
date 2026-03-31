@@ -36,6 +36,11 @@ import {
   Trash,
   Stethoscope,
   Activity,
+  Building2,
+  HeartPulse,
+  BedDouble,
+  BedSingle,
+  DoorOpen,
 } from 'lucide-react';
 
 // Recharts components
@@ -92,6 +97,13 @@ export const Icons = {
   Eye,
   Edit,
   Trash,
+  Stethoscope,
+  Activity,
+  Building2,
+  HeartPulse,
+  BedDouble,
+  BedSingle,
+  DoorOpen,
 };
 
 export const Charts = {

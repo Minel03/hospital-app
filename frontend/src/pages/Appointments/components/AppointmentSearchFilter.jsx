@@ -80,14 +80,9 @@ const AppointmentSearchFilter = ({
 
             <div className='flex justify-end gap-2 mt-3'>
               <button
-                className='px-3 py-1 text-gray-700 bg-gray-200 rounded hover:bg-gray-300'
-                onClick={resetFilters}>
-                Reset
-              </button>
-              <button
-                className='px-3 py-1 text-white bg-blue-600 rounded hover:bg-blue-700'
-                onClick={() => setShowFilterPopover(false)}>
-                Apply
+                onClick={resetFilters}
+                className='mt-3 w-full bg-gray-100 text-gray-700 py-1 rounded-lg hover:bg-gray-200 text-sm'>
+                Reset Filters
               </button>
             </div>
           </div>

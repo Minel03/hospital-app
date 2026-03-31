@@ -695,7 +695,7 @@ const departments = [
   },
 ];
 
-export const statsDepartment = [
+const statsDepartment = [
   {
     label: 'Total Departments',
     value: '12',
@@ -736,4 +736,5 @@ export {
   statsBilling,
   settingsSections,
   departments,
+  statsDepartment,
 };

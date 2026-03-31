@@ -76,7 +76,7 @@ const Appointments = () => {
       const payload = {
         patient: formData.patient,
         doctor: formData.doctor,
-        department: formData.department,
+        department: formData.department?.value || formData.department || null, // ← extract ID
         date: formData.date,
         time: formData.time,
         status: formData.status,
@@ -101,7 +101,7 @@ const Appointments = () => {
       setFormData({
         patient: '',
         doctor: '',
-        department: '',
+        department: null,
         date: '',
         time: '',
         status: 'Pending',
@@ -135,7 +135,6 @@ const Appointments = () => {
     setMode('edit');
     setSelectedAppointment(appointment);
 
-    // appointment.date is just the date, appointment.time has the actual time
     const apptDate = new Date(appointment.date);
     const pad = (n) => String(n).padStart(2, '0');
     const formattedDate = `${apptDate.getUTCFullYear()}-${pad(apptDate.getUTCMonth() + 1)}-${pad(apptDate.getUTCDate())}`;
@@ -143,9 +142,14 @@ const Appointments = () => {
     setFormData({
       patient: appointment.patient?._id || '',
       doctor: appointment.doctor?._id || '',
-      department: appointment.department || '',
-      date: formattedDate, // use UTC date to avoid day shift
-      time: appointment.time, // ← use stored time directly, no parsing
+      department: appointment.department
+        ? {
+            value: appointment.department._id,
+            label: appointment.department.name,
+          } // ← format for react-select
+        : '',
+      date: formattedDate,
+      time: appointment.time,
       status: appointment.status || 'Pending',
       type: appointment.type || 'Check-up',
     });

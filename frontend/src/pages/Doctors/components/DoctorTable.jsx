@@ -2,7 +2,7 @@ import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
 const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
-  const { Star, Phone, Mail } = Icons;
+  const { Star, Phone, Mail, Edit, Trash, Eye } = Icons;
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
@@ -13,8 +13,10 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
           <div className='flex items-start justify-between mb-4'>
             <div className='w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center'>
               <span className='text-xl font-semibold text-blue-600'>
-                {doctor.name.split(' ')[1]?.[0] || ''}
-                {doctor.name.split(' ')[2]?.[0] || ''}
+                {doctor.name
+                  .split(' ')
+                  .map((n, i) => (i > 0 ? n[0] : ''))
+                  .join('')}
               </span>
             </div>
             <span
@@ -30,7 +32,12 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
           </div>
 
           <h3 className='font-semibold text-gray-900 mb-1'>{doctor.name}</h3>
-          <p className='text-sm text-blue-600 mb-3'>{doctor.specialty}</p>
+          <p className='text-sm text-blue-600 mb-1'>{doctor.specialty}</p>
+
+          {/* Department */}
+          <p className='text-sm text-gray-500 mb-3'>
+            Department: {doctor.department?.name || 'N/A'}
+          </p>
 
           <div className='flex items-center gap-1 mb-4'>
             <Star className='w-4 h-4 fill-yellow-400 text-yellow-400' />
@@ -63,18 +70,21 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
           <div className='flex gap-2 mt-4'>
             <button
               onClick={() => onView(doctor)}
-              className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100 transition-colors'>
-              View
+              className='flex-1 bg-gray-50  text-gray-600 py-2 rounded-lg hover:bg-gray-100 '>
+              <Eye className='w-4 h-4 inline mr-1' />
+              <span className='hidden md:inline'>View</span>
             </button>
             <button
               onClick={() => onEdit(doctor)}
-              className='flex-1 bg-yellow-50 text-yellow-600 py-2 rounded-lg hover:bg-yellow-100 transition-colors'>
-              Edit
+              className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100'>
+              <Edit className='w-4 h-4 inline mr-1' />
+              <span className='hidden md:inline'>Edit</span>
             </button>
             <button
               onClick={() => onDelete(doctor._id)}
-              className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition-colors'>
-              Delete
+              className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100'>
+              <Trash className='w-4 h-4 inline mr-1' />
+              <span className='hidden md:inline'>Delete</span>
             </button>
           </div>
         </div>

@@ -11,6 +11,7 @@ import DoctorViewModal from './components/DoctorViewModal';
 const Doctors = () => {
   const { axios, doctors, fetchDoctors } = useAppContext();
 
+  const [departments, setDepartments] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -33,10 +34,14 @@ const Doctors = () => {
     rating: 0,
     patients: 0,
     status: 'Available',
+    department: null, // <--- add department here
   });
 
+  // Fetch doctors and departments on mount
   useEffect(() => {
     fetchDoctors();
+    fetchDepartments();
+
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilterPopover(false);
@@ -46,12 +51,30 @@ const Doctors = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const fetchDepartments = async () => {
+    try {
+      const { data } = await axios.get('/api/department/list');
+      if (data.success) setDepartments(data.departments);
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to fetch departments');
+    }
+  };
+
   // Add / Edit doctor
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...formData,
+        department:
+          formData.department?.value || // react-select object
+          formData.department?._id || // raw populated object
+          null,
+      };
+
       if (mode === 'add') {
-        const { data } = await axios.post('/api/doctor/add', formData);
+        const { data } = await axios.post('/api/doctor/add', payload);
         if (data.success) {
           toast.success(data.message);
           fetchDoctors();
@@ -60,7 +83,7 @@ const Doctors = () => {
       } else if (mode === 'edit' && selectedDoctor) {
         const { data } = await axios.post('/api/doctor/update', {
           doctorId: selectedDoctor._id,
-          ...formData,
+          ...payload,
         });
         if (data.success) {
           toast.success(data.message);
@@ -83,6 +106,7 @@ const Doctors = () => {
         rating: 0,
         patients: 0,
         status: 'Available',
+        department: null,
       });
     }
   };
@@ -94,6 +118,7 @@ const Doctors = () => {
 
   const handleEditDoctor = (doctor) => {
     setSelectedDoctor(doctor);
+    setMode('edit');
     setFormData({
       name: doctor.name || '',
       age: doctor.age || '',
@@ -104,6 +129,9 @@ const Doctors = () => {
       experience: doctor.experience || '',
       patients: doctor.patients || 0,
       status: doctor.status || 'Available',
+      department: doctor.department
+        ? { value: doctor.department._id, label: doctor.department.name } // ← format for react-select
+        : null,
     });
     setShowModal(true);
   };
@@ -146,7 +174,6 @@ const Doctors = () => {
     });
   };
 
-  // Filter & search doctors
   const filteredDoctors = doctors.filter((doctor) => {
     const query = searchQuery.toLowerCase();
 
@@ -193,8 +220,8 @@ const Doctors = () => {
         formData={formData}
         setFormData={setFormData}
         selectedDoctor={selectedDoctor}
-        fetchDoctors={fetchDoctors}
         handleSubmit={handleSubmit}
+        departments={departments} // now properly passed
       />
 
       <DoctorViewModal

@@ -82,16 +82,13 @@ const AppointmentFormModal = ({
             </label>
             <Select
               options={departments?.map((dep) => ({
-                value: dep.name,
+                value: dep._id, // ← use _id not name
                 label: dep.name,
               }))}
-              value={
-                formData.department
-                  ? { value: formData.department, label: formData.department }
-                  : null
-              }
-              onChange={(selected) =>
-                setFormData({ ...formData, department: selected?.value || '' })
+              value={formData.department || null} // ← already a {value, label} object
+              onChange={
+                (selected) =>
+                  setFormData({ ...formData, department: selected || null }) // ← store whole object
               }
               placeholder='Select Department'
               isClearable

@@ -6,6 +6,9 @@ import patientRouter from './routes/patientRoute.js';
 import doctorRouter from './routes/doctorRoute.js';
 import appointmentRouter from './routes/appointmentRoute.js';
 import departmentRouter from './routes/departmentRoute.js';
+import staffRouter from './routes/staffRoute.js';
+import admissionRouter from './routes/admissionRoute.js';
+import bedRouter from './routes/bedRoute.js';
 
 // App Config
 const app = express();
@@ -19,8 +22,11 @@ app.use(cors());
 // API Endpoints
 app.use('/api/patient', patientRouter);
 app.use('/api/appointment', appointmentRouter);
+app.use('/api/admission', admissionRouter);
 app.use('/api/doctor', doctorRouter);
+app.use('/api/staff', staffRouter);
 app.use('/api/department', departmentRouter);
+app.use('/api/bed', bedRouter);
 
 app.get('/', (req, res) => {
   res.send('API Working');

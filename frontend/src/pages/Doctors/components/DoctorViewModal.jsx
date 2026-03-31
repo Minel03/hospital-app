@@ -24,6 +24,12 @@ const DoctorViewModal = ({
             <span className='font-medium'>Specialty:</span>
             <span>{selectedDoctor.specialty}</span>
           </div>
+          {selectedDoctor.department && (
+            <div className='flex items-center justify-between'>
+              <span className='font-medium'>Department:</span>
+              <span>{selectedDoctor.department.name}</span>
+            </div>
+          )}
           <div className='flex items-center justify-between'>
             <span className='font-medium'>Experience:</span>
             <span>{selectedDoctor.experience} years</span>

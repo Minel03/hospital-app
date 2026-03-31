@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import Select from 'react-select';
 import { Icons } from '../../../context/AppContext';
 
 const DoctorFormModal = ({
@@ -9,35 +10,53 @@ const DoctorFormModal = ({
   setFormData,
   selectedDoctor,
   handleSubmit,
+  departments = [], // pass departments as a prop
 }) => {
   const { X } = Icons;
-
-  // Default values to reset the form
-  const defaultFormData = {
-    name: '',
-    age: '',
-    gender: 'Male',
-    phone: '',
-    email: '',
-    specialty: '',
-    experience: '',
-    patients: 0,
-    status: 'Available',
-  };
 
   if (!showModal) return null;
 
   const handleClose = () => {
     setShowModal(false);
-    setFormData(defaultFormData);
+    setFormData({
+      name: '',
+      age: '',
+      gender: 'Male',
+      phone: '',
+      email: '',
+      specialty: '',
+      experience: '',
+      patients: 0,
+      status: 'Available',
+      department: null,
+    });
   };
+
+  // Map departments to react-select options
+  const departmentOptions = departments.map((dept) => ({
+    value: dept._id,
+    label: dept.name,
+  }));
+
+  useEffect(() => {
+    if (mode === 'edit' && selectedDoctor) {
+      const deptOption = departments
+        .map((dept) => ({ value: dept._id, label: dept.name }))
+        .find((d) => d.value === selectedDoctor.department?._id);
+
+      setFormData((prev) => ({
+        ...prev,
+        department: deptOption || null,
+      }));
+    }
+  }, [mode, selectedDoctor, departments]); // departmentOptions removed — use departments directly
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
       <div className='bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
         {/* Header */}
         <div className='sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between'>
-          <h3 className='text-xl font-semibold text-gray-900'>
+          <h3 className='text-xl font-semibold'>
             {mode === 'add' ? 'Add Doctor' : 'Edit Doctor'}
           </h3>
           <button
@@ -117,6 +136,22 @@ const DoctorFormModal = ({
                 }
                 className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
                 placeholder='Cardiology'
+              />
+            </div>
+
+            {/* Department */}
+            <div>
+              <label className='block text-sm font-medium text-gray-700 mb-2'>
+                Department
+              </label>
+              <Select
+                options={departmentOptions}
+                value={formData.department}
+                onChange={(selected) =>
+                  setFormData({ ...formData, department: selected })
+                }
+                placeholder='Select Department'
+                isClearable
               />
             </div>
 

@@ -8,7 +8,7 @@ const AppointmentTable = ({
   onEditAppointment,
   onCancelAppointment,
 }) => {
-  const { Calendar, Clock } = Icons;
+  const { Calendar, Clock, Edit, X } = Icons;
   const formatTime12Hour = (time) => {
     if (!time) return '';
     const [hourStr, minute] = time.split(':');
@@ -23,7 +23,7 @@ const AppointmentTable = ({
     const matchesSearch =
       appointment.patient?.name?.toLowerCase().includes(query) ||
       appointment.doctor?.name?.toLowerCase().includes(query) ||
-      appointment.department?.toLowerCase().includes(query);
+      appointment.department?.name?.toLowerCase().includes(query);
 
     const matchesStatus =
       filters.status.length === 0 ||
@@ -68,7 +68,8 @@ const AppointmentTable = ({
                       {appointment.patient?.name}
                     </h3>
                     <p className='text-sm text-gray-500'>
-                      {appointment.doctor?.name} - {appointment.department}
+                      {appointment.doctor?.name} -{' '}
+                      {appointment.department?.name}
                     </p>
                   </div>
                 </div>
@@ -93,13 +94,15 @@ const AppointmentTable = ({
                   <div className='flex gap-2'>
                     <button
                       onClick={() => onEditAppointment(appointment)}
-                      className='px-3 py-1 text-xs text-white bg-blue-600 rounded hover:bg-blue-700'>
-                      Edit
+                      className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100'>
+                      <Edit className='w-4 h-4 inline mr-1' />
+                      <span className='hidden md:inline'>Edit</span>
                     </button>
                     <button
                       onClick={() => onCancelAppointment(appointment._id)}
-                      className='px-3 py-1 text-xs text-white bg-red-600 rounded hover:bg-red-700'>
-                      Cancel
+                      className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100'>
+                      <X className='w-4 h-4 inline mr-1' />
+                      <span className='hidden md:inline'>Cancel</span>
                     </button>
                   </div>
                 )}
