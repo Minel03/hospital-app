@@ -6,42 +6,7 @@ import { useNavigate } from 'react-router-dom';
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 // Lucide-react icons
-import {
-  Users,
-  Calendar,
-  DollarSign,
-  Bed,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Search,
-  Filter,
-  Plus,
-  Download,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  Phone,
-  Mail,
-  MoreVertical,
-  Bell,
-  Lock,
-  Building,
-  Globe,
-  Shield,
-  Palette,
-  X,
-  Eye,
-  Edit,
-  Trash,
-  Stethoscope,
-  Activity,
-  Building2,
-  HeartPulse,
-  BedDouble,
-  BedSingle,
-  DoorOpen,
-} from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 // Recharts components
 import {
@@ -68,42 +33,7 @@ const AppContext = createContext({});
 
 // Export icons and charts for global reuse
 export const Icons = {
-  Users,
-  Calendar,
-  DollarSign,
-  Bed,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Search,
-  Filter,
-  Plus,
-  Download,
-  CheckCircle,
-  AlertCircle,
-  Search,
-  Calendar,
-  Star,
-  Phone,
-  Mail,
-  MoreVertical,
-  Bell,
-  Lock,
-  Building,
-  Globe,
-  Shield,
-  Palette,
-  X,
-  Eye,
-  Edit,
-  Trash,
-  Stethoscope,
-  Activity,
-  Building2,
-  HeartPulse,
-  BedDouble,
-  BedSingle,
-  DoorOpen,
+  ...LucideIcons,
 };
 
 export const Charts = {
@@ -133,19 +63,19 @@ export const AppProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
 
   // Fetch rooms example
-  // const fetchRooms = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const { data } = await axios.get('/api'); // replace with your API
-  //     if (data.success) setRooms(data.rooms);
-  //     else toast.error(data.message);
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error(error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchRooms = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get('/api/bed/list'); // replace with your API
+      if (data.success) setRooms(data.rooms);
+      else toast.error(data.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch patients example
   const fetchPatients = async () => {
@@ -164,21 +94,20 @@ export const AppProvider = ({ children }) => {
 
   // Fetch doctors example
   const fetchDoctors = async () => {
-    setLoading(true);
     try {
-      const { data } = await axios.get('/api/doctor/list'); // replace with your API
-      if (data.success) setDoctors(data.doctors);
-      else toast.error(data.message);
+      const { data } = await axios.get('/api/doctor/list'); // <-- doctor endpoint
+      if (data.success) {
+        setDoctors(data.doctors);
+      } else {
+        toast.error(data.message);
+      }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    // fetchRooms();
+    fetchRooms();
     fetchPatients();
     fetchDoctors();
   }, []);
@@ -194,7 +123,7 @@ export const AppProvider = ({ children }) => {
     setPatients,
     doctors,
     setDoctors,
-    // fetchRooms,
+    fetchRooms,
     fetchPatients,
     fetchDoctors,
   };

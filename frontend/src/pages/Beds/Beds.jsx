@@ -3,7 +3,7 @@ import Title from '../../components/Title';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
-const Rooms = () => {
+const Beds = () => {
   const {
     Search,
     Filter,
@@ -319,4 +319,4 @@ const Rooms = () => {
   );
 };
 
-export default Rooms;
+export default Beds;

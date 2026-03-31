@@ -8,7 +8,7 @@ import DepartmentCardGrid from './components/DepartmentCardGrid';
 import DepartmentFormModal from './components/DepartmentFormModal';
 
 const Departments = () => {
-  const { axios } = useAppContext();
+  const { axios, fetchDoctors } = useAppContext();
 
   const [departments, setDepartments] = useState([]);
   const [doctors, setDoctors] = useState([]); // <-- Added doctors state
@@ -68,20 +68,6 @@ const Departments = () => {
             icon: 'HeartPulse',
           },
         ]);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
-  // Fetch doctors
-  const fetchDoctors = async () => {
-    try {
-      const { data } = await axios.get('/api/doctor/list'); // <-- doctor endpoint
-      if (data.success) {
-        setDoctors(data.doctors);
       } else {
         toast.error(data.message);
       }

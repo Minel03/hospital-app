@@ -10,6 +10,8 @@ import {
   Activity,
   Menu,
   X,
+  ClipboardList,
+  UserCog,
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
@@ -20,9 +22,11 @@ const Sidebar = () => {
     { id: '', label: 'Dashboard', icon: Home },
     { id: 'patients', label: 'Patients', icon: Users },
     { id: 'appointments', label: 'Appointments', icon: Calendar },
+    { id: 'admissions', label: 'Admissions', icon: ClipboardList },
     { id: 'doctors', label: 'Doctors', icon: Stethoscope },
+    { id: 'staffs', label: 'Staff', icon: UserCog },
     { id: 'departments', label: 'Departments', icon: Activity },
-    { id: 'rooms', label: 'Rooms & Beds', icon: Bed },
+    { id: 'beds', label: 'Rooms & Beds', icon: Bed },
     { id: 'billing', label: 'Billing', icon: DollarSign },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
