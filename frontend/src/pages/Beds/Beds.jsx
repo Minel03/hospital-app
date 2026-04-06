@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import Title from '../../components/Title';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
+import BedsHeader from './components/BedsHeader';
+import BedsSearchFilter from './components/BedsSearchFilter';
+import BedsList from './components/BedsList';
+import BedsModal from './components/BedsModal';
 
 const Beds = () => {
-  const {
-    Search,
-    Filter,
-    Plus,
-    ChevronDown,
-    ChevronUp,
-    BedDouble,
-    BedSingle,
-    DoorOpen,
-  } = Icons;
+  const { Search, Filter, Plus, BedSingle, BedDouble, DoorOpen } = Icons;
   const { axios } = useAppContext();
 
+  // --- State ---
+  const [rooms, setRooms] = useState([]);
   const [beds, setBeds] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +22,38 @@ const Beds = () => {
     occupiedBeds: 0,
     availableBeds: 0,
   });
+
+  // --- Room Modal ---
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [roomMode, setRoomMode] = useState('add'); // 'add' | 'edit'
+  const [roomForm, setRoomForm] = useState({
+    roomNumber: '',
+    floor: '',
+    type: 'General',
+    department: '',
+    capacity: '',
+  });
+  const [editingRoomId, setEditingRoomId] = useState(null);
+
+  // --- Bed Modal ---
+  const [showBedModal, setShowBedModal] = useState(false);
+  const [bedMode, setBedMode] = useState('add'); // 'add' | 'edit'
+  const [bedForm, setBedForm] = useState({
+    roomId: '',
+    status: 'Available',
+    numberOfBeds: 1,
+  });
+  const [editingBedId, setEditingBedId] = useState(null);
+
+  // --- Fetch Rooms & Beds ---
+  const fetchRooms = async () => {
+    try {
+      const { data } = await axios.get('/api/room/list');
+      if (data.success) setRooms(data.rooms);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const fetchBeds = async () => {
     try {
@@ -48,55 +76,141 @@ const Beds = () => {
     }
   };
 
+  useEffect(() => {
+    fetchRooms();
+    fetchBeds();
+    fetchDepartments();
+  }, []);
+
+  // --- Compute Stats ---
   const computeStats = (beds) => {
-    const rooms = [...new Set(beds.map((b) => b.roomNumber))];
+    const roomsSet = new Set(beds.map((b) => b.room?.roomNumber)); // ✅
     setStats({
-      totalRooms: rooms.length,
+      totalRooms: roomsSet.size,
       totalBeds: beds.length,
       occupiedBeds: beds.filter((b) => b.status === 'Occupied').length,
       availableBeds: beds.filter((b) => b.status === 'Available').length,
     });
   };
 
-  useEffect(() => {
-    fetchBeds();
-    fetchDepartments();
-  }, []);
+  // --- Modal Handlers ---
+  const openAddRoomModal = () => {
+    setRoomMode('add');
+    setRoomForm({
+      roomNumber: '',
+      floor: '',
+      type: 'General',
+      department: '',
+      capacity: '',
+    });
+    setEditingRoomId(null);
+    setShowRoomModal(true);
+  };
 
-  // Group beds by roomNumber
+  const openEditRoomModal = (room) => {
+    setRoomMode('edit');
+    setRoomForm({
+      roomNumber: room.roomNumber,
+      floor: room.floor,
+      type: room.type,
+      department: room.department?._id || '',
+      capacity: room.capacity,
+    });
+    setEditingRoomId(room._id);
+    setShowRoomModal(true);
+  };
+
+  const openAddBedModal = () => {
+    setBedMode('add');
+    setBedForm({
+      roomId: '',
+      status: 'Available',
+      numberOfBeds: 1,
+    });
+    setEditingBedId(null);
+    setShowBedModal(true);
+  };
+
+  const openEditBedModal = (bed) => {
+    setBedMode('edit');
+    setBedForm({
+      roomId: bed.room?._id || bed.room, // ✅ was: bed.roomId
+      status: bed.status,
+      numberOfBeds: 1,
+    });
+    setEditingBedId(bed._id);
+    setShowBedModal(true);
+  };
+
+  // --- Submit Handlers ---
+  const handleRoomSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (roomMode === 'add') {
+        await axios.post('/api/room/add', roomForm);
+        toast.success('Room added successfully');
+      } else {
+        await axios.put('/api/room/update', {
+          roomId: editingRoomId,
+          ...roomForm,
+        });
+        toast.success('Room updated successfully');
+      }
+      fetchRooms();
+      fetchBeds(); // ✅ add this
+      setShowRoomModal(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleBedSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (bedMode === 'add') {
+        const count = parseInt(bedForm.numberOfBeds || 1);
+        for (let i = 0; i < count; i++) {
+          await axios.post('/api/bed/add', {
+            roomId: bedForm.roomId,
+            status: bedForm.status,
+          });
+        }
+        toast.success(`${count} bed(s) added successfully`);
+      } else {
+        await axios.put('/api/bed/update', {
+          bedId: editingBedId,
+          roomId: bedForm.roomId,
+          status: bedForm.status,
+        });
+        toast.success('Bed updated successfully');
+      }
+      fetchBeds();
+      setShowBedModal(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // --- Rooms & Beds Display ---
   const groupedRooms = beds.reduce((acc, bed) => {
-    const room = bed.roomNumber;
+    const room = bed.room?.roomNumber; // ✅ was: bed.roomNumber
+    if (!room) return acc;
     if (!acc[room]) acc[room] = [];
     acc[room].push(bed);
     return acc;
   }, {});
 
-  // Filter by search
   const filteredRooms = Object.entries(groupedRooms).filter(
-    ([roomNumber, beds]) => {
+    ([roomNumber, roomBeds]) => {
       const query = searchQuery.toLowerCase();
       return (
         roomNumber.toLowerCase().includes(query) ||
-        beds[0]?.type?.toLowerCase().includes(query) ||
-        beds[0]?.department?.name?.toLowerCase().includes(query) ||
-        beds[0]?.floor?.toLowerCase().includes(query)
+        roomBeds[0]?.room?.type?.toLowerCase().includes(query) || // ✅ was: bed.type
+        roomBeds[0]?.room?.department?.name?.toLowerCase().includes(query) || // ✅
+        roomBeds[0]?.room?.floor?.toLowerCase().includes(query) // ✅ was: bed.floor
       );
     },
   );
-
-  const toggleRoom = (roomNumber) => {
-    setExpandedRooms((prev) => ({
-      ...prev,
-      [roomNumber]: !prev[roomNumber],
-    }));
-  };
-
-  const getRoomStatus = (beds) => {
-    const occupied = beds.filter((b) => b.status === 'Occupied').length;
-    if (occupied === 0) return 'Available';
-    if (occupied === beds.length) return 'Fully Occupied';
-    return 'Partially Occupied';
-  };
 
   const statsConfig = [
     {
@@ -128,193 +242,40 @@ const Beds = () => {
   return (
     <div className='p-8 space-y-6'>
       {/* Header */}
-      <div className='flex items-center justify-between'>
-        <Title
-          title='Rooms & Beds'
-          subtitle='Manage hospital rooms and bed allocation'
-        />
-        <button className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
-          <Plus className='w-5 h-5' />
-          <span className='hidden sm:inline'>Add Bed</span>
-        </button>
-      </div>
+      <BedsHeader
+        openAddRoomModal={openAddRoomModal}
+        openAddBedModal={openAddBedModal}
+        statsConfig={statsConfig}
+      />
 
-      {/* Stats */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4'>
-        {statsConfig.map((stat, index) => {
-          const Icon = stat.icon; // ← add this
-          return (
-            <div
-              key={index}
-              className='flex items-center justify-between bg-white p-4 rounded-lg border border-gray-200'>
-              <div>
-                <p className='text-sm text-gray-500'>{stat.label}</p>
-                <p className='text-2xl font-bold text-gray-900'>{stat.value}</p>
-              </div>
-              <div className={`${stat.color} p-3 rounded-lg`}>
-                <Icon className='w-6 h-6 text-white' />{' '}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <BedsSearchFilter
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
 
-      {/* Search */}
-      <div className='flex items-center gap-4'>
-        <div className='flex-1 relative'>
-          <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400' />
-          <input
-            type='text'
-            placeholder='Search by room number, type, floor or department...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-          />
-        </div>
-        <button className='flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50'>
-          <Filter className='w-5 h-5' />
-          Filter
-        </button>
-      </div>
+      <BedsList
+        filteredRooms={filteredRooms}
+        openEditRoomModal={openEditRoomModal}
+        openEditBedModal={openEditBedModal}
+      />
 
-      {/* Rooms Table */}
-      <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
-        <div className='overflow-x-auto'>
-          <table className='w-full'>
-            <thead className='bg-gray-50 border-b border-gray-200'>
-              <tr>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8'></th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Room
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Type
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Floor
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Department
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Beds
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Occupied
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className='bg-white divide-y divide-gray-200'>
-              {filteredRooms.map(([roomNumber, roomBeds]) => {
-                const isExpanded = expandedRooms[roomNumber];
-                const occupied = roomBeds.filter(
-                  (b) => b.status === 'Occupied',
-                ).length;
-                const roomStatus = getRoomStatus(roomBeds);
-                const firstBed = roomBeds[0];
-
-                return (
-                  <React.Fragment key={roomNumber}>
-                    {/* Room Row */}
-                    <tr
-                      className='hover:bg-gray-50 cursor-pointer'
-                      onClick={() => toggleRoom(roomNumber)}>
-                      <td className='px-6 py-4'>
-                        {isExpanded ? (
-                          <ChevronUp className='w-4 h-4 text-gray-400' />
-                        ) : (
-                          <ChevronDown className='w-4 h-4 text-gray-400' />
-                        )}
-                      </td>
-                      <td className='px-6 py-4 font-medium text-gray-900'>
-                        Room {roomNumber}
-                      </td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        {firstBed?.type}
-                      </td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        Floor {firstBed?.floor}
-                      </td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        {firstBed?.department?.name}
-                      </td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        {roomBeds.length}
-                      </td>
-                      <td className='px-6 py-4 text-sm text-gray-600'>
-                        {occupied} / {roomBeds.length}
-                      </td>
-                      <td className='px-6 py-4'>
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            roomStatus === 'Available'
-                              ? 'bg-green-100 text-green-700'
-                              : roomStatus === 'Fully Occupied'
-                                ? 'bg-red-100 text-red-700'
-                                : 'bg-yellow-100 text-yellow-700'
-                          }`}>
-                          {roomStatus}
-                        </span>
-                      </td>
-                    </tr>
-
-                    {/* Expanded Beds */}
-                    {isExpanded &&
-                      roomBeds.map((bed) => (
-                        <tr
-                          key={bed._id}
-                          className='bg-gray-50 border-l-4 border-blue-200'>
-                          <td className='px-6 py-3'></td>
-                          <td className='px-6 py-3 text-sm text-gray-500 pl-10'>
-                            ↳ Bed {bed.bedNumber}
-                          </td>
-                          <td className='px-6 py-3 text-sm text-gray-500'>
-                            {bed.type}
-                          </td>
-                          <td className='px-6 py-3 text-sm text-gray-500'>
-                            Floor {bed.floor}
-                          </td>
-                          <td className='px-6 py-3 text-sm text-gray-500'>
-                            {bed.department?.name}
-                          </td>
-                          <td className='px-6 py-3 text-sm text-gray-500'>—</td>
-                          <td className='px-6 py-3 text-sm text-gray-500'>
-                            {bed.currentPatient?.name || '—'}
-                          </td>
-                          <td className='px-6 py-3'>
-                            <span
-                              className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                bed.status === 'Available'
-                                  ? 'bg-green-100 text-green-700'
-                                  : bed.status === 'Occupied'
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-red-100 text-red-700'
-                              }`}>
-                              {bed.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                  </React.Fragment>
-                );
-              })}
-
-              {filteredRooms.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className='px-6 py-8 text-center text-gray-400'>
-                    No rooms found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <BedsModal
+        showRoomModal={showRoomModal}
+        showBedModal={showBedModal}
+        roomMode={roomMode}
+        bedMode={bedMode}
+        roomForm={roomForm}
+        setRoomForm={setRoomForm}
+        bedForm={bedForm}
+        setBedForm={setBedForm}
+        handleRoomSubmit={handleRoomSubmit}
+        handleBedSubmit={handleBedSubmit}
+        setShowRoomModal={setShowRoomModal}
+        setShowBedModal={setShowBedModal}
+        departments={departments}
+        rooms={rooms}
+        beds={beds}
+      />
     </div>
   );
 };

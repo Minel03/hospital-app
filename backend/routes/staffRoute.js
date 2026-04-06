@@ -9,8 +9,8 @@ import {
 const staffRouter = express.Router();
 
 staffRouter.post('/add', addStaff);
-staffRouter.post('/update', updateStaff);
+staffRouter.put('/update', updateStaff);
 staffRouter.get('/list', getAllStaff);
-staffRouter.post('/delete', deleteStaff);
+staffRouter.delete('/delete', deleteStaff);
 
 export default staffRouter;

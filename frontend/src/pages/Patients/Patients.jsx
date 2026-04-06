@@ -121,6 +121,8 @@ const Patients = () => {
   };
 
   const deletePatient = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this staff member?'))
+      return;
     try {
       const { data } = await axios.delete('/api/patient/delete', {
         data: { patientId: id },

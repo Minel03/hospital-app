@@ -196,7 +196,7 @@ export const getDepartmentById = async (req, res) => {
 export const getAllDepartments = async (req, res) => {
   try {
     const [departments, doctors, staff, admissions, beds] = await Promise.all([
-      departmentModel.find(),
+      departmentModel.find().populate('head', 'name'),
       doctorModel.find(),
       staffModel.find(),
       admissionModel.find({ status: 'Admitted' }),

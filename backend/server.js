@@ -9,6 +9,7 @@ import departmentRouter from './routes/departmentRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import admissionRouter from './routes/admissionRoute.js';
 import bedRouter from './routes/bedRoute.js';
+import roomRouter from './routes/roomRoute.js';
 
 // App Config
 const app = express();
@@ -27,6 +28,7 @@ app.use('/api/doctor', doctorRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/department', departmentRouter);
 app.use('/api/bed', bedRouter);
+app.use('/api/room', roomRouter);
 
 app.get('/', (req, res) => {
   res.send('API Working');

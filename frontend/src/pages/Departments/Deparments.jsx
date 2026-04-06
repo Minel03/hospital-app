@@ -8,10 +8,9 @@ import DepartmentCardGrid from './components/DepartmentCardGrid';
 import DepartmentFormModal from './components/DepartmentFormModal';
 
 const Departments = () => {
-  const { axios, fetchDoctors } = useAppContext();
+  const { axios, fetchDoctors, doctors } = useAppContext();
 
   const [departments, setDepartments] = useState([]);
-  const [doctors, setDoctors] = useState([]); // <-- Added doctors state
   const [statsDepartment, setStatsDepartment] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
@@ -164,7 +163,7 @@ const Departments = () => {
         departments={filteredDepartments}
         onEdit={handleEditDepartment}
         onDelete={handleDeleteDepartment}
-        doctors={doctors} // <-- pass doctors if needed in card/grid
+        doctors={doctors}
       />
 
       <DepartmentFormModal

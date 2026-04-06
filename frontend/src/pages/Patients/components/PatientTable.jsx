@@ -7,7 +7,7 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
   return (
     <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
       <div className='overflow-x-auto'>
-        <div className='w-full'>
+        <div className='min-w-250'>
           {/* ------------ List Table Title (Desktop Only) ------------ */}
           <div className='hidden md:grid grid-cols-[2fr_1fr_1fr_2fr_2fr_1fr_auto] items-center py-2 px-3 bg-gray-100 border-b border-gray-200 text-sm font-medium text-gray-600'>
             <b>Patient</b>
@@ -23,7 +23,7 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
           {patients.map((patient) => (
             <div
               key={patient._id}
-              className='border-b border-gray-200 px-3 py-3 hover:bg-gray-50 flex flex-col gap-2 md:grid md:grid-cols-[2fr_1fr_1fr_2fr_2fr_1fr_auto] md:items-center text-sm'>
+              className='border-b border-gray-200 px-3 py-3 hover:bg-gray-50 grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_2fr_2fr_1fr_auto] gap-2 md:gap-0 md:items-center text-sm'>
               {/* Patient */}
               <div className='flex flex-col md:flex-row md:items-center gap-1'>
                 <p className='md:hidden text-xs text-gray-500 font-medium'>
@@ -102,20 +102,20 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
               </div>
 
               {/* Actions */}
-              <div className='flex gap-2 w-28 justify-center'>
+              <div className='flex gap-2 md:w-28 justify-start md:justify-center'>
                 <button
                   onClick={() => onView(patient)}
-                  className='p-2 bg-gray-50 rounded hover:bg-gray-100 flex-1 md:flex-none flex justify-center'>
+                  className='p-2 bg-gray-50 rounded hover:bg-gray-100 flex justify-center'>
                   <Eye className='w-4 h-4 text-gray-700' />
                 </button>
                 <button
                   onClick={() => onEdit(patient)}
-                  className='p-2 bg-blue-50 rounded hover:bg-blue-100 flex-1 md:flex-none flex justify-center'>
+                  className='p-2 bg-blue-50 rounded hover:bg-blue-100 flex justify-center'>
                   <Edit className='w-4 h-4 text-blue-700' />
                 </button>
                 <button
                   onClick={() => onDelete(patient._id)}
-                  className='p-2 bg-red-50 rounded hover:bg-red-100 flex-1 md:flex-none flex justify-center'>
+                  className='p-2 bg-red-50 rounded hover:bg-red-100 flex justify-center'>
                   <Trash className='w-4 h-4 text-red-600' />
                 </button>
               </div>
