@@ -15,7 +15,7 @@ const AppointmentFormModal = ({
   if (!showModal) return null;
 
   const today = new Date();
-  const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
@@ -82,13 +82,12 @@ const AppointmentFormModal = ({
             </label>
             <Select
               options={departments?.map((dep) => ({
-                value: dep._id, // ← use _id not name
+                value: dep._id,
                 label: dep.name,
               }))}
-              value={formData.department || null} // ← already a {value, label} object
-              onChange={
-                (selected) =>
-                  setFormData({ ...formData, department: selected || null }) // ← store whole object
+              value={formData.department || null}
+              onChange={(selected) =>
+                setFormData({ ...formData, department: selected || null })
               }
               placeholder='Select Department'
               isClearable
@@ -100,27 +99,16 @@ const AppointmentFormModal = ({
             <label className='block text-sm font-medium text-gray-700 mb-2'>
               Date & Time
             </label>
-            <div className='flex gap-2'>
-              <input
-                type='date'
-                value={formData.date}
-                min={localToday}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
-                className='w-1/2 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
-                required
-              />
-              <input
-                type='time'
-                value={formData.time}
-                onChange={(e) =>
-                  setFormData({ ...formData, time: e.target.value })
-                }
-                className='w-1/2 border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
-                required
-              />
-            </div>
+            <input
+              type='datetime-local'
+              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              min={localToday}
+              value={formData.datetime || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, datetime: e.target.value })
+              }
+              required
+            />
           </div>
 
           {/* Status */}

@@ -30,6 +30,7 @@ const roomSchema = new mongoose.Schema(
       enum: ['Available', 'Full', 'Under Maintenance'],
       default: 'Available',
     },
+    ratePerNight: { type: Number, default: 0 },
   },
   { timestamps: true },
 );

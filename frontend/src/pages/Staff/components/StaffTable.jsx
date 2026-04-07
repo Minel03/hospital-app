@@ -40,7 +40,9 @@ const StaffTable = ({ filteredStaff, handleEdit, handleDelete }) => {
                     </div>
                     <div className='flex flex-col'>
                       <p className='font-medium text-gray-900'>{member.name}</p>
-                      <p className='text-xs text-gray-500'>ID: {member._id}</p>
+                      <p className='text-xs text-gray-500'>
+                        ID: {member._id.slice(-4).toUpperCase()}
+                      </p>
                     </div>
                   </div>
                 </div>

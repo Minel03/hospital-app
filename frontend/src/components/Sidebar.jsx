@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import {
-  Home,
-  Users,
-  Calendar,
-  Stethoscope,
-  Bed,
-  DollarSign,
-  Settings,
-  Activity,
-  Menu,
-  X,
-  ClipboardList,
-  UserCog,
-} from 'lucide-react';
+import { Icons } from '../context/AppContext';
 import { NavLink } from 'react-router-dom';
 
 const Sidebar = () => {
+  const {
+    Home,
+    Users,
+    Calendar,
+    Stethoscope,
+    Bed,
+    DollarSign,
+    Settings,
+    Activity,
+    Menu,
+    X,
+    ClipboardList,
+    UserCog,
+    FileText,
+  } = Icons;
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
@@ -28,6 +30,7 @@ const Sidebar = () => {
     { id: 'departments', label: 'Departments', icon: Activity },
     { id: 'beds', label: 'Rooms & Beds', icon: Bed },
     { id: 'billing', label: 'Billing', icon: DollarSign },
+    { id: 'logs', label: 'Logs', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 

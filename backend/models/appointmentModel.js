@@ -11,12 +11,13 @@ const appointmentSchema = new mongoose.Schema({
     ref: 'Doctor',
     required: true,
   },
-  date: {
-    type: Date,
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
     required: true,
   },
-  time: {
-    type: String,
+  datetime: {
+    type: Date,
     required: true,
   },
   status: {
@@ -26,13 +27,8 @@ const appointmentSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Check-up', 'Consultation', 'Follow-up'],
+    enum: ['Check-up', 'Consultation', 'Follow-up', 'Emergency'],
     default: 'Check-up',
-  },
-  department: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Department',
-    required: true,
   },
 });
 

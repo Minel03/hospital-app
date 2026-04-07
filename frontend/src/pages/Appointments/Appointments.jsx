@@ -29,9 +29,8 @@ const Appointments = () => {
   const [formData, setFormData] = useState({
     patient: '',
     doctor: '',
-    department: '',
-    date: '',
-    time: '',
+    department: null,
+    datetime: '', // single datetime field
     status: 'Pending',
     type: 'Check-up',
   });
@@ -42,7 +41,7 @@ const Appointments = () => {
       const [appointmentsRes, patientsRes, doctorsRes, departmentsRes] =
         await Promise.all([
           axios.get('/api/appointment/list'),
-          axios.get('/api/patient/list'),
+          axios.get('/api/patient/all'),
           axios.get('/api/doctor/list'),
           axios.get('/api/department/list'),
         ]);
@@ -76,9 +75,8 @@ const Appointments = () => {
       const payload = {
         patient: formData.patient,
         doctor: formData.doctor,
-        department: formData.department?.value || formData.department || null, // ← extract ID
-        date: formData.date,
-        time: formData.time,
+        department: formData.department?.value || formData.department || null,
+        datetime: formData.datetime, // ← send single datetime
         status: formData.status,
         type: formData.type,
       };
@@ -102,8 +100,7 @@ const Appointments = () => {
         patient: '',
         doctor: '',
         department: null,
-        date: '',
-        time: '',
+        datetime: '',
         status: 'Pending',
         type: 'Check-up',
       });
@@ -121,9 +118,8 @@ const Appointments = () => {
     setFormData({
       patient: '',
       doctor: '',
-      department: '',
-      date: '',
-      time: '',
+      department: null,
+      datetime: '',
       status: 'Pending',
       type: 'Check-up',
     });
@@ -135,9 +131,10 @@ const Appointments = () => {
     setMode('edit');
     setSelectedAppointment(appointment);
 
-    const apptDate = new Date(appointment.date);
+    // format datetime for datetime-local input
+    const dt = new Date(appointment.datetime);
     const pad = (n) => String(n).padStart(2, '0');
-    const formattedDate = `${apptDate.getUTCFullYear()}-${pad(apptDate.getUTCMonth() + 1)}-${pad(apptDate.getUTCDate())}`;
+    const formattedDatetime = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 
     setFormData({
       patient: appointment.patient?._id || '',
@@ -146,10 +143,9 @@ const Appointments = () => {
         ? {
             value: appointment.department._id,
             label: appointment.department.name,
-          } // ← format for react-select
-        : '',
-      date: formattedDate,
-      time: appointment.time,
+          }
+        : null,
+      datetime: formattedDatetime,
       status: appointment.status || 'Pending',
       type: appointment.type || 'Check-up',
     });

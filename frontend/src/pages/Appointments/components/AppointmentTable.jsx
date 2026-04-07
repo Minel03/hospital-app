@@ -8,16 +8,22 @@ const AppointmentTable = ({
   onEditAppointment,
   onCancelAppointment,
 }) => {
-  const { Calendar, Clock, Edit, X } = Icons;
-  const formatTime12Hour = (time) => {
-    if (!time) return '';
-    const [hourStr, minute] = time.split(':');
-    let hour = parseInt(hourStr, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12;
-    return `${hour}:${minute} ${ampm}`;
+  const { Calendar, Edit, X } = Icons;
+
+  // Format datetime to MM/DD/YYYY hh:mm AM/PM
+  const formatDateTime = (datetime) => {
+    if (!datetime) return '';
+    return new Date(datetime).toLocaleString([], {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
   };
 
+  // Filter appointments
   const filteredAppointments = appointments.filter((appointment) => {
     const query = searchQuery.toLowerCase();
     const matchesSearch =
@@ -35,18 +41,32 @@ const AppointmentTable = ({
     return matchesSearch && matchesStatus && matchesType;
   });
 
+  // Sort: nearest upcoming appointment first
+  const sortedAppointments = filteredAppointments.sort((a, b) => {
+    const today = new Date();
+    const dateA = new Date(a.datetime || a.date);
+    const dateB = new Date(b.datetime || b.date);
+
+    const isAFuture = dateA >= today && a.status !== 'Cancelled';
+    const isBFuture = dateB >= today && b.status !== 'Cancelled';
+
+    // Future appointments first
+    if (isAFuture && !isBFuture) return -1;
+    if (!isAFuture && isBFuture) return 1;
+
+    // Otherwise, sort by datetime ascending
+    return dateA - dateB;
+  });
+
   return (
     <div className='lg:col-span-2 space-y-4'>
-      {filteredAppointments.map((appointment) => {
+      {sortedAppointments.map((appointment) => {
         const today = new Date();
-        today.setSeconds(0, 0); // strip seconds and milliseconds
+        today.setSeconds(0, 0);
 
-        const apptDateTime = new Date(appointment.date);
-        // set the time from appointment.time field
-        const [hours, minutes] = appointment.time.split(':');
-        apptDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-
+        const apptDateTime = new Date(appointment.datetime || appointment.date);
         const isFuture = apptDateTime >= today;
+
         return (
           <div
             key={appointment._id}
@@ -74,15 +94,11 @@ const AppointmentTable = ({
                   </div>
                 </div>
 
-                {/* Date, Time & Type */}
+                {/* Date & Time */}
                 <div className='flex items-center gap-4 text-sm text-gray-600 mb-2'>
                   <div className='flex items-center gap-2'>
                     <Calendar className='w-4 h-4' />
-                    {appointment.date?.slice(0, 10)}
-                  </div>
-                  <div className='flex items-center gap-2'>
-                    <Clock className='w-4 h-4' />
-                    {formatTime12Hour(appointment.time)}
+                    <span>{formatDateTime(appointment.datetime)}</span>
                   </div>
                   <span className='px-2 py-1 bg-gray-100 rounded text-xs'>
                     {appointment.type}
@@ -90,19 +106,17 @@ const AppointmentTable = ({
                 </div>
 
                 {/* Actions */}
-                {isFuture && (
+                {isFuture && appointment.status !== 'Cancelled' && (
                   <div className='flex gap-2'>
                     <button
                       onClick={() => onEditAppointment(appointment)}
                       className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100'>
                       <Edit className='w-4 h-4 inline mr-1' />
-                      <span className='hidden md:inline'>Edit</span>
                     </button>
                     <button
                       onClick={() => onCancelAppointment(appointment._id)}
                       className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100'>
                       <X className='w-4 h-4 inline mr-1' />
-                      <span className='hidden md:inline'>Cancel</span>
                     </button>
                   </div>
                 )}

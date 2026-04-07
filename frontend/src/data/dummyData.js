@@ -13,12 +13,12 @@ import {
 } from 'lucide-react';
 
 const patientData = [
-  { month: 'Jan', patients: 400 },
-  { month: 'Feb', patients: 450 },
-  { month: 'Mar', patients: 520 },
-  { month: 'Apr', patients: 480 },
-  { month: 'May', patients: 600 },
-  { month: 'Jun', patients: 650 },
+  { month: 'Jan', Patients: 400 },
+  { month: 'Feb', Patients: 450 },
+  { month: 'Mar', Patients: 520 },
+  { month: 'Apr', Patients: 480 },
+  { month: 'May', Patients: 600 },
+  { month: 'Jun', Patients: 650 },
 ];
 
 const departmentData = [

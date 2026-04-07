@@ -186,11 +186,13 @@ const AdmissionsModal = ({
                 />
               </div>
 
-              {/* ADMISSION DATE */}
+              {/* ADMISSION DATE & TIME */}
               <div>
-                <label className='block mb-1 font-medium'>Admission Date</label>
+                <label className='block mb-1 font-medium'>
+                  Admission Date & Time
+                </label>
                 <input
-                  type='date'
+                  type='datetime-local'
                   className='w-full border p-2 rounded'
                   value={formData.admissionDate}
                   onChange={(e) =>
@@ -200,13 +202,13 @@ const AdmissionsModal = ({
                 />
               </div>
 
-              {/* EXPECTED DISCHARGE DATE */}
+              {/* EXPECTED DISCHARGE DATE & TIME */}
               <div>
                 <label className='block mb-1 font-medium'>
-                  Expected Discharge Date
+                  Expected Discharge Date & Time
                 </label>
                 <input
-                  type='date'
+                  type='datetime-local'
                   className='w-full border p-2 rounded'
                   value={formData.expectedDischargeDate}
                   onChange={(e) =>

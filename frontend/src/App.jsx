@@ -12,6 +12,7 @@ import Departments from './pages/Departments/Deparments';
 import Admissions from './pages/Admissions/Admissions';
 import Staff from './pages/Staff/Staff';
 import Beds from './pages/Beds/Beds';
+import Logs from './pages/Logs/Logs';
 
 const App = () => {
   // Track active tab if you want to highlight the sidebar item
@@ -64,6 +65,10 @@ const App = () => {
           <Route
             path='/billing'
             element={<Billing />}
+          />
+          <Route
+            path='/logs'
+            element={<Logs />}
           />
           <Route
             path='/settings'

@@ -41,7 +41,12 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
                   <div className='flex flex-col'>
                     <p className='font-medium text-gray-900'>{patient.name}</p>
                     <p className='text-xs text-gray-500'>
-                      ID: {patient._id.toString().padStart(4, '0').slice(-4)}
+                      ID:{' '}
+                      {patient._id
+                        .toString()
+                        .padStart(4, '0')
+                        .slice(-4)
+                        .toUpperCase()}
                     </p>
                   </div>
                 </div>
