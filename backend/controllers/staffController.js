@@ -18,7 +18,7 @@ export const updateStaff = async (req, res) => {
       return res.json({ success: false, message: 'Staff ID is required' });
 
     const updated = await staffModel.findByIdAndUpdate(staffId, rest, {
-      new: true,
+      returnDocument: 'after',
     });
     if (!updated)
       return res.json({ success: false, message: 'Staff not found' });

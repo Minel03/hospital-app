@@ -60,20 +60,26 @@ export const AppProvider = ({ children }) => {
   const [rooms, setRooms] = useState([]);
   const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [admission, setAdmission] = useState([]);
+  const [staff, setStaff] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch rooms example
   const fetchRooms = async () => {
-    setLoading(true);
     try {
-      const { data } = await axios.get('/api/bed/list'); // replace with your API
+      const { data } = await axios.get('/api/room/list');
       if (data.success) setRooms(data.rooms);
-      else toast.error(data.message);
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const { data } = await axios.get('/api/department/list');
+      if (data.success) setDepartments(data.departments);
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
@@ -81,7 +87,7 @@ export const AppProvider = ({ children }) => {
   const fetchPatients = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get('/api/patient/list'); // replace with your API
+      const { data } = await axios.get('/api/patient/all'); // replace with your API
       if (data.success) setPatients(data.patients);
       else toast.error(data.message);
     } catch (error) {
@@ -106,10 +112,31 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const fetchStaff = async () => {
+    try {
+      const res = await axios.get('/api/staff/list');
+      if (res.data.success) setStaff(res.data.staff);
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
+  };
+
+  const fetchAdmissions = async () => {
+    try {
+      const res = await axios.get('/api/admission/list');
+      if (res.data.success) setAdmission(res.data.admission);
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    }
+  };
+
   useEffect(() => {
     fetchRooms();
     fetchPatients();
     fetchDoctors();
+    fetchDepartments();
+    fetchStaff();
+    fetchAdmissions();
   }, []);
 
   const value = {
@@ -126,6 +153,9 @@ export const AppProvider = ({ children }) => {
     fetchRooms,
     fetchPatients,
     fetchDoctors,
+    fetchDepartments,
+    fetchStaff,
+    fetchAdmissions,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

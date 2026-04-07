@@ -6,7 +6,6 @@ import DoctorHeader from './components/DoctorHeader';
 import DoctorSearchFilter from './components/DoctorSearchFilter';
 import DoctorTable from './components/DoctorTable';
 import DoctorFormModal from './components/DoctorFormModal';
-import DoctorViewModal from './components/DoctorViewModal';
 
 const Doctors = () => {
   const { axios, doctors, fetchDoctors } = useAppContext();
@@ -15,7 +14,6 @@ const Doctors = () => {
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState({
     status: [],
@@ -136,11 +134,6 @@ const Doctors = () => {
     setShowModal(true);
   };
 
-  const handleViewDoctor = (doctor) => {
-    setSelectedDoctor(doctor);
-    setShowViewModal(true);
-  };
-
   const deleteDoctor = async (id) => {
     try {
       const { data } = await axios.delete('/api/doctor/delete', {
@@ -208,7 +201,6 @@ const Doctors = () => {
 
       <DoctorTable
         doctors={filteredDoctors}
-        onView={handleViewDoctor}
         onEdit={handleEditDoctor}
         onDelete={deleteDoctor}
       />
@@ -222,12 +214,6 @@ const Doctors = () => {
         selectedDoctor={selectedDoctor}
         handleSubmit={handleSubmit}
         departments={departments} // now properly passed
-      />
-
-      <DoctorViewModal
-        showViewModal={showViewModal}
-        setShowViewModal={setShowViewModal}
-        selectedDoctor={selectedDoctor}
       />
     </div>
   );

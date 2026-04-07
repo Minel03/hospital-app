@@ -66,13 +66,11 @@ const DepartmentCardGrid = ({ departments, onEdit, onDelete }) => {
               onClick={() => onEdit(dept)}
               className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100'>
               <Edit className='w-4 h-4 inline mr-1' />
-              <span className='hidden md:inline'>Edit</span>
             </button>
             <button
               onClick={() => onDelete(dept._id)}
               className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100'>
               <Trash className='w-4 h-4 inline mr-1' />
-              <span className='hidden md:inline'>Delete</span>
             </button>
           </div>
         </div>

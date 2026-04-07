@@ -1,3 +1,4 @@
+import admissionModel from '../models/admissionModel.js';
 import patientModel from '../models/patientModel.js';
 
 export const addPatient = async (req, res) => {
@@ -104,7 +105,18 @@ export const updatePatient = async (req, res) => {
 
 export const getAllPatients = async (req, res) => {
   try {
-    const patients = await patientModel.find();
+    const activeAdmissions = await admissionModel.find(
+      { status: 'Admitted' },
+      'patient',
+    );
+    const admittedPatientIds = activeAdmissions.map((a) =>
+      a.patient.toString(),
+    );
+
+    const patients = await patientModel.find({
+      _id: { $nin: admittedPatientIds },
+    });
+
     res.json({ success: true, patients });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -122,6 +134,16 @@ export const getPatientById = async (req, res) => {
       return res.json({ success: false, message: 'Patient not found' });
 
     res.json({ success: true, patient });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// New endpoint — returns ALL patients, used for edit mode
+export const getAllPatientsUnfiltered = async (req, res) => {
+  try {
+    const patients = await patientModel.find();
+    res.json({ success: true, patients });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

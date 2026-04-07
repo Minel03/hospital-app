@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
-const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
+const DoctorTable = ({ doctors, onEdit, onDelete }) => {
   const { Star, Phone, Mail, Edit, Trash, Eye } = Icons;
 
   return (
@@ -69,22 +69,14 @@ const DoctorTable = ({ doctors, onView, onEdit, onDelete }) => {
 
           <div className='flex gap-2 mt-4'>
             <button
-              onClick={() => onView(doctor)}
-              className='flex-1 bg-gray-50  text-gray-600 py-2 rounded-lg hover:bg-gray-100 '>
-              <Eye className='w-4 h-4 inline mr-1' />
-              <span className='hidden md:inline'>View</span>
-            </button>
-            <button
               onClick={() => onEdit(doctor)}
               className='flex-1 bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100'>
               <Edit className='w-4 h-4 inline mr-1' />
-              <span className='hidden md:inline'>Edit</span>
             </button>
             <button
               onClick={() => onDelete(doctor._id)}
               className='flex-1 bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100'>
               <Trash className='w-4 h-4 inline mr-1' />
-              <span className='hidden md:inline'>Delete</span>
             </button>
           </div>
         </div>

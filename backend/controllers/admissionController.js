@@ -1,6 +1,9 @@
 import admissionModel from '../models/admissionModel.js';
 import bedModel from '../models/bedModel.js';
 
+/* =========================================================
+   ADD ADMISSION (Admit Patient)
+========================================================= */
 export const addAdmission = async (req, res) => {
   try {
     const {
@@ -13,15 +16,17 @@ export const addAdmission = async (req, res) => {
       diagnosis,
     } = req.body;
 
-    // Check if bed is available
+    if (!patient || !doctor || !department || !bed) {
+      return res.json({ success: false, message: 'Missing required fields' });
+    }
+
     const selectedBed = await bedModel.findById(bed);
     if (!selectedBed)
       return res.json({ success: false, message: 'Bed not found' });
     if (selectedBed.status !== 'Available')
       return res.json({ success: false, message: 'Bed is not available' });
 
-    // Create admission
-    const admission = new admissionModel({
+    const admission = await admissionModel.create({
       patient,
       doctor,
       department,
@@ -29,41 +34,54 @@ export const addAdmission = async (req, res) => {
       admissionDate,
       expectedDischargeDate,
       diagnosis,
-    });
-    await admission.save();
-
-    // Mark bed as occupied
-    await bedModel.findByIdAndUpdate(bed, {
-      status: 'Occupied',
-      currentPatient: patient,
+      status: 'Admitted',
     });
 
-    res.json({ success: true, message: 'Patient admitted successfully' });
+    // Occupy bed
+    selectedBed.status = 'Occupied';
+    selectedBed.currentPatient = patient;
+    await selectedBed.save();
+
+    res.json({
+      success: true,
+      message: 'Patient admitted successfully',
+      admission,
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
+/* =========================================================
+   DISCHARGE PATIENT
+========================================================= */
 export const dischargePatient = async (req, res) => {
   try {
     const { admissionId } = req.body;
     if (!admissionId)
       return res.json({ success: false, message: 'Admission ID is required' });
 
-    const admission = await admissionModel.findByIdAndUpdate(
-      admissionId,
-      { status: 'Discharged' },
-      { new: true },
-    );
+    const admission = await admissionModel.findById(admissionId);
     if (!admission)
       return res.json({ success: false, message: 'Admission not found' });
+    if (admission.status === 'Discharged')
+      return res.json({
+        success: false,
+        message: 'Patient already discharged',
+      });
 
-    // Free up the bed
-    await bedModel.findByIdAndUpdate(admission.bed, {
-      status: 'Available',
-      currentPatient: null,
-    });
+    admission.status = 'Discharged';
+    admission.dischargeDate = new Date();
+    await admission.save();
+
+    // Free bed
+    const bed = await bedModel.findById(admission.bed);
+    if (bed) {
+      bed.status = 'Available';
+      bed.currentPatient = null;
+      await bed.save();
+    }
 
     res.json({ success: true, message: 'Patient discharged successfully' });
   } catch (error) {
@@ -72,43 +90,67 @@ export const dischargePatient = async (req, res) => {
   }
 };
 
+/* =========================================================
+   UPDATE / TRANSFER ADMISSION
+========================================================= */
 export const updateAdmission = async (req, res) => {
   try {
     const { admissionId, bed, ...rest } = req.body;
     if (!admissionId)
       return res.json({ success: false, message: 'Admission ID is required' });
 
-    const oldAdmission = await admissionModel.findById(admissionId);
-    if (!oldAdmission)
+    const admission = await admissionModel.findById(admissionId);
+    if (!admission)
       return res.json({ success: false, message: 'Admission not found' });
 
-    // If bed changed, update old and new bed status
-    if (bed && bed !== oldAdmission.bed?.toString()) {
+    // BED TRANSFER
+    if (bed && bed !== admission.bed?.toString()) {
+      const oldBed = await bedModel.findById(admission.bed);
+      const newBed = await bedModel.findById(bed);
+
+      if (!newBed)
+        return res.json({ success: false, message: 'New bed not found' });
+      if (newBed.status !== 'Available')
+        return res.json({
+          success: false,
+          message: 'New bed is not available',
+        });
+
       // Free old bed
-      await bedModel.findByIdAndUpdate(oldAdmission.bed, {
-        status: 'Available',
-        currentPatient: null,
-      });
+      if (oldBed) {
+        oldBed.status = 'Available';
+        oldBed.currentPatient = null;
+        await oldBed.save();
+      }
+
       // Occupy new bed
-      await bedModel.findByIdAndUpdate(bed, {
-        status: 'Occupied',
-        currentPatient: oldAdmission.patient,
-      });
+      newBed.status = 'Occupied';
+      newBed.currentPatient = admission.patient;
+      await newBed.save();
+
+      rest.bed = bed;
     }
 
-    await admissionModel.findByIdAndUpdate(
+    const updatedAdmission = await admissionModel.findByIdAndUpdate(
       admissionId,
-      { ...rest, bed },
+      rest,
       { new: true },
     );
 
-    res.json({ success: true, message: 'Admission updated successfully' });
+    res.json({
+      success: true,
+      message: 'Admission updated successfully',
+      admission: updatedAdmission,
+    });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
+/* =========================================================
+   GET ALL ADMISSIONS
+========================================================= */
 export const getAllAdmissions = async (req, res) => {
   try {
     const admissions = await admissionModel
@@ -116,13 +158,18 @@ export const getAllAdmissions = async (req, res) => {
       .populate('patient')
       .populate('doctor')
       .populate('department')
-      .populate('bed'); // ← populate bed with roomNumber and bedNumber
+      .populate({ path: 'bed', populate: { path: 'room' } }) // 👈 nested populate
+      .sort({ admissionDate: -1 });
+
     res.json({ success: true, admissions });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
+/* =========================================================
+   DELETE ADMISSION
+========================================================= */
 export const deleteAdmission = async (req, res) => {
   try {
     const { admissionId } = req.body;
@@ -133,13 +180,16 @@ export const deleteAdmission = async (req, res) => {
     if (!admission)
       return res.json({ success: false, message: 'Admission not found' });
 
-    // Free up bed on delete too
-    await bedModel.findByIdAndUpdate(admission.bed, {
-      status: 'Available',
-      currentPatient: null,
-    });
+    // Free bed
+    const bed = await bedModel.findById(admission.bed);
+    if (bed) {
+      bed.status = 'Available';
+      bed.currentPatient = null;
+      await bed.save();
+    }
 
     await admissionModel.findByIdAndDelete(admissionId);
+
     res.json({ success: true, message: 'Admission deleted successfully' });
   } catch (error) {
     console.log(error);

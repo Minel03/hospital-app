@@ -19,7 +19,7 @@ const admissionSchema = new mongoose.Schema(
     },
     bed: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Bed', // ← now references Bed model
+      ref: 'Bed',
       required: true,
     },
     admissionDate: {
@@ -29,6 +29,9 @@ const admissionSchema = new mongoose.Schema(
     expectedDischargeDate: {
       type: Date,
       required: true,
+    },
+    dischargeDate: {
+      type: Date,
     },
     diagnosis: {
       type: String,

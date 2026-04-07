@@ -106,3 +106,20 @@ export const deleteBed = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+export const getAvailableBeds = async (req, res) => {
+  try {
+    const status = req.query.status || 'Available'; // default to Available
+
+    const beds = await bedModel
+      .find({ status }) // filter by status
+      .populate({
+        path: 'room',
+        populate: { path: 'department' },
+      });
+
+    res.json({ success: true, beds });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};

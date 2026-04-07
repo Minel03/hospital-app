@@ -9,7 +9,7 @@ import {
 
 const admissionRouter = express.Router();
 
-admissionRouter.post('/add', addAdmission);
+admissionRouter.post('/admit', addAdmission);
 admissionRouter.post('/update', updateAdmission);
 admissionRouter.post('/discharge', dischargePatient);
 admissionRouter.get('/list', getAllAdmissions);

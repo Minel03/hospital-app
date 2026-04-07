@@ -4,6 +4,7 @@ import appointmentModel from '../models/appointmentModel.js';
 import staffModel from '../models/staffModel.js';
 import admissionModel from '../models/admissionModel.js';
 import bedModel from '../models/bedModel.js';
+import roomModel from '../models/roomModel.js';
 
 // Create a new department
 export const createDepartment = async (req, res) => {
@@ -195,13 +196,15 @@ export const getDepartmentById = async (req, res) => {
 // Get all departments
 export const getAllDepartments = async (req, res) => {
   try {
-    const [departments, doctors, staff, admissions, beds] = await Promise.all([
-      departmentModel.find().populate('head', 'name'),
-      doctorModel.find(),
-      staffModel.find(),
-      admissionModel.find({ status: 'Admitted' }),
-      bedModel.find(), // ← add this
-    ]);
+    const [departments, doctors, staff, admissions, rooms, beds] =
+      await Promise.all([
+        departmentModel.find().populate('head', 'name'),
+        doctorModel.find(),
+        staffModel.find(),
+        admissionModel.find({ status: 'Admitted' }),
+        roomModel.find(),
+        bedModel.find(),
+      ]);
 
     const enriched = departments.map((dept) => {
       const deptId = dept._id.toString();
@@ -218,12 +221,21 @@ export const getAllDepartments = async (req, res) => {
         (a) => a.department?.toString() === deptId,
       );
 
-      const deptBeds = beds.filter((b) => b.department?.toString() === deptId);
+      // Rooms belonging to department
+      const deptRooms = rooms.filter(
+        (r) => r.department?.toString() === deptId,
+      );
+
+      const roomIds = deptRooms.map((r) => r._id.toString());
+
+      // Beds belonging to those rooms
+      const deptBeds = beds.filter((b) => roomIds.includes(b.room?.toString()));
 
       const totalBeds = deptBeds.length;
       const occupiedBeds = deptBeds.filter(
         (b) => b.status === 'Occupied',
       ).length;
+
       const availableBeds = deptBeds.filter(
         (b) => b.status === 'Available',
       ).length;
@@ -232,10 +244,11 @@ export const getAllDepartments = async (req, res) => {
         ...dept.toObject(),
         doctors: doctorCount,
         staff: staffCount,
-        patients: activeAdmissions.length, // actively admitted patients
-        totalBeds, // total beds in department
-        occupiedBeds, // beds currently occupied
-        availableBeds, // beds currently free
+        patients: activeAdmissions.length,
+        rooms: deptRooms.length,
+        totalBeds,
+        occupiedBeds,
+        availableBeds,
       };
     });
 
