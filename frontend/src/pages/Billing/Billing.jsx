@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
-import Select from 'react-select';
 import BillingHeader from './components/BillingHeader';
 import BillingSearch from './components/BillingSearch';
 import BillingTable from './components/BillingTable';
 import BillingModal from './components/BillingModal';
+import BillingViewModal from './components/BillingViewModal';
 
 const SERVICE_TYPES = [
   'Consultation',
@@ -18,18 +18,7 @@ const SERVICE_TYPES = [
 ];
 
 const Billing = () => {
-  const {
-    Search,
-    Edit,
-    Trash,
-    Download,
-    Check,
-    ReceiptText,
-    FileEdit,
-    CircleDollarSign,
-    Clock,
-    TrendingUp,
-  } = Icons;
+  const { ReceiptText, FileEdit, CircleDollarSign, Clock, TrendingUp } = Icons;
   const { axios } = useAppContext();
 
   const [invoices, setInvoices] = useState([]);
@@ -37,6 +26,8 @@ const Billing = () => {
   const [doctors, setDoctors] = useState([]);
   const [admissions, setAdmissions] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewInvoice, setViewInvoice] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
@@ -127,172 +118,193 @@ const Billing = () => {
     }
   };
 
-  const handleDownload = (invoice) => {
-    // Dynamically load jsPDF from CDN
-    const script = document.createElement('script');
-    script.src =
-      'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = () => {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
+  const openView = (invoice) => {
+    setViewInvoice(invoice);
+    setShowViewModal(true);
+  };
 
-      // ── Header ──
-      doc.setFillColor(37, 99, 235); // blue-600
-      doc.rect(0, 0, pageWidth, 40, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(22);
-      doc.setFont('helvetica', 'bold');
-      doc.text('MEDICAL INVOICE', pageWidth / 2, 18, { align: 'center' });
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('HealthCare Management System', pageWidth / 2, 28, {
-        align: 'center',
-      });
-      doc.text(
-        `Invoice #${invoice._id.slice(-6).toUpperCase()}`,
-        pageWidth / 2,
-        36,
-        { align: 'center' },
-      );
+  const handlePrint = (invoice) => {
+    if (!invoice) return;
 
-      // ── Reset color ──
-      doc.setTextColor(30, 30, 30);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+    <html>
+      <head>
+        <title>Invoice #${invoice._id.slice(-6).toUpperCase()}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { color: #2563EB; text-align: center; }
+          h3 { text-align: center; color: #555; }
+          .section { margin-top: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+          th { background-color: #f3f4f6; }
+          .total { text-align: right; font-weight: bold; }
+          .status { padding: 4px 8px; color: white; border-radius: 4px; }
+          .Paid { background-color: #16A34A; }
+          .Pending { background-color: #CA8A04; }
+          .Draft { background-color: #6B7280; }
+        </style>
+      </head>
+      <body>
+        <h1>MEDICAL INVOICE</h1>
+        <h3>HealthCare Management System</h3>
+        <p><strong>Invoice #:</strong> ${invoice._id.slice(-6).toUpperCase()}</p>
+        <p><strong>Date Issued:</strong> ${new Date(invoice.createdAt).toLocaleDateString()}</p>
+        <p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> <span class="status ${invoice.status}">${invoice.status}</span></p>
 
-      // ── Invoice Meta ──
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(100, 100, 100);
-      doc.text(
-        `Date Issued: ${new Date(invoice.createdAt).toLocaleDateString()}`,
-        14,
-        52,
-      );
-      doc.text(
-        `Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}`,
-        14,
-        59,
-      );
+        <div class="section">
+          <h4>Billed To:</h4>
+          <p>${invoice.patient?.name || 'N/A'}</p>
+        </div>
 
-      // Status badge
-      const statusColor =
-        invoice.status === 'Paid'
-          ? [22, 163, 74]
-          : invoice.status === 'Pending'
-            ? [202, 138, 4]
-            : [220, 38, 38];
-      doc.setFillColor(...statusColor);
-      doc.roundedRect(pageWidth - 50, 48, 36, 10, 3, 3, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.text(invoice.status.toUpperCase(), pageWidth - 32, 55, {
-        align: 'center',
-      });
+        <div class="section">
+          <h4>Doctor:</h4>
+          <p>${invoice.doctor?.name || 'N/A'}</p>
+        </div>
 
-      // ── Divider ──
-      doc.setDrawColor(220, 220, 220);
-      doc.line(14, 65, pageWidth - 14, 65);
+        <div class="section">
+          <h4>Services:</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.services
+                .map(
+                  (s) => `<tr>
+                    <td>${s.name}</td>
+                    <td>$${parseFloat(s.amount).toLocaleString()}</td>
+                  </tr>`,
+                )
+                .join('')}
+            </tbody>
+          </table>
+          <p class="total">TOTAL: $${invoice.totalAmount.toLocaleString()}</p>
+        </div>
 
-      // ── Patient & Doctor Info ──
-      doc.setTextColor(30, 30, 30);
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.text('BILLED TO', 14, 75);
-      doc.text('DOCTOR', pageWidth / 2, 75);
+        <div class="section">
+          <p style="text-align:center; color:#999;">Thank you for choosing our healthcare services.</p>
+          <p style="text-align:center; color:#999;">For inquiries, please contact billing@healthcare.com</p>
+        </div>
+      </body>
+    </html>
+  `);
 
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(60, 60, 60);
-      doc.text(invoice.patient?.name || 'N/A', 14, 83);
-      doc.text(invoice.doctor?.name || 'N/A', pageWidth / 2, 83);
+    printWindow.document.close();
+    printWindow.focus();
 
-      if (invoice.admission) {
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.text(
-          `Admission: ${invoice.admission?.patient?.name || invoice.admission?._id?.slice(-6) || 'N/A'}`,
-          14,
-          90,
-        );
-      }
-      if (invoice.appointment) {
-        doc.setFontSize(9);
-        doc.setTextColor(100, 100, 100);
-        doc.text(
-          `Appointment: ${new Date(invoice.appointment?.date || '').toLocaleDateString() || 'N/A'}`,
-          pageWidth / 2,
-          90,
-        );
-      }
-
-      // ── Services Table Header ──
-      const tableTop = 102;
-      doc.setFillColor(243, 244, 246); // gray-100
-      doc.rect(14, tableTop - 6, pageWidth - 28, 10, 'F');
-      doc.setTextColor(80, 80, 80);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.text('SERVICE', 18, tableTop);
-      doc.text('AMOUNT', pageWidth - 18, tableTop, { align: 'right' });
-
-      // ── Services Rows ──
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      let y = tableTop + 10;
-      invoice.services.forEach((s, idx) => {
-        if (idx % 2 === 0) {
-          doc.setFillColor(249, 250, 251);
-          doc.rect(14, y - 5, pageWidth - 28, 9, 'F');
-        }
-        doc.setTextColor(30, 30, 30);
-        doc.text(s.name, 18, y);
-        doc.text(
-          `$${parseFloat(s.amount).toLocaleString()}`,
-          pageWidth - 18,
-          y,
-          { align: 'right' },
-        );
-        y += 10;
-      });
-
-      // ── Total ──
-      doc.setDrawColor(220, 220, 220);
-      doc.line(14, y, pageWidth - 14, y);
-      y += 8;
-      doc.setFillColor(37, 99, 235);
-      doc.rect(pageWidth - 80, y - 6, 66, 12, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(11);
-      doc.text('TOTAL', pageWidth - 75, y + 2);
-      doc.text(
-        `$${invoice.totalAmount.toLocaleString()}`,
-        pageWidth - 18,
-        y + 2,
-        { align: 'right' },
-      );
-
-      // ── Footer ──
-      doc.setTextColor(150, 150, 150);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.text(
-        'Thank you for choosing our healthcare services.',
-        pageWidth / 2,
-        270,
-        { align: 'center' },
-      );
-      doc.text(
-        'For inquiries, please contact billing@healthcare.com',
-        pageWidth / 2,
-        276,
-        { align: 'center' },
-      );
-
-      doc.save(`invoice-${invoice._id.slice(-6).toUpperCase()}.pdf`);
+    // Automatically close after printing or cancelling
+    printWindow.onafterprint = () => {
+      printWindow.close();
     };
-    document.head.appendChild(script);
+
+    printWindow.print();
+  };
+
+  const handleDownload = (invoice) => {
+    if (!invoice) return;
+
+    // Prepare the same HTML as the print view
+    const htmlContent = `
+    <html>
+      <head>
+        <title>Invoice #${invoice._id.slice(-6).toUpperCase()}</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 20px; }
+          h1 { color: #2563EB; text-align: center; }
+          h3 { text-align: center; color: #555; }
+          .section { margin-top: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+          th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+          th { background-color: #f3f4f6; }
+          .total { text-align: right; font-weight: bold; }
+          .status { padding: 4px 8px; color: white; border-radius: 4px; }
+          .Paid { background-color: #16A34A; }
+          .Pending { background-color: #CA8A04; }
+          .Draft { background-color: #6B7280; }
+        </style>
+      </head>
+      <body>
+        <h1>MEDICAL INVOICE</h1>
+        <h3>HealthCare Management System</h3>
+        <p><strong>Invoice #:</strong> ${invoice._id.slice(-6).toUpperCase()}</p>
+        <p><strong>Date Issued:</strong> ${new Date(invoice.createdAt).toLocaleDateString()}</p>
+        <p><strong>Due Date:</strong> ${new Date(invoice.dueDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> <span class="status ${invoice.status}">${invoice.status}</span></p>
+
+        <div class="section">
+          <h4>Billed To:</h4>
+          <p>${invoice.patient?.name || 'N/A'}</p>
+        </div>
+
+        <div class="section">
+          <h4>Doctor:</h4>
+          <p>${invoice.doctor?.name || 'N/A'}</p>
+        </div>
+
+        <div class="section">
+          <h4>Services:</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.services
+                .map(
+                  (s) => `<tr>
+                    <td>${s.name}</td>
+                    <td>$${parseFloat(s.amount).toLocaleString()}</td>
+                  </tr>`,
+                )
+                .join('')}
+            </tbody>
+          </table>
+          <p class="total">TOTAL: $${invoice.totalAmount.toLocaleString()}</p>
+        </div>
+
+        <div class="section">
+          <p style="text-align:center; color:#999;">Thank you for choosing our healthcare services.</p>
+          <p style="text-align:center; color:#999;">For inquiries, please contact billing@healthcare.com</p>
+        </div>
+      </body>
+    </html>
+  `;
+
+    // Load html2pdf dynamically if not already loaded
+    if (!window.html2pdf) {
+      const script = document.createElement('script');
+      script.src =
+        'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      script.onload = () => generatePDF(htmlContent, invoice);
+      document.body.appendChild(script);
+    } else {
+      generatePDF(htmlContent, invoice);
+    }
+
+    function generatePDF(content, invoice) {
+      const container = document.createElement('div');
+      container.innerHTML = content;
+      document.body.appendChild(container);
+
+      window
+        .html2pdf()
+        .set({
+          margin: 10,
+          filename: `invoice-${invoice._id.slice(-6).toUpperCase()}.pdf`,
+          html2canvas: { scale: 2 },
+        })
+        .from(container)
+        .save()
+        .finally(() => document.body.removeChild(container));
+    }
   };
 
   const openAdd = () => {
@@ -398,16 +410,16 @@ const Billing = () => {
         setSearchQuery={setSearchQuery}
       />
 
-      {/* Table */}
       <BillingTable
         filtered={filtered}
         handleDelete={handleDelete}
         handleDownload={handleDownload}
         handleMarkPaid={handleMarkPaid}
         openEdit={openEdit}
+        openView={openView}
+        handlePrint={handlePrint}
       />
 
-      {/* Modal */}
       <BillingModal
         showModal={showModal}
         setShowModal={setShowModal}
@@ -424,6 +436,12 @@ const Billing = () => {
         removeService={removeService}
         totalAmount={totalAmount}
         SERVICE_TYPES={SERVICE_TYPES}
+      />
+
+      <BillingViewModal
+        invoice={viewInvoice}
+        showModal={showViewModal}
+        setShowModal={setShowViewModal}
       />
     </div>
   );

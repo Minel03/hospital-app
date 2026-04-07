@@ -35,6 +35,7 @@ const invoiceSchema = new mongoose.Schema(
             'Pharmacy',
             'Room & Board',
             'Emergency',
+            'Admission Fee',
           ],
           required: true,
         },

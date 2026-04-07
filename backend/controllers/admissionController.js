@@ -18,16 +18,19 @@ export const addAdmission = async (req, res) => {
       diagnosis,
     } = req.body;
 
+    // Validate required fields
     if (!patient || !doctor || !department || !bed) {
       return res.json({ success: false, message: 'Missing required fields' });
     }
 
-    const selectedBed = await bedModel.findById(bed);
+    // Find bed and check availability
+    const selectedBed = await bedModel.findById(bed).populate('room');
     if (!selectedBed)
       return res.json({ success: false, message: 'Bed not found' });
     if (selectedBed.status !== 'Available')
       return res.json({ success: false, message: 'Bed is not available' });
 
+    // Create admission record
     const admission = await admissionModel.create({
       patient,
       doctor,
@@ -39,11 +42,40 @@ export const addAdmission = async (req, res) => {
       status: 'Admitted',
     });
 
-    // Occupy bed
+    // Occupy the bed
     selectedBed.status = 'Occupied';
     selectedBed.currentPatient = patient;
     await selectedBed.save();
 
+    // ---------------------------
+    // CREATE DRAFT INVOICE
+    // ---------------------------
+    const admissionFee = 1500;
+
+    // Set due date for invoice (7 days later)
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 7);
+
+    const invoice = await invoiceModel.create({
+      patient,
+      doctor,
+      admission: admission._id,
+      appointment: null,
+      dueDate, // required
+      status: 'Draft',
+      services: [
+        {
+          name: 'Admission Fee', // must match enum in schema
+          description: 'Hospital admission fee',
+          amount: admissionFee,
+        },
+      ],
+      totalAmount: admissionFee,
+    });
+
+    // ---------------------------
+    // LOG ADMISSION
+    // ---------------------------
     await createLog({
       entity: 'Admission',
       entityId: admission._id,
@@ -56,8 +88,9 @@ export const addAdmission = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Patient admitted successfully',
+      message: 'Patient admitted successfully and billing started',
       admission,
+      invoice,
     });
   } catch (error) {
     console.log(error);
@@ -73,19 +106,13 @@ export const dischargePatient = async (req, res) => {
     const { admissionId } = req.body;
 
     if (!admissionId) {
-      return res.json({
-        success: false,
-        message: 'Admission ID is required',
-      });
+      return res.json({ success: false, message: 'Admission ID is required' });
     }
 
     const admission = await admissionModel.findById(admissionId);
 
     if (!admission) {
-      return res.json({
-        success: false,
-        message: 'Admission not found',
-      });
+      return res.json({ success: false, message: 'Admission not found' });
     }
 
     if (admission.status === 'Discharged') {
@@ -95,54 +122,44 @@ export const dischargePatient = async (req, res) => {
       });
     }
 
-    /* ===============================
-       SET DISCHARGE DATE
-    =============================== */
-
+    // ------------------------------
+    // SET DISCHARGE DATE
+    // ------------------------------
     const dischargeDate = new Date();
     admission.status = 'Discharged';
     admission.dischargeDate = dischargeDate;
 
-    /* ===============================
-       CALCULATE LENGTH OF STAY
-    =============================== */
-
+    // ------------------------------
+    // CALCULATE LENGTH OF STAY
+    // ------------------------------
     const admissionDate = new Date(admission.admissionDate);
-
     const msPerDay = 1000 * 60 * 60 * 24;
-
     const daysStayed = Math.max(
       1,
       Math.ceil((dischargeDate - admissionDate) / msPerDay),
     );
-
     admission.lengthOfStay = daysStayed;
-
     await admission.save();
 
-    /* ===============================
-       FREE BED
-    =============================== */
-
+    // ------------------------------
+    // FREE BED
+    // ------------------------------
     const bed = await bedModel.findById(admission.bed).populate('room');
-
     if (bed) {
       bed.status = 'Available';
       bed.currentPatient = null;
       await bed.save();
     }
 
-    /* ===============================
-       ROOM BILLING
-    =============================== */
-
+    // ------------------------------
+    // ROOM BILLING
+    // ------------------------------
     const ratePerNight = bed?.room?.ratePerNight || 0;
-
     const roomCharge = daysStayed * ratePerNight;
 
     const services = [
       {
-        name: 'Room & Board',
+        name: 'Room & Board', // must match enum in schema
         description: `${daysStayed} night(s) @ $${ratePerNight}/night`,
         amount: roomCharge,
       },
@@ -150,17 +167,15 @@ export const dischargePatient = async (req, res) => {
 
     const totalAmount = services.reduce((sum, s) => sum + s.amount, 0);
 
-    /* ===============================
-       DUE DATE
-    =============================== */
-
+    // ------------------------------
+    // SET DUE DATE
+    // ------------------------------
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 7);
 
-    /* ===============================
-       CREATE INVOICE
-    =============================== */
-
+    // ------------------------------
+    // CREATE INVOICE
+    // ------------------------------
     const invoice = await invoiceModel.create({
       patient: admission.patient,
       doctor: admission.doctor,
@@ -168,14 +183,13 @@ export const dischargePatient = async (req, res) => {
       appointment: null,
       services,
       totalAmount,
-      dueDate,
+      dueDate, // required field
       status: 'Draft',
     });
 
-    /* ===============================
-       AUDIT LOGS
-    =============================== */
-
+    // ------------------------------
+    // AUDIT LOGS
+    // ------------------------------
     await createLog({
       entity: 'Admission',
       entityId: admission._id,
@@ -195,10 +209,6 @@ export const dischargePatient = async (req, res) => {
       details: `Draft invoice created. Room & Board: $${roomCharge} (${daysStayed} nights × $${ratePerNight}).`,
     });
 
-    /* ===============================
-       RESPONSE
-    =============================== */
-
     res.json({
       success: true,
       message: `Patient discharged successfully. Draft invoice created.`,
@@ -206,11 +216,7 @@ export const dischargePatient = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    res.json({ success: false, message: error.message });
   }
 };
 

@@ -13,7 +13,8 @@ const BillingHeader = ({ openAdd, stats }) => {
         <button
           onClick={openAdd}
           className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg'>
-          <Plus className='w-5 h-5' /> New Invoice
+          <Plus className='w-5 h-5' />
+          <span className='hidden sm:inline'>New Invoice</span>
         </button>
       </div>
 

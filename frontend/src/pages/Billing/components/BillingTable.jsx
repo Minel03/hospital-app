@@ -7,8 +7,11 @@ const BillingTable = ({
   handleDownload,
   openEdit,
   handleMarkPaid,
+  openView,
+  handlePrint, // Print handler
 }) => {
-  const { Edit, Trash, Check, Download } = Icons;
+  const { Edit, Trash, Check, Download, ReceiptText, Printer } = Icons;
+
   return (
     <div>
       <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
@@ -65,7 +68,7 @@ const BillingTable = ({
                           : inv.status === 'Pending'
                             ? 'bg-yellow-100 text-yellow-700'
                             : inv.status === 'Draft'
-                              ? 'bg-gray-100 text-gray-600' // 👈 add
+                              ? 'bg-gray-100 text-gray-600'
                               : 'bg-red-100 text-red-700'
                       }`}>
                       {inv.status}
@@ -73,11 +76,23 @@ const BillingTable = ({
                   </td>
                   <td className='px-4 py-3'>
                     <div className='flex gap-1'>
+                      {/* Edit - only show if not Paid */}
+                      {inv.status !== 'Paid' && (
+                        <button
+                          onClick={() => openEdit(inv)}
+                          className='p-2 bg-blue-50 rounded hover:bg-blue-100'>
+                          <Edit className='w-4 h-4 text-blue-700' />
+                        </button>
+                      )}
+
+                      {/* View */}
                       <button
-                        onClick={() => openEdit(inv)}
-                        className='p-2 bg-blue-50 rounded hover:bg-blue-100'>
-                        <Edit className='w-4 h-4 text-blue-700' />
+                        onClick={() => openView(inv)}
+                        className='p-2 bg-gray-50 rounded hover:bg-gray-100'>
+                        <ReceiptText className='w-4 h-4 text-gray-700' />
                       </button>
+
+                      {/* Mark Paid - only if not Paid */}
                       {inv.status !== 'Paid' && (
                         <button
                           onClick={() => handleMarkPaid(inv._id)}
@@ -85,16 +100,29 @@ const BillingTable = ({
                           <Check className='w-4 h-4 text-green-700' />
                         </button>
                       )}
+
+                      {/* Download */}
                       <button
                         onClick={() => handleDownload(inv)}
                         className='p-2 bg-gray-50 rounded hover:bg-gray-100'>
                         <Download className='w-4 h-4 text-gray-700' />
                       </button>
+
+                      {/* Print */}
                       <button
-                        onClick={() => handleDelete(inv._id)}
-                        className='p-2 bg-red-50 rounded hover:bg-red-100'>
-                        <Trash className='w-4 h-4 text-red-600' />
+                        onClick={() => handlePrint(inv)}
+                        className='p-2 bg-gray-50 rounded hover:bg-gray-100'>
+                        <Printer className='w-4 h-4 text-gray-700' />
                       </button>
+
+                      {/* Delete - only show if not Paid */}
+                      {inv.status !== 'Paid' && (
+                        <button
+                          onClick={() => handleDelete(inv._id)}
+                          className='p-2 bg-red-50 rounded hover:bg-red-100'>
+                          <Trash className='w-4 h-4 text-red-600' />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

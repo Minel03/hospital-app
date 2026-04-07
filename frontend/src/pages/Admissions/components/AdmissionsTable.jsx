@@ -9,12 +9,13 @@ const AdmissionsTable = ({
   deleteAdmission,
 }) => {
   const { Edit, Eye, LogOut, Trash } = Icons;
+
   return (
     <div>
       <div className='bg-white rounded-lg border border-gray-200 overflow-hidden'>
         <div className='overflow-x-auto'>
           <div className='min-w-250'>
-            {/* Table Header (Desktop Only) */}
+            {/* Table Header */}
             <div className='hidden md:grid grid-cols-[2fr_2fr_2fr_2fr_2fr_1fr_auto] items-center py-2 px-3 bg-gray-100 border-b border-gray-200 text-sm font-medium text-gray-600'>
               <b>Patient</b>
               <b>Doctor</b>
@@ -25,7 +26,7 @@ const AdmissionsTable = ({
               <b className='w-28 text-center'>Actions</b>
             </div>
 
-            {/* Admissions List */}
+            {/* Admissions */}
             {filteredAdmissions.map((a) => (
               <div
                 key={a._id}
@@ -35,9 +36,13 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Patient
                   </p>
-                  <p className='font-medium text-gray-900'>{a.patient?.name}</p>
+
+                  <p className='font-medium text-gray-900'>
+                    {a.patient?.name || 'Unknown'}
+                  </p>
+
                   <p className='md:hidden text-xs text-gray-500'>
-                    ID: {a.patient?._id.slice(-4)}
+                    ID: {a.patient?._id?.slice(-4) || '----'}
                   </p>
                 </div>
 
@@ -46,7 +51,7 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Doctor
                   </p>
-                  <p className='text-gray-900'>{a.doctor?.name}</p>
+                  <p className='text-gray-900'>{a.doctor?.name || 'Unknown'}</p>
                 </div>
 
                 {/* Department */}
@@ -54,7 +59,7 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Department
                   </p>
-                  <p className='text-gray-900'>{a.department?.name}</p>
+                  <p className='text-gray-900'>{a.department?.name || 'N/A'}</p>
                 </div>
 
                 {/* Room/Bed */}
@@ -62,8 +67,11 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Room/Bed
                   </p>
+
                   <p className='text-gray-900'>
-                    {a.bed?.room?.roomNumber}-{a.bed?.bedNumber}
+                    {a.bed?.room?.roomNumber && a.bed?.bedNumber
+                      ? `${a.bed.room.roomNumber}-${a.bed.bedNumber}`
+                      : 'Not Assigned'}
                   </p>
                 </div>
 
@@ -72,8 +80,11 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Admission
                   </p>
+
                   <p className='text-gray-900'>
-                    {new Date(a.admissionDate).toLocaleDateString()}
+                    {a.admissionDate
+                      ? new Date(a.admissionDate).toLocaleDateString()
+                      : 'N/A'}
                   </p>
                 </div>
 
@@ -82,6 +93,7 @@ const AdmissionsTable = ({
                   <p className='md:hidden text-xs text-gray-500 font-medium'>
                     Status
                   </p>
+
                   <span
                     className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
                       a.status === 'Admitted'
@@ -94,16 +106,23 @@ const AdmissionsTable = ({
 
                 {/* Actions */}
                 <div className='flex gap-2 md:w-28 justify-start md:justify-center'>
+                  {/* View */}
                   <button
                     onClick={() => openViewModal(a)}
                     className='p-2 bg-gray-50 rounded hover:bg-gray-100 flex justify-center'>
                     <Eye className='w-4 h-4 text-gray-700' />
                   </button>
-                  <button
-                    onClick={() => openEditModal(a)}
-                    className='p-2 bg-blue-50 rounded hover:bg-blue-100 flex justify-center'>
-                    <Edit className='w-4 h-4 text-blue-700' />
-                  </button>
+
+                  {/* Edit (ONLY if admitted) */}
+                  {a.status === 'Admitted' && (
+                    <button
+                      onClick={() => openEditModal(a)}
+                      className='p-2 bg-blue-50 rounded hover:bg-blue-100 flex justify-center'>
+                      <Edit className='w-4 h-4 text-blue-700' />
+                    </button>
+                  )}
+
+                  {/* Discharge */}
                   {a.status === 'Admitted' && (
                     <button
                       onClick={() => dischargePatient(a._id)}
@@ -111,6 +130,8 @@ const AdmissionsTable = ({
                       <LogOut className='w-4 h-4 text-green-700' />
                     </button>
                   )}
+
+                  {/* Delete */}
                   <button
                     onClick={() => deleteAdmission(a._id)}
                     className='p-2 bg-red-50 rounded hover:bg-red-100 flex justify-center'>

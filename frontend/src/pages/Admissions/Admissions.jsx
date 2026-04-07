@@ -116,6 +116,7 @@ const Admissions = () => {
       toast.success(data.message);
       fetchAdmissions();
       fetchBeds();
+      fetchPatients();
     }
   };
 
@@ -132,6 +133,7 @@ const Admissions = () => {
       toast.success(data.message);
       fetchAdmissions();
       fetchBeds();
+      fetchPatients();
     }
   };
 

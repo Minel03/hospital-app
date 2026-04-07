@@ -12,6 +12,7 @@ import bedRouter from './routes/bedRoute.js';
 import roomRouter from './routes/roomRoute.js';
 import invoiceRouter from './routes/invoiceRoute.js';
 import auditLogRouter from './routes/auditLogRoute.js';
+import settingsRouter from './routes/settingsRoute.js';
 
 // App Config
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/bed', bedRouter);
 app.use('/api/room', roomRouter);
 app.use('/api/invoice', invoiceRouter);
 app.use('/api/logs', auditLogRouter);
+app.use('/api/settings', settingsRouter);
 
 app.get('/', (req, res) => {
   res.send('API Working');
