@@ -6,7 +6,7 @@ import {
   saveUserSettings,
   saveUserNotifications,
 } from '../controllers/settingsController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const settingsRouter = express.Router();
 

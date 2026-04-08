@@ -85,3 +85,78 @@ export const saveUserNotifications = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/* ================== GET SETTINGS (GLOBAL + USER) ================== */
+export const getSettings = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    let globalSettings = await GlobalSettings.findOne();
+    if (!globalSettings) {
+      globalSettings = await GlobalSettings.create({
+        hospitalName: process.env.VITE_APP_TITLE || 'My Hospital',
+        address: '',
+        contactNumber: '',
+        email: '',
+      });
+    }
+
+    let userSettings = await UserSettings.findOne({ user: userId });
+    if (!userSettings) {
+      userSettings = await UserSettings.create({ user: userId });
+    }
+
+    res.json({
+      success: true,
+      settings: {
+        general: globalSettings,
+        appearance: { theme: userSettings.theme },
+        notifications: userSettings.notifications,
+        emailSettings: userSettings.emailSettings,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/* ================== UPDATE SETTINGS ================== */
+export const updateSettings = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const { general, appearance, notifications, emailSettings } = req.body;
+
+    /* -------- Update Global Settings -------- */
+    await GlobalSettings.findOneAndUpdate(
+      {},
+      {
+        hospitalName: general.hospitalName,
+        address: general.address,
+        contactNumber: general.contactNumber,
+        email: general.email,
+      },
+      { upsert: true, new: true },
+    );
+
+    /* -------- Update User Settings -------- */
+    await UserSettings.findOneAndUpdate(
+      { user: userId },
+      {
+        theme: appearance.theme,
+        notifications,
+        emailSettings,
+      },
+      { upsert: true, new: true },
+    );
+
+    res.json({
+      success: true,
+      message: 'Settings updated successfully',
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
