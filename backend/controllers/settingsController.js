@@ -38,7 +38,7 @@ export const saveGlobalSettings = async (req, res) => {
 /* ================== USER SETTINGS ================== */
 export const fetchUserSettings = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     let settings = await UserSettings.findOne({ user: userId });
     if (!settings) {
       settings = await UserSettings.create({ user: userId });
@@ -52,7 +52,7 @@ export const fetchUserSettings = async (req, res) => {
 
 export const saveUserSettings = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const { theme, notifications, emailSettings } = req.body;
 
     const settings = await UserSettings.findOneAndUpdate(
@@ -70,7 +70,7 @@ export const saveUserSettings = async (req, res) => {
 
 export const saveUserNotifications = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
     const { notifications } = req.body;
 
     const settings = await UserSettings.findOneAndUpdate(
@@ -89,7 +89,7 @@ export const saveUserNotifications = async (req, res) => {
 /* ================== GET SETTINGS (GLOBAL + USER) ================== */
 export const getSettings = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     let globalSettings = await GlobalSettings.findOne();
     if (!globalSettings) {
@@ -124,7 +124,7 @@ export const getSettings = async (req, res) => {
 /* ================== UPDATE SETTINGS ================== */
 export const updateSettings = async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user.id;
 
     const { general, appearance, notifications, emailSettings } = req.body;
 

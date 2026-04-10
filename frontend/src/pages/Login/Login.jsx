@@ -54,7 +54,7 @@ const Login = () => {
                 type='email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder='admin@medicare.com'
+                placeholder='Enter you email'
                 required
                 className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               />

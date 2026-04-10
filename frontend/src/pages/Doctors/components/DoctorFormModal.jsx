@@ -10,7 +10,8 @@ const DoctorFormModal = ({
   setFormData,
   selectedDoctor,
   handleSubmit,
-  departments = [], // pass departments as a prop
+  departments = [],
+  doctorUsers = [],
 }) => {
   const { X } = Icons;
 
@@ -19,6 +20,7 @@ const DoctorFormModal = ({
   const handleClose = () => {
     setShowModal(false);
     setFormData({
+      userId: null,
       name: '',
       age: '',
       gender: 'Male',
@@ -37,6 +39,37 @@ const DoctorFormModal = ({
     value: dept._id,
     label: dept.name,
   }));
+
+  // Map doctor-role users to react-select options
+  const userOptions = doctorUsers.map((u) => ({
+    value: u._id,
+    label: u.name,
+    email: u.email,
+    phone: u.phone || '',
+  }));
+
+  // Pre-select user in edit mode
+  const selectedUser = userOptions.find((o) => o.value === formData.userId) || null;
+
+  const handleUserSelect = (selected) => {
+    if (selected) {
+      setFormData((prev) => ({
+        ...prev,
+        userId: selected.value,
+        name: selected.label,
+        email: selected.email || '',
+        phone: selected.phone || '',
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        userId: null,
+        name: '',
+        email: '',
+        phone: '',
+      }));
+    }
+  };
 
   useEffect(() => {
     if (mode === 'edit' && selectedDoctor) {
@@ -70,21 +103,22 @@ const DoctorFormModal = ({
           onSubmit={handleSubmit}
           className='p-6 space-y-4'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {/* Name */}
-            <div>
+          {/* User (Name) Picker */}
+            <div className='md:col-span-2'>
               <label className='block text-sm font-medium text-gray-700 mb-2'>
-                Name
+                Select Doctor (User Account)
               </label>
-              <input
-                type='text'
-                required
-                value={formData.name || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
-                placeholder='Dr. John Doe'
+              <Select
+                options={userOptions}
+                value={selectedUser}
+                onChange={handleUserSelect}
+                placeholder='Search and select a doctor user...'
+                isClearable
+                isDisabled={mode === 'edit'}
               />
+              {mode === 'edit' && (
+                <p className='text-xs text-gray-400 mt-1'>User link cannot be changed after creation.</p>
+              )}
             </div>
 
             {/* Age */}

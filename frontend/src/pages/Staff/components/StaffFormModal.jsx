@@ -10,8 +10,40 @@ const StaffFormModal = ({
   setFormData,
   editingStaff,
   departmentOptions,
+  staffUsers = [],
 }) => {
   const { X } = Icons;
+
+  // Map staff-role users to react-select options
+  const userOptions = staffUsers.map((u) => ({
+    value: u._id,
+    label: u.name,
+    email: u.email,
+    phone: u.phone || '',
+  }));
+
+  const selectedUser =
+    userOptions.find((o) => o.value === formData.userId) || null;
+
+  const handleUserSelect = (selected) => {
+    if (selected) {
+      setFormData((prev) => ({
+        ...prev,
+        userId: selected.value,
+        name: selected.label,
+        email: selected.email || '',
+        phone: selected.phone || '',
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        userId: null,
+        name: '',
+        email: '',
+        phone: '',
+      }));
+    }
+  };
 
   if (!showAddModal) return null;
 
@@ -36,24 +68,31 @@ const StaffFormModal = ({
         <form
           onSubmit={handleSubmit}
           className='p-6 space-y-5'>
-          {/* Name + Age */}
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {/* User (Name) Picker — full width */}
+          <div className='grid grid-cols-1 gap-4'>
             <div>
               <label className='text-sm font-medium text-gray-700'>
-                Full Name
+                Select Staff (User Account)
               </label>
-              <input
-                type='text'
-                value={formData.name}
-                placeholder='Enter full name'
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className='mt-1 border px-3 py-2 rounded w-full'
-                required
+              <Select
+                className='mt-1'
+                options={userOptions}
+                value={selectedUser}
+                onChange={handleUserSelect}
+                placeholder='Search and select a staff user...'
+                isClearable
+                isDisabled={!!editingStaff}
               />
+              {editingStaff && (
+                <p className='text-xs text-gray-400 mt-1'>
+                  User link cannot be changed after creation.
+                </p>
+              )}
             </div>
+          </div>
 
+          {/* Age */}
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
               <label className='text-sm font-medium text-gray-700'>Age</label>
               <input

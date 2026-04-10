@@ -11,6 +11,7 @@ const Doctors = () => {
   const { axios, doctors, fetchDoctors } = useAppContext();
 
   const [departments, setDepartments] = useState([]);
+  const [doctorUsers, setDoctorUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -23,6 +24,7 @@ const Doctors = () => {
   const filterRef = useRef(null);
 
   const [formData, setFormData] = useState({
+    userId: null,
     name: '',
     specialty: '',
     phone: '',
@@ -32,13 +34,14 @@ const Doctors = () => {
     rating: 0,
     patients: 0,
     status: 'Available',
-    department: null, // <--- add department here
+    department: null,
   });
 
   // Fetch doctors and departments on mount
   useEffect(() => {
     fetchDoctors();
     fetchDepartments();
+    fetchDoctorUsers();
 
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
@@ -59,15 +62,34 @@ const Doctors = () => {
     }
   };
 
+  const fetchDoctorUsers = async () => {
+    try {
+      const { data } = await axios.get('/api/user/all');
+      if (data.success)
+        setDoctorUsers(data.users.filter((u) => u.role === 'doctor'));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Users not yet linked to any doctor profile
+  const linkedDoctorUserIds = new Set(
+    doctors.filter((d) => d.userId).map((d) => d.userId.toString())
+  );
+  const availableDoctorUsers = doctorUsers.filter(
+    (u) => !linkedDoctorUserIds.has(u._id.toString())
+  );
+
   // Add / Edit doctor
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const payload = {
         ...formData,
+        userId: formData.userId || null,
         department:
-          formData.department?.value || // react-select object
-          formData.department?._id || // raw populated object
+          formData.department?.value ||
+          formData.department?._id ||
           null,
       };
 
@@ -95,6 +117,7 @@ const Doctors = () => {
     } finally {
       setSelectedDoctor(null);
       setFormData({
+        userId: null,
         name: '',
         specialty: '',
         phone: '',
@@ -118,6 +141,7 @@ const Doctors = () => {
     setSelectedDoctor(doctor);
     setMode('edit');
     setFormData({
+      userId: doctor.userId || null,
       name: doctor.name || '',
       age: doctor.age || '',
       gender: doctor.gender || 'Male',
@@ -128,7 +152,7 @@ const Doctors = () => {
       patients: doctor.patients || 0,
       status: doctor.status || 'Available',
       department: doctor.department
-        ? { value: doctor.department._id, label: doctor.department.name } // ← format for react-select
+        ? { value: doctor.department._id, label: doctor.department.name }
         : null,
     });
     setShowModal(true);
@@ -213,7 +237,8 @@ const Doctors = () => {
         setFormData={setFormData}
         selectedDoctor={selectedDoctor}
         handleSubmit={handleSubmit}
-        departments={departments} // now properly passed
+        departments={departments}
+        doctorUsers={availableDoctorUsers}
       />
     </div>
   );

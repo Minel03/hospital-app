@@ -28,6 +28,15 @@ import { toast } from 'react-toastify';
 // Set Axios base URL from VITE environment variable
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
+// Attach JWT token to every request automatically
+axios.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem('token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Create context
 const AppContext = createContext({});
 
@@ -64,6 +73,7 @@ export const AppProvider = ({ children }) => {
   const [staff, setStaff] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [globalSettings, setGlobalSettings] = useState(null);
 
   const fetchRooms = async () => {
     try {
@@ -130,6 +140,17 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const fetchGlobalSettings = async () => {
+    try {
+      const { data } = await axios.get('/api/settings/global');
+      if (data.success) {
+        setGlobalSettings(data.settings);
+      }
+    } catch (error) {
+      console.error('Error fetching global settings:', error);
+    }
+  };
+
   useEffect(() => {
     fetchRooms();
     fetchPatients();
@@ -137,6 +158,7 @@ export const AppProvider = ({ children }) => {
     fetchDepartments();
     fetchStaff();
     fetchAdmissions();
+    fetchGlobalSettings();
   }, []);
 
   const value = {
@@ -156,6 +178,9 @@ export const AppProvider = ({ children }) => {
     fetchDepartments,
     fetchStaff,
     fetchAdmissions,
+    globalSettings,
+    setGlobalSettings,
+    fetchGlobalSettings,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -31,6 +31,11 @@ const staffSchema = new mongoose.Schema(
       enum: ['Active', 'Inactive', 'On Leave'],
       default: 'Active',
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
   },
   { timestamps: true },
 );

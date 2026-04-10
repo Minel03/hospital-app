@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Icons } from '../context/AppContext';
+import { Icons, useAppContext } from '../context/AppContext';
 import { NavLink, useNavigate } from 'react-router-dom';
 import jwtDecode from 'jwt-decode';
 
@@ -23,6 +23,7 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState({ name: '', email: '' });
   const navigate = useNavigate();
+  const { globalSettings } = useAppContext();
 
   const menuItems = [
     { id: '', label: 'Dashboard', icon: Home },
@@ -66,7 +67,7 @@ const Sidebar = () => {
             <Activity className='w-8 h-8 text-blue-600 shrink-0' />
             <div>
               <h1 className='font-semibold text-gray-900 text-xl whitespace-nowrap'>
-                {import.meta.env.VITE_APP_TITLE}
+                {globalSettings?.hospitalName || import.meta.env.VITE_APP_TITLE}
               </h1>
               <p className='text-xs text-gray-500'>Hospital Management</p>
             </div>

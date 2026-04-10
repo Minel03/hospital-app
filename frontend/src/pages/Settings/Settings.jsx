@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
+import Title from '../../components/Title';
 
 const {
   Bell,
@@ -15,7 +16,7 @@ const {
 } = Icons;
 
 const Settings = () => {
-  const { axios } = useAppContext();
+  const { axios, fetchGlobalSettings } = useAppContext();
   const [activeSection, setActiveSection] = useState('General');
 
   // ---------------- General / Appearance / Notifications / Email ----------------
@@ -42,10 +43,12 @@ const Settings = () => {
   // ---------------- User Management ----------------
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
+  const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'user',
+    password: '',
+    role: 'staff',
   });
 
   const sidebarItems = [
@@ -131,6 +134,7 @@ const Settings = () => {
         emailSettings,
       });
       toast.success('Settings saved successfully');
+      if (fetchGlobalSettings) fetchGlobalSettings(); // Refresh sidebar info
     } catch (err) {
       toast.error('Error saving settings');
       console.error(err);
@@ -140,26 +144,40 @@ const Settings = () => {
   // ---------------- User Management Handlers ----------------
   const openAddUser = () => {
     setEditingUser(null);
-    setFormData({ name: '', email: '', role: 'user' });
+    setFormData({ name: '', email: '', password: '', role: 'staff' });
+    setShowForm(true);
   };
 
   const openEditUser = (user) => {
     setEditingUser(user._id);
-    setFormData({ name: user.name, email: user.email, role: user.role });
+    setFormData({
+      name: user.name,
+      email: user.email,
+      password: '',
+      role: user.role,
+    });
+    setShowForm(true);
   };
 
   const saveUser = async () => {
     try {
       if (editingUser) {
-        await axios.put(`/api/users/${editingUser}`, formData);
+        const res = await axios.put('/api/user/update', {
+          userId: editingUser,
+          ...formData,
+        });
+        if (!res.data.success) return toast.error(res.data.message);
         toast.success('User updated successfully');
       } else {
-        await axios.post('/api/users', formData);
+        if (!formData.password) return toast.error('Password is required');
+        const res = await axios.post('/api/user/add', formData);
+        if (!res.data.success) return toast.error(res.data.message);
         toast.success('User added successfully');
       }
       fetchUsers();
-      setFormData({ name: '', email: '', role: 'user' });
+      setFormData({ name: '', email: '', password: '', role: 'staff' });
       setEditingUser(null);
+      setShowForm(false);
     } catch (err) {
       toast.error('Failed to save user');
       console.error(err);
@@ -169,7 +187,10 @@ const Settings = () => {
   const deleteUser = async (id) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      await axios.delete(`/api/users/${id}`);
+      const res = await axios.delete('/api/user/delete', {
+        data: { userId: id },
+      });
+      if (!res.data.success) return toast.error(res.data.message);
       toast.success('User deleted successfully');
       fetchUsers();
     } catch (err) {
@@ -181,12 +202,12 @@ const Settings = () => {
   return (
     <div className='p-8 space-y-6'>
       {/* Header */}
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between mb-2'>
         <div>
-          <h2 className='text-2xl font-semibold text-gray-900'>Settings</h2>
-          <p className='text-gray-500 mt-1'>
-            Manage your system configuration and preferences
-          </p>
+          <Title
+            title='Settings'
+            subtitle='Manage your system configuration and preferences'
+          />
         </div>
 
         <button
@@ -206,7 +227,7 @@ const Settings = () => {
               <button
                 key={i}
                 onClick={() => setActiveSection(item.name)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                   activeSection === item.name
                     ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-600 hover:bg-gray-50'
@@ -223,9 +244,12 @@ const Settings = () => {
           {/* Existing sections */}
           {activeSection === 'General' && (
             <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-4'>
+              <h3 className='font-semibold text-gray-900 mb-1'>
                 General Settings
               </h3>
+              <p className='text-sm text-gray-500 mb-4'>
+                Set your primary hospital information.
+              </p>
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Hospital Name
@@ -283,7 +307,10 @@ const Settings = () => {
           )}
           {activeSection === 'Appearance' && (
             <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-4'>Appearance</h3>
+              <h3 className='font-semibold text-gray-900 mb-1'>Appearance</h3>
+              <p className='text-sm text-gray-500 mb-4'>
+                Customize how the dashboard looks on your device.
+              </p>
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-1'>
                   Theme
@@ -302,9 +329,12 @@ const Settings = () => {
           )}
           {activeSection === 'Notifications' && (
             <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-4'>
+              <h3 className='font-semibold text-gray-900 mb-1'>
                 Notifications
               </h3>
+              <p className='text-sm text-gray-500 mb-4'>
+                Manage your alerts and notification preferences.
+              </p>
               {Object.entries(notifications).map(([key, value]) => (
                 <div
                   key={key}
@@ -323,9 +353,13 @@ const Settings = () => {
           )}
           {activeSection === 'Email Settings' && (
             <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-4'>
+              <h3 className='font-semibold text-gray-900 mb-1'>
                 Email Settings
               </h3>
+              <p className='text-sm text-gray-500 mb-4'>
+                Configure the SMTP server used to send outgoing emails to staff
+                and patients.
+              </p>
               <div>
                 <label className='block text-sm font-medium text-gray-700 mb-1'>
                   SMTP Server
@@ -346,9 +380,14 @@ const Settings = () => {
           {activeSection === 'User Management' && (
             <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
               <div className='flex justify-between items-center'>
-                <h3 className='font-semibold text-gray-900 mb-4'>
-                  User Management
-                </h3>
+                <div>
+                  <h3 className='font-semibold text-gray-900 mb-1'>
+                    User Management
+                  </h3>
+                  <p className='text-sm text-gray-500'>
+                    Control access and roles for all staff members.
+                  </p>
+                </div>
                 <button
                   onClick={openAddUser}
                   className='flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700'>
@@ -400,7 +439,7 @@ const Settings = () => {
               </div>
 
               {/* Add/Edit Form */}
-              {(editingUser !== null || formData.name !== '') && (
+              {showForm && (
                 <div className='mt-4 p-4 border border-gray-300 rounded-lg space-y-2'>
                   <h4 className='font-medium text-gray-800'>
                     {editingUser ? 'Edit User' : 'Add New User'}
@@ -424,14 +463,28 @@ const Settings = () => {
                       }
                       className='px-3 py-2 border border-gray-300 rounded-lg w-full'
                     />
+                    <input
+                      type='password'
+                      placeholder={
+                        editingUser
+                          ? 'New password (leave blank to keep)'
+                          : 'Password'
+                      }
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData({ ...formData, password: e.target.value })
+                      }
+                      className='px-3 py-2 border border-gray-300 rounded-lg w-full'
+                    />
                     <select
                       value={formData.role}
                       onChange={(e) =>
                         setFormData({ ...formData, role: e.target.value })
                       }
                       className='px-3 py-2 border border-gray-300 rounded-lg w-full'>
-                      <option value='user'>User</option>
                       <option value='admin'>Admin</option>
+                      <option value='doctor'>Doctor</option>
+                      <option value='staff'>Staff</option>
                     </select>
                   </div>
                   <button

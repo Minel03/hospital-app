@@ -11,6 +11,7 @@ const Staff = () => {
   const { axios } = useAppContext();
 
   const [staff, setStaff] = useState([]);
+  const [staffUsers, setStaffUsers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('');
@@ -18,6 +19,7 @@ const Staff = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
   const [formData, setFormData] = useState({
+    userId: null,
     name: '',
     age: '',
     gender: 'Male',
@@ -48,15 +50,34 @@ const Staff = () => {
     }
   };
 
+  const fetchStaffUsers = async () => {
+    try {
+      const { data } = await axios.get('/api/user/all');
+      if (data.success)
+        setStaffUsers(data.users.filter((u) => u.role === 'staff'));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     fetchStaff();
     fetchDepartments();
+    fetchStaffUsers();
   }, []);
 
   const departmentOptions = departments.map((d) => ({
     value: d._id,
     label: d.name,
   }));
+
+  // Users not yet linked to any staff profile
+  const linkedStaffUserIds = new Set(
+    staff.filter((s) => s.userId).map((s) => s.userId.toString())
+  );
+  const availableStaffUsers = staffUsers.filter(
+    (u) => !linkedStaffUserIds.has(u._id.toString())
+  );
 
   const filteredStaff = staff.filter((member) => {
     const matchesSearch =
@@ -81,11 +102,15 @@ const Staff = () => {
         const res = await axios.put('/api/staff/update', {
           staffId: editingStaff._id,
           ...formData,
+          userId: formData.userId || null,
         });
         if (res.data.success) toast.success(res.data.message);
         else toast.error(res.data.message);
       } else {
-        const res = await axios.post('/api/staff/add', formData);
+        const res = await axios.post('/api/staff/add', {
+          ...formData,
+          userId: formData.userId || null,
+        });
         if (res.data.success) toast.success(res.data.message);
         else toast.error(res.data.message);
       }
@@ -101,6 +126,7 @@ const Staff = () => {
   const handleEdit = (staffMember) => {
     setEditingStaff(staffMember);
     setFormData({
+      userId: staffMember.userId || null,
       name: staffMember.name,
       age: staffMember.age,
       gender: staffMember.gender,
@@ -131,6 +157,7 @@ const Staff = () => {
 
   const resetForm = () => {
     setFormData({
+      userId: null,
       name: '',
       age: '',
       gender: 'Male',
@@ -195,6 +222,7 @@ const Staff = () => {
         setFormData={setFormData}
         editingStaff={editingStaff}
         departmentOptions={departmentOptions}
+        staffUsers={availableStaffUsers}
       />
     </div>
   );
