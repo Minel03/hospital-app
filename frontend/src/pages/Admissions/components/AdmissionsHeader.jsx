@@ -24,11 +24,11 @@ const AdmissionsHeader = ({ openAddModal, stats }) => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className='bg-white rounded-lg border border-gray-200 p-6'>
+            className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 transition-colors'>
             <div className='flex items-center justify-between'>
               <div>
-                <p className='text-sm text-gray-500 mb-1'>{stat.label}</p>
-                <p className='text-3xl font-semibold text-gray-900'>
+                <p className='text-sm text-gray-500 dark:text-gray-400 mb-1'>{stat.label}</p>
+                <p className='text-3xl font-semibold text-gray-900 dark:text-white'>
                   {stat.value}
                 </p>
               </div>

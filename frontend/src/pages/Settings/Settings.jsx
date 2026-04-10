@@ -13,6 +13,7 @@ const {
   Plus,
   Edit,
   Trash2,
+  XCircle,
 } = Icons;
 
 const Settings = () => {
@@ -220,7 +221,7 @@ const Settings = () => {
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
         {/* Sidebar */}
-        <div className='bg-white rounded-lg border border-gray-200 p-4 space-y-1'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-1'>
           {sidebarItems.map((item, i) => {
             const Icon = item.icon;
             return (
@@ -229,8 +230,8 @@ const Settings = () => {
                 onClick={() => setActiveSection(item.name)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                   activeSection === item.name
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700/50'
                 }`}>
                 <Icon className='w-5 h-5' />
                 {item.name}
@@ -243,15 +244,15 @@ const Settings = () => {
         <div className='lg:col-span-2 space-y-6'>
           {/* Existing sections */}
           {activeSection === 'General' && (
-            <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-1'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
+              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>
                 General Settings
               </h3>
-              <p className='text-sm text-gray-500 mb-4'>
+              <p className='text-sm text-gray-500 dark:text-gray-400 mb-4'>
                 Set your primary hospital information.
               </p>
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Hospital Name
                 </label>
                 <input
@@ -260,12 +261,12 @@ const Settings = () => {
                   onChange={(e) =>
                     handleGeneralChange('hospitalName', e.target.value)
                   }
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Address
                 </label>
                 <input
@@ -274,12 +275,12 @@ const Settings = () => {
                   onChange={(e) =>
                     handleGeneralChange('address', e.target.value)
                   }
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Contact Number
                 </label>
                 <input
@@ -288,31 +289,31 @@ const Settings = () => {
                   onChange={(e) =>
                     handleGeneralChange('contactNumber', e.target.value)
                   }
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
 
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Email
                 </label>
                 <input
                   type='email'
                   value={general.email}
                   onChange={(e) => handleGeneralChange('email', e.target.value)}
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
             </div>
           )}
           {activeSection === 'Appearance' && (
-            <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-1'>Appearance</h3>
-              <p className='text-sm text-gray-500 mb-4'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
+              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>Appearance</h3>
+              <p className='text-sm text-gray-500 dark:text-gray-400 mb-4'>
                 Customize how the dashboard looks on your device.
               </p>
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   Theme
                 </label>
                 <select
@@ -320,7 +321,7 @@ const Settings = () => {
                   onChange={(e) =>
                     handleAppearanceChange('theme', e.target.value)
                   }
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'>
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'>
                   <option value='light'>Light</option>
                   <option value='dark'>Dark</option>
                 </select>
@@ -328,23 +329,24 @@ const Settings = () => {
             </div>
           )}
           {activeSection === 'Notifications' && (
-            <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-1'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
+              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>
                 Notifications
               </h3>
-              <p className='text-sm text-gray-500 mb-4'>
+              <p className='text-sm text-gray-500 dark:text-gray-400 mb-4'>
                 Manage your alerts and notification preferences.
               </p>
               {Object.entries(notifications).map(([key, value]) => (
                 <div
                   key={key}
-                  className='flex items-center justify-between py-2 border-b last:border-0'>
-                  <span className='capitalize'>
+                  className='flex items-center justify-between py-3 border-b border-gray-100 dark:border-gray-700 last:border-0'>
+                  <span className='capitalize text-gray-700 dark:text-gray-300 font-medium'>
                     {key.replace(/([A-Z])/g, ' $1')}
                   </span>
                   <input
                     type='checkbox'
                     checked={value}
+                    className='w-4 h-4 text-blue-600 rounded dark:bg-gray-700 dark:border-gray-600'
                     onChange={() => handleNotificationsChange(key, !value)}
                   />
                 </div>
@@ -352,16 +354,16 @@ const Settings = () => {
             </div>
           )}
           {activeSection === 'Email Settings' && (
-            <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 mb-1'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
+              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>
                 Email Settings
               </h3>
-              <p className='text-sm text-gray-500 mb-4'>
+              <p className='text-sm text-gray-500 dark:text-gray-400 mb-4'>
                 Configure the SMTP server used to send outgoing emails to staff
                 and patients.
               </p>
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-1'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1'>
                   SMTP Server
                 </label>
                 <input
@@ -370,7 +372,7 @@ const Settings = () => {
                   onChange={(e) =>
                     handleEmailSettingsChange('smtpServer', e.target.value)
                   }
-                  className='w-full px-4 py-2 border border-gray-300 rounded-lg'
+                  className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg'
                 />
               </div>
             </div>
@@ -378,13 +380,13 @@ const Settings = () => {
 
           {/* ---------------- User Management ---------------- */}
           {activeSection === 'User Management' && (
-            <div className='bg-white rounded-lg border border-gray-200 p-6 space-y-4'>
+            <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
               <div className='flex justify-between items-center'>
                 <div>
-                  <h3 className='font-semibold text-gray-900 mb-1'>
+                  <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>
                     User Management
                   </h3>
-                  <p className='text-sm text-gray-500'>
+                  <p className='text-sm text-gray-500 dark:text-gray-400'>
                     Control access and roles for all staff members.
                   </p>
                 </div>
@@ -397,39 +399,43 @@ const Settings = () => {
 
               {/* User Table */}
               <div className='overflow-x-auto'>
-                <table className='min-w-full divide-y divide-gray-200'>
-                  <thead className='bg-gray-50'>
+                <table className='min-w-full divide-y divide-gray-200 dark:divide-gray-700'>
+                  <thead className='bg-gray-50 dark:bg-gray-900/50'>
                     <tr>
-                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500'>
+                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400'>
                         Name
                       </th>
-                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500'>
+                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400'>
                         Email
                       </th>
-                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500'>
+                      <th className='px-4 py-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400'>
                         Role
                       </th>
-                      <th className='px-4 py-2 text-right text-sm font-medium text-gray-500'>
+                      <th className='px-4 py-2 text-right text-sm font-medium text-gray-500 dark:text-gray-400'>
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className='divide-y divide-gray-100'>
+                  <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
                     {users.map((user) => (
-                      <tr key={user._id}>
-                        <td className='px-4 py-2'>{user.name}</td>
-                        <td className='px-4 py-2'>{user.email}</td>
-                        <td className='px-4 py-2 capitalize'>{user.role}</td>
-                        <td className='px-4 py-2 text-right space-x-2'>
+                      <tr key={user._id} className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
+                        <td className='px-4 py-3 text-sm text-gray-900 dark:text-gray-200'>{user.name}</td>
+                        <td className='px-4 py-3 text-sm text-gray-600 dark:text-gray-400'>{user.email}</td>
+                        <td className='px-4 py-3 text-sm capitalize'>
+                          <span className='px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-medium'>
+                            {user.role}
+                          </span>
+                        </td>
+                        <td className='px-4 py-3 text-right space-x-2'>
                           <button
                             onClick={() => openEditUser(user)}
-                            className='text-blue-600 hover:underline'>
-                            <Edit className='w-4 h-4 inline' />
+                            className='p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors'>
+                            <Edit className='w-4 h-4' />
                           </button>
                           <button
                             onClick={() => deleteUser(user._id)}
-                            className='text-red-600 hover:underline'>
-                            <Trash2 className='w-4 h-4 inline' />
+                            className='p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors'>
+                            <Trash2 className='w-4 h-4' />
                           </button>
                         </td>
                       </tr>
@@ -440,10 +446,17 @@ const Settings = () => {
 
               {/* Add/Edit Form */}
               {showForm && (
-                <div className='mt-4 p-4 border border-gray-300 rounded-lg space-y-2'>
-                  <h4 className='font-medium text-gray-800'>
-                    {editingUser ? 'Edit User' : 'Add New User'}
-                  </h4>
+                <div className='mt-4 p-4 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg space-y-2'>
+                  <div className='flex items-center justify-between mb-2'>
+                    <h4 className='font-medium text-gray-800 dark:text-gray-100'>
+                      {editingUser ? 'Edit User' : 'Add New User'}
+                    </h4>
+                    <button
+                      onClick={() => setShowForm(false)}
+                      className='text-gray-400 hover:text-red-500 transition-colors'>
+                      <XCircle className='w-5 h-5' />
+                    </button>
+                  </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
                     <input
                       type='text'
@@ -452,7 +465,7 @@ const Settings = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      className='px-3 py-2 border border-gray-300 rounded-lg w-full'
+                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg w-full'
                     />
                     <input
                       type='email'
@@ -461,7 +474,7 @@ const Settings = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      className='px-3 py-2 border border-gray-300 rounded-lg w-full'
+                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg w-full'
                     />
                     <input
                       type='password'
@@ -474,24 +487,31 @@ const Settings = () => {
                       onChange={(e) =>
                         setFormData({ ...formData, password: e.target.value })
                       }
-                      className='px-3 py-2 border border-gray-300 rounded-lg w-full'
+                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
                     />
                     <select
                       value={formData.role}
                       onChange={(e) =>
                         setFormData({ ...formData, role: e.target.value })
                       }
-                      className='px-3 py-2 border border-gray-300 rounded-lg w-full'>
+                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500'>
                       <option value='admin'>Admin</option>
                       <option value='doctor'>Doctor</option>
                       <option value='staff'>Staff</option>
                     </select>
                   </div>
-                  <button
-                    onClick={saveUser}
-                    className='mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'>
-                    {editingUser ? 'Update User' : 'Add User'}
-                  </button>
+                  <div className='mt-3 flex gap-2'>
+                    <button
+                      onClick={saveUser}
+                      className='bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
+                      {editingUser ? 'Update User' : 'Add User'}
+                    </button>
+                    <button
+                      onClick={() => setShowForm(false)}
+                      className='bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors'>
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

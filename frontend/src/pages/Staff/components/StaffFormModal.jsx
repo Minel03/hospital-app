@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
-import { Icons } from '../../../context/AppContext';
+import { Icons, useAppContext } from '../../../context/AppContext';
 
 const StaffFormModal = ({
   showAddModal,
@@ -13,6 +13,7 @@ const StaffFormModal = ({
   staffUsers = [],
 }) => {
   const { X } = Icons;
+  const { getSelectStyles } = useAppContext();
 
   // Map staff-role users to react-select options
   const userOptions = staffUsers.map((u) => ({
@@ -49,10 +50,10 @@ const StaffFormModal = ({
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-      <div className='bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
+      <div className='bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
         {/* Header */}
-        <div className='sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between'>
-          <h3 className='text-xl font-semibold text-gray-900'>
+        <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between'>
+          <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
             {editingStaff ? 'Edit Staff Member' : 'Add New Staff Member'}
           </h3>
 
@@ -71,11 +72,12 @@ const StaffFormModal = ({
           {/* User (Name) Picker — full width */}
           <div className='grid grid-cols-1 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Select Staff (User Account)
               </label>
               <Select
                 className='mt-1'
+                styles={getSelectStyles()}
                 options={userOptions}
                 value={selectedUser}
                 onChange={handleUserSelect}
@@ -94,7 +96,7 @@ const StaffFormModal = ({
           {/* Age */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700'>Age</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Age</label>
               <input
                 type='number'
                 value={formData.age}
@@ -110,7 +112,7 @@ const StaffFormModal = ({
           {/* Gender + Phone */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Gender
               </label>
               <select
@@ -126,7 +128,7 @@ const StaffFormModal = ({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700'>Phone</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Phone</label>
               <input
                 type='text'
                 value={formData.phone}
@@ -156,7 +158,7 @@ const StaffFormModal = ({
           {/* Role + Department */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700'>Role</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Role</label>
               <input
                 type='text'
                 value={formData.role}
@@ -169,10 +171,11 @@ const StaffFormModal = ({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Department
               </label>
               <Select
+                styles={getSelectStyles()}
                 options={departmentOptions}
                 value={
                   departmentOptions.find(
@@ -195,7 +198,7 @@ const StaffFormModal = ({
           {/* Experience + Status */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Experience (Years)
               </label>
               <input
@@ -210,7 +213,7 @@ const StaffFormModal = ({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Status
               </label>
               <select

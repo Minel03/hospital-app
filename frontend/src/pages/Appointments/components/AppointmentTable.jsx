@@ -70,7 +70,7 @@ const AppointmentTable = ({
         return (
           <div
             key={appointment._id}
-            className='bg-white rounded-lg border border-gray-200 p-6'>
+            className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 transition-colors'>
             <div className='flex justify-between items-start'>
               <div className='flex-1'>
                 {/* Patient Info */}
@@ -84,10 +84,10 @@ const AppointmentTable = ({
                     </span>
                   </div>
                   <div>
-                    <h3 className='font-semibold text-gray-900'>
+                    <h3 className='font-semibold text-gray-900 dark:text-white'>
                       {appointment.patient?.name}
                     </h3>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-gray-400'>
                       {appointment.doctor?.name} -{' '}
                       {appointment.department?.name}
                     </p>
@@ -126,10 +126,10 @@ const AppointmentTable = ({
               <span
                 className={`px-3 py-1 text-xs font-medium rounded-full ${
                   appointment.status === 'Confirmed'
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
                     : appointment.status === 'Pending'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-red-100 text-red-700'
+                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
                 }`}>
                 {appointment.status}
               </span>

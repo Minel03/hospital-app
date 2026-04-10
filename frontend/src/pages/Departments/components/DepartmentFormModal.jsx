@@ -12,6 +12,7 @@ const DepartmentFormModal = ({
   doctors = [], // 👈 pass doctors here
 }) => {
   const { X } = Icons;
+  const { getSelectStyles } = useAppContext();
   const { axios } = useAppContext();
 
   const initialForm = {
@@ -109,11 +110,11 @@ const DepartmentFormModal = ({
       className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'
       onClick={() => setShowModal(false)}>
       <div
-        className='bg-white rounded-lg w-full max-w-lg p-6 relative'
+        className='bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg p-6 relative dark:border dark:border-gray-700'
         onClick={(e) => e.stopPropagation()}>
         <button
           onClick={() => setShowModal(false)}
-          className='absolute top-3 right-3 text-gray-500 hover:text-gray-700'>
+          className='absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:text-gray-300'>
           <X className='w-5 h-5' />
         </button>
 
@@ -126,7 +127,7 @@ const DepartmentFormModal = ({
           className='space-y-4'>
           {/* Name */}
           <div>
-            <label className='text-sm font-medium text-gray-700'>Name</label>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Name</label>
             <input
               type='text'
               value={formData.name}
@@ -140,7 +141,7 @@ const DepartmentFormModal = ({
 
           {/* Description */}
           <div>
-            <label className='text-sm font-medium text-gray-700'>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
               Description
             </label>
             <textarea
@@ -155,10 +156,10 @@ const DepartmentFormModal = ({
           <div className='grid grid-cols-2 gap-4'>
             {/* 👇 UPDATED HEAD (React Select) */}
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Head (Doctor)
               </label>
-              <Select
+              <Select styles={getSelectStyles()}
                 options={doctorOptions}
                 value={doctorOptions.find((opt) => opt.value === formData.head)}
                 onChange={(selected) =>
@@ -173,7 +174,7 @@ const DepartmentFormModal = ({
 
             {/* Status */}
             <div>
-              <label className='text-sm font-medium text-gray-700'>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                 Status
               </label>
               <select
@@ -190,7 +191,7 @@ const DepartmentFormModal = ({
 
           {/* 👇 NEW PHONE FIELD */}
           <div>
-            <label className='text-sm font-medium text-gray-700'>Phone</label>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Phone</label>
             <input
               type='text'
               value={formData.phone}
@@ -206,7 +207,7 @@ const DepartmentFormModal = ({
             <button
               type='button'
               onClick={() => setShowModal(false)}
-              className='bg-gray-50 text-gray-700 py-2 px-4 rounded-lg'>
+              className='bg-gray-50 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg'>
               Cancel
             </button>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
+import { useAppContext } from '../../../context/AppContext';
 
 const BedsModal = ({
   showRoomModal,
@@ -17,6 +18,7 @@ const BedsModal = ({
   rooms,
   bedMode,
 }) => {
+  const { getSelectStyles } = useAppContext();
   const departmentOptions = departments.map((d) => ({
     value: d._id,
     label: d.name,
@@ -27,7 +29,7 @@ const BedsModal = ({
       {/* ---------------- ROOM MODAL ---------------- */}
       {showRoomModal && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-          <div className='bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto'>
+          <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
             {/* Header */}
             <div className='flex justify-between items-center px-6 py-4'>
               <h2 className='text-lg font-semibold'>
@@ -36,7 +38,7 @@ const BedsModal = ({
 
               <button
                 onClick={() => setShowRoomModal(false)}
-                className='text-gray-500 hover:text-gray-700'>
+                className='text-gray-500 hover:text-gray-700 dark:text-gray-300'>
                 ✕
               </button>
             </div>
@@ -46,7 +48,7 @@ const BedsModal = ({
               className='p-6 space-y-4'>
               {/* Room Number */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Room Number
                 </label>
                 <input
@@ -56,14 +58,14 @@ const BedsModal = ({
                   onChange={(e) =>
                     setRoomForm({ ...roomForm, roomNumber: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                   placeholder='Enter room number'
                 />
               </div>
 
               {/* Floor */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Floor
                 </label>
                 <input
@@ -73,14 +75,14 @@ const BedsModal = ({
                   onChange={(e) =>
                     setRoomForm({ ...roomForm, floor: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                   placeholder='Floor number'
                 />
               </div>
 
               {/* Room Type */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Room Type
                 </label>
                 <select
@@ -88,7 +90,7 @@ const BedsModal = ({
                   onChange={(e) =>
                     setRoomForm({ ...roomForm, type: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'>
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
                   <option>General</option>
                   <option>ICU</option>
                   <option>Private</option>
@@ -99,11 +101,11 @@ const BedsModal = ({
 
               {/* Department */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Department
                 </label>
 
-                <Select
+                <Select styles={getSelectStyles()}
                   options={departmentOptions}
                   value={
                     departmentOptions.find(
@@ -124,7 +126,7 @@ const BedsModal = ({
 
               {/* Capacity */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Capacity
                 </label>
 
@@ -135,7 +137,7 @@ const BedsModal = ({
                   onChange={(e) =>
                     setRoomForm({ ...roomForm, capacity: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                   placeholder='Number of beds'
                 />
               </div>
@@ -163,7 +165,7 @@ const BedsModal = ({
       {/* ---------------- BED MODAL ---------------- */}
       {showBedModal && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-          <div className='bg-white rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto'>
+          <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
             {/* Header */}
             <div className='flex justify-between items-center border-b px-6 py-4'>
               <h2 className='text-lg font-semibold'>
@@ -172,7 +174,7 @@ const BedsModal = ({
 
               <button
                 onClick={() => setShowBedModal(false)}
-                className='text-gray-500 hover:text-gray-700'>
+                className='text-gray-500 hover:text-gray-700 dark:text-gray-300'>
                 ✕
               </button>
             </div>
@@ -182,7 +184,7 @@ const BedsModal = ({
               className='p-6 space-y-4'>
               {/* Room */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Room
                 </label>
 
@@ -192,7 +194,7 @@ const BedsModal = ({
                   onChange={(e) =>
                     setBedForm({ ...bedForm, roomId: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'>
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
                   <option value=''>Select Room</option>
                   {rooms.map((r) => (
                     <option
@@ -207,7 +209,7 @@ const BedsModal = ({
               {/* Number of Beds (only when adding) */}
               {bedMode === 'add' && (
                 <div>
-                  <label className='text-sm font-medium text-gray-700'>
+                  <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                     Number of Beds
                   </label>
 
@@ -222,7 +224,7 @@ const BedsModal = ({
                         numberOfBeds: e.target.value,
                       })
                     }
-                    className='mt-1 w-full border px-3 py-2 rounded-lg'
+                    className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                     placeholder='Enter number of beds'
                   />
                 </div>
@@ -230,7 +232,7 @@ const BedsModal = ({
 
               {/* Status */}
               <div>
-                <label className='text-sm font-medium text-gray-700'>
+                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
                   Status
                 </label>
 
@@ -239,7 +241,7 @@ const BedsModal = ({
                   onChange={(e) =>
                     setBedForm({ ...bedForm, status: e.target.value })
                   }
-                  className='mt-1 w-full border px-3 py-2 rounded-lg'>
+                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
                   <option>Available</option>
                   <option>Occupied</option>
                   <option>Under Maintenance</option>

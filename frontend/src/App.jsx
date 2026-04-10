@@ -42,7 +42,7 @@ const App = () => {
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
                 />
-                <div className='flex-1 overflow-auto bg-gray-50 p-6'>
+                <div className='flex-1 overflow-auto bg-gray-50 dark:bg-gray-900 p-6 transition-colors duration-200'>
                   <Routes>
                     <Route
                       path='/'

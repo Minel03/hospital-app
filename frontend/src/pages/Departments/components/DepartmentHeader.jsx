@@ -28,13 +28,13 @@ const DepartmentHeader = ({ onAddDepartment, stats }) => {
           return (
             <div
               key={index}
-              className='bg-white rounded-lg border border-gray-200 p-5 relative'>
+              className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 relative transition-colors'>
               <div
                 className={`absolute top-4 right-4 ${stat.color} p-3 rounded-lg`}>
                 <Icon className='w-5 h-5 text-white' />
               </div>
-              <p className='text-sm text-gray-500'>{stat.label}</p>
-              <p className='text-3xl font-semibold text-gray-900 mt-2'>
+              <p className='text-sm text-gray-500 dark:text-gray-400'>{stat.label}</p>
+              <p className='text-3xl font-semibold text-gray-900 dark:text-white mt-2'>
                 {stat.value}
               </p>
             </div>

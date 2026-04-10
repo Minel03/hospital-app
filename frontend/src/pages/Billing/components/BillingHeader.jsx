@@ -7,8 +7,8 @@ const BillingHeader = ({ openAdd, stats }) => {
     <div>
       <div className='flex justify-between'>
         <div>
-          <h2 className='text-2xl font-semibold'>Billing</h2>
-          <p className='text-gray-500'>Manage payments and financial records</p>
+          <h2 className='text-2xl font-semibold text-gray-900 dark:text-white'>Billing</h2>
+          <p className='text-gray-500 dark:text-gray-400'>Manage payments and financial records</p>
         </div>
         <button
           onClick={openAdd}
@@ -26,10 +26,10 @@ const BillingHeader = ({ openAdd, stats }) => {
           return (
             <div
               key={i}
-              className='bg-white rounded-lg border border-gray-200 p-6 flex items-center justify-between'>
+              className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between transition-colors'>
               <div>
-                <p className='text-sm text-gray-500'>{s.label}</p>
-                <p className='text-3xl font-semibold'>{s.value}</p>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>{s.label}</p>
+                <p className='text-3xl font-semibold text-gray-900 dark:text-white'>{s.value}</p>
               </div>
 
               <div className={`${s.color} p-3 rounded-lg`}>

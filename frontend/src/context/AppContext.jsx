@@ -151,6 +151,64 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const fetchUserSettings = async () => {
+    try {
+      if (!sessionStorage.getItem('token')) return;
+      const { data } = await axios.get('/api/settings/user');
+      if (data.success && data.settings) {
+        document.documentElement.classList.toggle('dark', data.settings.theme === 'dark');
+      }
+    } catch (error) {
+      console.error('Error fetching user settings:', error);
+    }
+  };
+
+  // Helper for react-select dark mode styling
+  const getSelectStyles = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    return {
+      control: (base, state) => ({
+        ...base,
+        backgroundColor: isDark ? '#1f2937' : '#ffffff', // gray-800 or white
+        borderColor: isDark ? '#374151' : '#e5e7eb', // gray-700 or gray-200
+        color: isDark ? '#ffffff' : '#000000',
+        '&:hover': {
+          borderColor: isDark ? '#4b5563' : '#d1d5db',
+        },
+        boxShadow: state.isFocused ? (isDark ? '0 0 0 1px #3b82f6' : '0 0 0 1px #3b82f6') : 'none',
+      }),
+      menu: (base) => ({
+        ...base,
+        backgroundColor: isDark ? '#1f2937' : '#ffffff',
+        border: isDark ? '1px solid #374151' : '1px solid #e5e7eb',
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected 
+          ? '#3b82f6' 
+          : state.isFocused 
+            ? (isDark ? '#374151' : '#f3f4f6') 
+            : 'transparent',
+        color: state.isSelected ? '#ffffff' : (isDark ? '#e5e7eb' : '#374151'),
+        '&:active': {
+          backgroundColor: '#3b82f6',
+        },
+      }),
+      singleValue: (base) => ({
+        ...base,
+        color: isDark ? '#ffffff' : '#000000',
+      }),
+      input: (base) => ({
+        ...base,
+        color: isDark ? '#ffffff' : '#000000',
+      }),
+      placeholder: (base) => ({
+        ...base,
+        color: isDark ? '#9ca3af' : '#6b7280', // gray-400 or gray-500
+      }),
+    };
+  };
+
   useEffect(() => {
     fetchRooms();
     fetchPatients();
@@ -159,6 +217,7 @@ export const AppProvider = ({ children }) => {
     fetchStaff();
     fetchAdmissions();
     fetchGlobalSettings();
+    fetchUserSettings();
   }, []);
 
   const value = {
@@ -181,6 +240,8 @@ export const AppProvider = ({ children }) => {
     globalSettings,
     setGlobalSettings,
     fetchGlobalSettings,
+    fetchUserSettings,
+    getSelectStyles,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,5 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
+import { useAppContext } from '../../../context/AppContext';
 
 const AppointmentFormModal = ({
   showModal,
@@ -12,6 +13,7 @@ const AppointmentFormModal = ({
   doctors,
   departments,
 }) => {
+  const { getSelectStyles } = useAppContext();
   if (!showModal) return null;
 
   const today = new Date();
@@ -19,7 +21,7 @@ const AppointmentFormModal = ({
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
-      <div className='bg-white rounded-lg p-6 w-full max-w-md'>
+      <div className='bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md dark:border dark:border-gray-700'>
         <h2 className='text-lg font-semibold mb-4'>
           {mode === 'add' ? 'Add Appointment' : 'Edit Appointment'}
         </h2>
@@ -29,10 +31,11 @@ const AppointmentFormModal = ({
           className='space-y-4'>
           {/* Patient */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Patient
             </label>
             <Select
+              styles={getSelectStyles()}
               options={patients?.map((p) => ({ value: p._id, label: p.name }))}
               value={
                 formData.patient
@@ -53,10 +56,11 @@ const AppointmentFormModal = ({
 
           {/* Doctor */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Doctor
             </label>
             <Select
+              styles={getSelectStyles()}
               options={doctors?.map((d) => ({ value: d._id, label: d.name }))}
               value={
                 formData.doctor
@@ -77,10 +81,11 @@ const AppointmentFormModal = ({
 
           {/* Department */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Department
             </label>
             <Select
+              styles={getSelectStyles()}
               options={departments?.map((dep) => ({
                 value: dep._id,
                 label: dep.name,
@@ -96,7 +101,7 @@ const AppointmentFormModal = ({
 
           {/* Date & Time */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Date & Time
             </label>
             <input
@@ -113,7 +118,7 @@ const AppointmentFormModal = ({
 
           {/* Status */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Status
             </label>
             <select
@@ -130,7 +135,7 @@ const AppointmentFormModal = ({
 
           {/* Type */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 mb-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Type
             </label>
             <select
@@ -138,7 +143,7 @@ const AppointmentFormModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
               }
-              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'>
+              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600'>
               <option value='Check-up'>Check-up</option>
               <option value='Follow-up'>Follow-up</option>
               <option value='Emergency'>Emergency</option>
@@ -150,7 +155,7 @@ const AppointmentFormModal = ({
             <button
               type='button'
               onClick={() => setShowModal(false)}
-              className='px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300'>
+              className='px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 rounded hover:bg-gray-300'>
               Cancel
             </button>
             <button

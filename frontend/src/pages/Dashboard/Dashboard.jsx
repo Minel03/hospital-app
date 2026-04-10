@@ -66,9 +66,9 @@ const Dashboard = () => {
       />
 
       {/* Today's Appointments Table */}
-      <div className='bg-white rounded-lg border border-gray-200'>
-        <div className='p-6 border-b border-gray-200'>
-          <h3 className='font-semibold text-gray-900'>Today's Appointments</h3>
+      <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors'>
+        <div className='p-6 border-b border-gray-200 dark:border-gray-700'>
+          <h3 className='font-semibold text-gray-900 dark:text-white'>Today's Appointments</h3>
         </div>
 
         <div className='overflow-x-auto'>
@@ -76,45 +76,45 @@ const Dashboard = () => {
             <p className='p-6 text-sm text-gray-400'>No appointments today.</p>
           ) : (
             <table className='w-full'>
-              <thead className='bg-gray-50'>
+              <thead className='bg-gray-50 dark:bg-gray-900/50'>
                 <tr>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                     Patient
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                     Doctor
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                     Time
                   </th>
-                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                     Status
                   </th>
                 </tr>
               </thead>
-              <tbody className='bg-white divide-y divide-gray-200'>
+              <tbody className='bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700'>
                 {todaysAppointments.map((appointment) => (
                   <tr key={appointment._id}>
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <div className='flex items-center'>
-                        <div className='w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3'>
-                          <span className='text-sm font-medium text-gray-600'>
+                        <div className='w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-3'>
+                          <span className='text-sm font-medium text-gray-600 dark:text-gray-300'>
                             {appointment.patient?.name
                               ?.split(' ')
                               .map((n) => n[0])
                               .join('')}
                           </span>
                         </div>
-                        <span className='text-sm text-gray-900'>
+                        <span className='text-sm text-gray-900 dark:text-gray-200'>
                           {appointment.patient?.name || '—'}
                         </span>
                       </div>
                     </td>
-                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900'>
+                    <td className='px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200'>
                       {appointment.doctor?.name || '—'}
                     </td>
                     <td className='px-6 py-4 whitespace-nowrap'>
-                      <div className='flex items-center gap-1 text-sm text-gray-500'>
+                      <div className='flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400'>
                         <Clock className='w-4 h-4' />
                         {new Date(appointment.datetime).toLocaleTimeString([], {
                           hour: '2-digit',
@@ -127,10 +127,10 @@ const Dashboard = () => {
                       <span
                         className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                           appointment.status === 'Confirmed'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
                             : appointment.status === 'Pending'
-                              ? 'bg-yellow-100 text-yellow-700'
-                              : 'bg-red-100 text-red-700'
+                              ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400'
+                              : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
                         }`}>
                         {appointment.status}
                       </span>

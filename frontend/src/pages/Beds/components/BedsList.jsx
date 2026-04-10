@@ -15,16 +15,16 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
           return (
             <div
               key={roomNumber}
-              className='bg-white border border-gray-200 rounded-xl p-6 shadow-sm'>
+              className='bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm hover:shadow-md transition-all'>
               {/* Room Header */}
               <div className='flex items-center justify-between mb-4'>
                 <div className='flex items-center gap-3'>
                   <DoorOpen className='w-6 h-6 text-blue-600' />
                   <div>
-                    <h3 className='font-semibold text-gray-900'>
+                    <h3 className='font-semibold text-gray-900 dark:text-white'>
                       Room {roomNumber}
                     </h3>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-gray-400'>
                       {firstBed?.room?.type} • Floor {firstBed?.room?.floor} •{' '}
                       {firstBed?.room?.department?.name}
                     </p>
@@ -32,13 +32,13 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
                 </div>
 
                 <div className='flex items-center gap-3'>
-                  <div className='text-sm text-gray-500'>
+                  <div className='text-sm text-gray-500 dark:text-gray-400'>
                     {occupied} / {roomBeds.length} Occupied
                   </div>
                   {/* ✅ Edit Room Button */}
                   <button
                     onClick={() => openEditRoomModal(firstBed.room)}
-                    className='flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition'>
+                    className='flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'>
                     Edit Room
                   </button>
                 </div>
@@ -49,10 +49,10 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
                 {roomBeds.map((bed) => {
                   const statusColor =
                     bed.status === 'Available'
-                      ? 'bg-green-100 text-green-700 border-green-200'
+                      ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800'
                       : bed.status === 'Occupied'
-                        ? 'bg-red-100 text-red-700 border-red-200'
-                        : 'bg-yellow-100 text-yellow-700 border-yellow-200';
+                        ? 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
+                        : 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-400 dark:border-yellow-800';
                   return (
                     <div
                       key={bed._id}
@@ -67,7 +67,7 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
                       <p className='font-semibold text-sm'>
                         Bed {bed.bedNumber}
                       </p>
-                      <p className='text-xs mt-1'>
+                      <p className='text-xs mt-1 opacity-80'>
                         {bed.currentPatient?.name || 'No Patient'}
                       </p>
                     </div>

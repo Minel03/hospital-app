@@ -43,24 +43,24 @@ const StatsCard = ({
       name: 'Total Patients',
       value: patients.length,
       icon: Users,
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-600',
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       id: 2,
       name: "Today's Appointments",
       value: appointments.length,
       icon: CalendarCheck,
-      bgColor: 'bg-green-50',
-      textColor: 'text-green-600',
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400',
     },
     {
       id: 3,
       name: 'Active Admissions',
       value: activeAdmissions,
       icon: Bed,
-      bgColor: 'bg-yellow-50',
-      textColor: 'text-yellow-600',
+      bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+      textColor: 'text-yellow-600 dark:text-yellow-400',
     },
   ];
 
@@ -108,13 +108,13 @@ const StatsCard = ({
           return (
             <div
               key={stat.id}
-              className='bg-white rounded-lg border border-gray-200 p-6 flex items-center gap-4'>
+              className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex items-center gap-4 transition-colors'>
               <div className={`p-3 rounded-full ${stat.bgColor}`}>
                 <Icon className={`w-6 h-6 ${stat.textColor}`} />
               </div>
               <div>
-                <p className='text-sm text-gray-500'>{stat.name}</p>
-                <p className='text-xl font-semibold text-gray-900'>
+                <p className='text-sm text-gray-500 dark:text-gray-400'>{stat.name}</p>
+                <p className='text-xl font-semibold text-gray-900 dark:text-white'>
                   {stat.value}
                 </p>
               </div>
@@ -126,8 +126,8 @@ const StatsCard = ({
       {/* Charts */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Patient Admissions Line Chart */}
-        <div className='bg-white rounded-lg border border-gray-200 p-6'>
-          <h3 className='font-semibold text-gray-900 mb-4'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 transition-colors'>
+          <h3 className='font-semibold text-gray-900 dark:text-white mb-4'>
             Patient Admissions
           </h3>
           {patientData.length === 0 ? (
@@ -141,24 +141,39 @@ const StatsCard = ({
               <LineChart data={patientData}>
                 <CartesianGrid
                   strokeDasharray='3 3'
-                  stroke='#e5e7eb'
+                  stroke='var(--chart-grid)'
                 />
                 <XAxis
                   dataKey='month'
-                  stroke='#6b7280'
+                  stroke='var(--chart-axis)'
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
                 />
                 <YAxis
-                  stroke='#6b7280'
+                  stroke='var(--chart-axis)'
                   allowDecimals={false}
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
                 />
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'var(--chart-tooltip-bg)', 
+                    borderColor: 'var(--chart-tooltip-border)',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    color: 'var(--chart-axis)'
+                  }}
+                  itemStyle={{ color: '#3b82f6' }}
+                />
                 <Line
                   type='monotone'
                   dataKey='Patients'
                   stroke='#3b82f6'
-                  strokeWidth={2}
-                  dot={{ r: 4 }}
-                  activeDot={{ r: 6 }}
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: 'var(--chart-tooltip-bg)' }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -166,8 +181,8 @@ const StatsCard = ({
         </div>
 
         {/* Department Distribution Pie Chart */}
-        <div className='bg-white rounded-lg border border-gray-200 p-6'>
-          <h3 className='font-semibold text-gray-900 mb-4'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 transition-colors'>
+          <h3 className='font-semibold text-gray-900 dark:text-white mb-4'>
             Department Distribution
           </h3>
           {departmentData.every((d) => d.value === 0) ? (
@@ -186,7 +201,9 @@ const StatsCard = ({
                   labelLine={false}
                   label={({ name, value }) => `${name} (${value})`}
                   outerRadius={80}
-                  dataKey='value'>
+                  dataKey='value'
+                  stroke='var(--chart-tooltip-bg)'
+                  strokeWidth={2}>
                   {departmentData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
@@ -194,7 +211,14 @@ const StatsCard = ({
                     />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'var(--chart-tooltip-bg)', 
+                    borderColor: 'var(--chart-tooltip-border)',
+                    borderRadius: '8px',
+                    fontSize: '12px'
+                  }}
+                />
               </PieChart>
             </ResponsiveContainer>
           )}

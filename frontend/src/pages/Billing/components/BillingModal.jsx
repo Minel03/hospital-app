@@ -1,5 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
+import { useAppContext } from '../../../context/AppContext';
 
 const BillingModal = ({
   showModal,
@@ -18,11 +19,12 @@ const BillingModal = ({
   totalAmount,
   SERVICE_TYPES,
 }) => {
+  const { getSelectStyles } = useAppContext();
   return (
     <div>
       {showModal && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className='bg-white p-6 rounded-lg w-125 max-h-[90vh] overflow-y-auto'>
+          <div className='bg-white dark:bg-gray-800 p-6 rounded-lg w-125 max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
             <h3 className='text-xl font-semibold mb-4'>
               {mode === 'add' ? 'New Invoice' : 'Edit Invoice'}
             </h3>
@@ -31,8 +33,8 @@ const BillingModal = ({
               className='space-y-3'>
               {/* Patient */}
               <div>
-                <label className='block mb-1 font-medium'>Patient</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Patient</label>
+                <Select styles={getSelectStyles()}
                   options={patients.map((p) => ({
                     value: p._id,
                     label: p.name,
@@ -53,8 +55,8 @@ const BillingModal = ({
 
               {/* Doctor */}
               <div>
-                <label className='block mb-1 font-medium'>Doctor</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Doctor</label>
+                <Select styles={getSelectStyles()}
                   options={doctors.map((d) => ({
                     value: d._id,
                     label: d.name,
@@ -75,11 +77,11 @@ const BillingModal = ({
 
               {/* Admission (optional) */}
               <div>
-                <label className='block mb-1 font-medium'>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
                   Admission{' '}
                   <span className='text-gray-400 font-normal'>(optional)</span>
                 </label>
-                <Select
+                <Select styles={getSelectStyles()}
                   options={admissions.map((a) => ({
                     value: a._id,
                     label: `${a.patient?.name} - ${new Date(a.admissionDate).toLocaleDateString()}`,
@@ -103,11 +105,11 @@ const BillingModal = ({
 
               {/* Appointment (optional) */}
               <div>
-                <label className='block mb-1 font-medium'>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
                   Appointment{' '}
                   <span className='text-gray-400 font-normal'>(optional)</span>
                 </label>
-                <Select
+                <Select styles={getSelectStyles()}
                   options={appointments.map((a) => ({
                     value: a._id,
                     label: `${a.patient?.name} - ${new Date(a.date).toLocaleDateString()}`,
@@ -134,10 +136,10 @@ const BillingModal = ({
 
               {/* Due Date */}
               <div>
-                <label className='block mb-1 font-medium'>Due Date</label>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Due Date</label>
                 <input
                   type='date'
-                  className='w-full border p-2 rounded'
+                  className='w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                   value={formData.dueDate}
                   onChange={(e) =>
                     setFormData({ ...formData, dueDate: e.target.value })
@@ -148,9 +150,9 @@ const BillingModal = ({
 
               {/* Status */}
               <div>
-                <label className='block mb-1 font-medium'>Status</label>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Status</label>
                 <select
-                  className='w-full border p-2 rounded'
+                  className='w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                   value={formData.status}
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })
@@ -163,14 +165,14 @@ const BillingModal = ({
 
               {/* Services */}
               <div>
-                <label className='block mb-1 font-medium'>Services</label>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Services</label>
                 <div className='space-y-2'>
                   {formData.services.map((s, i) => (
                     <div
                       key={i}
                       className='flex gap-2 items-center'>
                       <select
-                        className='flex-1 border p-2 rounded'
+                        className='flex-1 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                         value={s.name}
                         onChange={(e) =>
                           updateService(i, 'name', e.target.value)
@@ -182,7 +184,7 @@ const BillingModal = ({
                       <input
                         type='number'
                         placeholder='Amount'
-                        className='w-28 border p-2 rounded'
+                        className='w-28 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                         value={s.amount}
                         onChange={(e) =>
                           updateService(i, 'amount', e.target.value)

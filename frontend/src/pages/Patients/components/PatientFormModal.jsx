@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons } from '../../../context/AppContext';
+import { Icons, useAppContext } from '../../../context/AppContext';
 
 const PatientFormModal = ({
   mode,
@@ -11,13 +11,14 @@ const PatientFormModal = ({
   setSelectedPatient,
 }) => {
   const { X } = Icons;
+  const { getSelectStyles } = useAppContext();
   if (!showModal) return null;
   return (
     <div>
       <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-        <div className='bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto'>
-          <div className='sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between'>
-            <h3 className='text-xl font-semibold text-gray-900'>
+        <div className='bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
+          <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between'>
+            <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
               {mode === 'add' ? 'Add New Patient' : 'Edit Patient'}
             </h3>
             <button
@@ -48,7 +49,7 @@ const PatientFormModal = ({
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               {/* Name */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Full Name
                 </label>
                 <input
@@ -65,7 +66,7 @@ const PatientFormModal = ({
 
               {/* Age */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Age
                 </label>
                 <input
@@ -82,7 +83,7 @@ const PatientFormModal = ({
 
               {/* Gender */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Gender
                 </label>
                 <select
@@ -100,7 +101,7 @@ const PatientFormModal = ({
 
               {/* Blood Type */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Blood Type
                 </label>
                 <select
@@ -123,7 +124,7 @@ const PatientFormModal = ({
 
               {/* Phone */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Phone Number
                 </label>
                 <input
@@ -140,7 +141,7 @@ const PatientFormModal = ({
 
               {/* Email */}
               <div>
-                <label className='block text-sm font-medium text-gray-700 mb-2'>
+                <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                   Email
                 </label>
                 <input
@@ -158,7 +159,7 @@ const PatientFormModal = ({
 
             {/* Address / Allergies / Medical History */}
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Address
               </label>
               <input
@@ -173,7 +174,7 @@ const PatientFormModal = ({
             </div>
 
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Allergies
               </label>
               <input
@@ -187,7 +188,7 @@ const PatientFormModal = ({
             </div>
 
             <div>
-              <label className='block text-sm font-medium text-gray-700 mb-2'>
+              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
                 Medical History
               </label>
               <textarea

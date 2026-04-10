@@ -1,5 +1,29 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --chart-grid: #e5e7eb;
+  --chart-axis: #6b7280;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #e5e7eb;
+}
+
+.dark {
+  --chart-grid: #374151;
+  --chart-axis: #9ca3af;
+  --chart-tooltip-bg: #1f2937;
+  --chart-tooltip-border: #374151;
+}
+
+body {
+  @apply transition-colors duration-200 dark:bg-gray-900;
+}
+
+input, select, textarea {
+  @apply dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder-gray-400;
+}
+
 button {
   cursor: pointer;
 }

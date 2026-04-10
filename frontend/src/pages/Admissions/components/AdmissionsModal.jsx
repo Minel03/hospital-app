@@ -1,5 +1,6 @@
 import React from 'react';
 import Select from 'react-select';
+import { useAppContext } from '../../../context/AppContext';
 
 const AdmissionsModal = ({
   showModal,
@@ -13,11 +14,12 @@ const AdmissionsModal = ({
   departments,
   beds,
 }) => {
+  const { getSelectStyles } = useAppContext();
   return (
     <div>
       {showModal && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className='bg-white p-6 rounded-lg w-125'>
+          <div className='bg-white dark:bg-gray-800 p-6 rounded-lg w-125 dark:border dark:border-gray-700'>
             <h3 className='text-xl font-semibold mb-4'>
               {mode === 'add' ? 'New Admission' : 'Edit Admission'}
             </h3>
@@ -27,8 +29,8 @@ const AdmissionsModal = ({
               className='space-y-3'>
               {/* PATIENT */}
               <div>
-                <label className='block mb-1 font-medium'>Patient</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Patient</label>
+                <Select styles={getSelectStyles()}
                   options={patients.map((p) => ({
                     value: p._id,
                     label: p.name,
@@ -49,8 +51,8 @@ const AdmissionsModal = ({
 
               {/* DOCTOR */}
               <div>
-                <label className='block mb-1 font-medium'>Doctor</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Doctor</label>
+                <Select styles={getSelectStyles()}
                   options={doctors.map((d) => ({
                     value: d._id,
                     label: d.name,
@@ -71,8 +73,8 @@ const AdmissionsModal = ({
 
               {/* DEPARTMENT */}
               <div>
-                <label className='block mb-1 font-medium'>Department</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Department</label>
+                <Select styles={getSelectStyles()}
                   options={departments.map((d) => ({
                     value: d._id,
                     label: d.name,
@@ -96,8 +98,8 @@ const AdmissionsModal = ({
 
               {/* BED */}
               <div>
-                <label className='block mb-1 font-medium'>Bed</label>
-                <Select
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Bed</label>
+                <Select styles={getSelectStyles()}
                   options={[
                     // Only available beds + current bed (for edit)
                     ...beds
@@ -134,37 +136,46 @@ const AdmissionsModal = ({
                   isSearchable
                   required
                   styles={{
+                    ...getSelectStyles(),
                     option: (provided, state) => {
+                      const baseStyles = getSelectStyles().option(provided, state);
                       let bgColor = '#d1fae5'; // green-100 for Available
                       let textColor = '#047857'; // green-700
+                      const isDark = document.documentElement.classList.contains('dark');
 
                       if (state.data.status === 'Occupied') {
-                        bgColor = '#fee2e2'; // red-100
-                        textColor = '#b91c1c'; // red-700
+                        bgColor = isDark ? '#450a0a' : '#fee2e2'; // red-900 or red-100
+                        textColor = isDark ? '#f87171' : '#b91c1c'; // red-400 or red-700
                       } else if (state.data.status === 'Reserved') {
-                        bgColor = '#fef3c7'; // yellow-100
-                        textColor = '#78350f'; // yellow-700
+                        bgColor = isDark ? '#451a03' : '#fef3c7'; // orange-900 or yellow-100
+                        textColor = isDark ? '#fb923c' : '#78350f'; // orange-400 or yellow-700
+                      } else if (state.data.status === 'Available') {
+                        bgColor = isDark ? '#064e3b' : '#d1fae5'; // green-900 or green-100
+                        textColor = isDark ? '#34d399' : '#047857'; // green-400 or green-700
                       }
 
                       return {
-                        ...provided,
-                        backgroundColor: state.isFocused ? bgColor : 'white',
+                        ...baseStyles,
+                        backgroundColor: state.isFocused ? bgColor : baseStyles.backgroundColor,
                         color: textColor,
                         padding: 10,
                       };
                     },
                     singleValue: (provided) => {
+                      const baseStyles = getSelectStyles().singleValue(provided);
                       const status =
                         beds.find((b) => b._id === formData.bed)?.status ||
                         'Occupied';
+                      
+                      const isDark = document.documentElement.classList.contains('dark');
+                      let color = '#047857';
+                      if (status === 'Occupied') color = isDark ? '#f87171' : '#b91c1c';
+                      else if (status === 'Reserved') color = isDark ? '#fb923c' : '#78350f';
+                      else if (status === 'Available') color = isDark ? '#34d399' : '#047857';
+
                       return {
-                        ...provided,
-                        color:
-                          status === 'Occupied'
-                            ? '#b91c1c'
-                            : status === 'Reserved'
-                              ? '#78350f'
-                              : '#047857',
+                        ...baseStyles,
+                        color: color,
                       };
                     },
                   }}
@@ -188,7 +199,7 @@ const AdmissionsModal = ({
 
               {/* ADMISSION DATE & TIME */}
               <div>
-                <label className='block mb-1 font-medium'>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
                   Admission Date & Time
                 </label>
                 <input
@@ -204,7 +215,7 @@ const AdmissionsModal = ({
 
               {/* EXPECTED DISCHARGE DATE & TIME */}
               <div>
-                <label className='block mb-1 font-medium'>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
                   Expected Discharge Date & Time
                 </label>
                 <input
@@ -223,7 +234,7 @@ const AdmissionsModal = ({
 
               {/* DIAGNOSIS */}
               <div>
-                <label className='block mb-1 font-medium'>Diagnosis</label>
+                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Diagnosis</label>
                 <textarea
                   className='w-full border p-2 rounded'
                   value={formData.diagnosis}
