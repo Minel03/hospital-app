@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
-import PatientHeader from '../Patients/components/PatientHeader';
+import PageHeader from '../../components/PageHeader';
 import PatientSearchFilter from '../Patients/components/PatientSearchFilter';
 import PatientTable from '../Patients/components/PatientTable';
 import PatientFormModal from '../Patients/components/PatientFormModal';
@@ -214,8 +214,14 @@ const Patients = () => {
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      <PatientHeader onAddPatient={handleAddPatient} stats={stats} />
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Patients'
+        subtitle='Manage and view all patient records'
+        buttonLabel='Add Patient'
+        onButtonClick={handleAddPatient}
+        stats={stats}
+      />
 
       <PatientSearchFilter
         searchQuery={searchQuery}

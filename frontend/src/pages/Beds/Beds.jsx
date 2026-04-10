@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
-import BedsHeader from './components/BedsHeader';
+import PageHeader from '../../components/PageHeader';
 import BedsSearchFilter from './components/BedsSearchFilter';
 import BedsList from './components/BedsList';
 import BedsModal from './components/BedsModal';
@@ -216,36 +216,53 @@ const Beds = () => {
     {
       label: 'Total Rooms',
       value: stats.totalRooms,
-      color: 'bg-blue-600',
       icon: DoorOpen,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
     },
     {
       label: 'Total Beds',
       value: stats.totalBeds,
-      color: 'bg-purple-600',
       icon: BedDouble,
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+      textColor: 'text-purple-600 dark:text-purple-400'
     },
     {
       label: 'Occupied Beds',
       value: stats.occupiedBeds,
-      color: 'bg-red-500',
       icon: BedSingle,
+      bgColor: 'bg-red-50 dark:bg-red-900/30',
+      textColor: 'text-red-600 dark:text-red-400'
     },
     {
       label: 'Available Beds',
       value: stats.availableBeds,
-      color: 'bg-green-600',
       icon: BedSingle,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
     },
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      {/* Header */}
-      <BedsHeader
-        openAddRoomModal={openAddRoomModal}
-        openAddBedModal={openAddBedModal}
-        statsConfig={statsConfig}
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Rooms & Beds'
+        subtitle='Manage hospital rooms and bed allocation'
+        actions={[
+          {
+            label: 'Add Room',
+            onClick: openAddRoomModal,
+            icon: Plus,
+            color: 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
+          },
+          {
+            label: 'Add Bed',
+            onClick: openAddBedModal,
+            icon: Plus,
+            color: 'bg-green-600 hover:bg-green-700 shadow-green-200'
+          }
+        ]}
+        stats={statsConfig}
       />
 
       <BedsSearchFilter

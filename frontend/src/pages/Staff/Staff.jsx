@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
 import { useAppContext, Icons } from '../../context/AppContext';
-import StaffHeader from './components/StaffHeader';
+import PageHeader from '../../components/PageHeader';
 import StaffSearchFilter from './components/StaffSearchFilter';
 import StaffTable from './components/StaffTable';
 import StaffFormModal from './components/StaffFormModal';
@@ -204,11 +204,16 @@ const Staff = () => {
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      <StaffHeader
-        setShowAddModal={setShowAddModal}
-        setEditingStaff={setEditingStaff}
-        resetForm={resetForm}
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Hospital Staff'
+        subtitle='Manage hospital personnel and roles'
+        buttonLabel='Add Staff'
+        onButtonClick={() => {
+          resetForm();
+          setEditingStaff(null);
+          setShowAddModal(true);
+        }}
         stats={stats}
       />
 

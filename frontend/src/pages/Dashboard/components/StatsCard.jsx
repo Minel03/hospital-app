@@ -1,6 +1,6 @@
 import React from 'react';
-import { Icons, Charts } from '../context/AppContext';
-import SummaryStats from './SummaryStats';
+import { Icons, Charts } from '../../../context/AppContext';
+import SummaryStats from '../../../components/SummaryStats';
 
 const { Users, CalendarCheck, Bed, DollarSign, Activity } = Icons;
 const {
@@ -46,7 +46,7 @@ const StatsCard = ({
   const stats = [
     {
       id: 1,
-      name: 'Total Patients',
+      label: 'Total Patients',
       value: totalPatients,
       icon: Users,
       bgColor: 'bg-blue-50 dark:bg-blue-900/30',
@@ -54,7 +54,7 @@ const StatsCard = ({
     },
     {
       id: 2,
-      name: "Today's Appointments",
+      label: "Today's Appointments",
       value: todayAppointmentsCount,
       icon: CalendarCheck,
       bgColor: 'bg-green-50 dark:bg-green-900/30',
@@ -62,7 +62,7 @@ const StatsCard = ({
     },
     {
       id: 3,
-      name: 'Active Admissions',
+      label: 'Active Admissions',
       value: activeAdmissionsCount,
       icon: Bed,
       bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
@@ -70,7 +70,7 @@ const StatsCard = ({
     },
     {
       id: 4,
-      name: 'Total Revenue (Paid)',
+      label: 'Total Revenue (Paid)',
       value: `$${analytics?.revenue?.reduce((a, b) => a + b.amount, 0).toLocaleString() || '0'}`,
       icon: DollarSign,
       bgColor: 'bg-purple-50 dark:bg-purple-900/30',

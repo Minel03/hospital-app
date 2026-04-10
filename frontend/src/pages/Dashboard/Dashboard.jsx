@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Title from '../../components/Title';
-import StatsCard from '../../components/StatsCard';
+import StatsCard from './components/StatsCard';
 import { Icons, useAppContext } from '../../context/AppContext';
 
 const { Clock } = Icons;
@@ -19,14 +19,19 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
-      const [patientsRes, departmentsRes, appointmentsRes, admissionsRes, analyticsRes] =
-        await Promise.all([
-          axios.get('/api/patient/all'),
-          axios.get('/api/department/list'),
-          axios.get('/api/appointment/list'),
-          axios.get('/api/admission/list'),
-          axios.get('/api/analytics/dashboard-summary'),
-        ]);
+      const [
+        patientsRes,
+        departmentsRes,
+        appointmentsRes,
+        admissionsRes,
+        analyticsRes,
+      ] = await Promise.all([
+        axios.get('/api/patient/all'),
+        axios.get('/api/department/list'),
+        axios.get('/api/appointment/list'),
+        axios.get('/api/admission/list'),
+        axios.get('/api/analytics/dashboard-summary'),
+      ]);
 
       setPatients(patientsRes.data.patients || []);
       setDepartments(departmentsRes.data.departments || []);
@@ -72,7 +77,9 @@ const Dashboard = () => {
       {/* Today's Appointments Table */}
       <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors'>
         <div className='p-6 border-b border-gray-200 dark:border-gray-700'>
-          <h3 className='font-semibold text-gray-900 dark:text-white'>Today's Appointments</h3>
+          <h3 className='font-semibold text-gray-900 dark:text-white'>
+            Today's Appointments
+          </h3>
         </div>
 
         <div className='overflow-x-auto'>

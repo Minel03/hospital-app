@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Icons, useAppContext } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import Title from '../../components/Title';
+import PageHeader from '../../components/PageHeader';
 
 const {
   Bell,
@@ -17,7 +18,7 @@ const {
 } = Icons;
 
 const Settings = () => {
-  const { axios, fetchGlobalSettings } = useAppContext();
+  const { axios, fetchGlobalSettings, refreshUserData } = useAppContext();
   const [activeSection, setActiveSection] = useState('General');
 
   // ---------------- General / Appearance / Notifications / Email ----------------
@@ -168,6 +169,12 @@ const Settings = () => {
           ...formData,
         });
         if (!res.data.success) return toast.error(res.data.message);
+        
+        // If the server returned a new token (meaning current user was updated)
+        if (res.data.token) {
+          sessionStorage.setItem('token', res.data.token);
+        }
+        
         toast.success('User updated successfully');
       } else {
         if (!formData.password) return toast.error('Password is required');
@@ -175,6 +182,9 @@ const Settings = () => {
         if (!res.data.success) return toast.error(res.data.message);
         toast.success('User added successfully');
       }
+      
+      if (refreshUserData) refreshUserData();
+      
       fetchUsers();
       setFormData({ name: '', email: '', password: '', role: 'staff' });
       setEditingUser(null);
@@ -201,23 +211,15 @@ const Settings = () => {
   };
 
   return (
-    <div className='p-8 space-y-6'>
+    <div className='p-8 space-y-8'>
       {/* Header */}
-      <div className='flex items-center justify-between mb-2'>
-        <div>
-          <Title
-            title='Settings'
-            subtitle='Manage your system configuration and preferences'
-          />
-        </div>
-
-        <button
-          onClick={saveSettings}
-          className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700'>
-          <CheckCircle className='w-5 h-5' />
-          <span className='hidden sm:inline'>Save Changes</span>
-        </button>
-      </div>
+      <PageHeader
+        title='Settings'
+        subtitle='Manage your system configuration and preferences'
+        buttonLabel='Save Changes'
+        buttonIcon={CheckCircle}
+        onButtonClick={saveSettings}
+      />
 
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'>
         {/* Sidebar */}
@@ -394,7 +396,7 @@ const Settings = () => {
                 </div>
                 <button
                   onClick={openAddUser}
-                  className='flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700'>
+                  className='flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-green-700 transition-colors shadow-sm shadow-green-600/20'>
                   <Plus className='w-4 h-4' /> Add User
                 </button>
               </div>
@@ -434,17 +436,19 @@ const Settings = () => {
                             {user.role}
                           </span>
                         </td>
-                        <td className='px-4 py-3 text-right space-x-2'>
-                          <button
-                            onClick={() => openEditUser(user)}
-                            className='p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors'>
-                            <Edit className='w-4 h-4' />
-                          </button>
-                          <button
-                            onClick={() => deleteUser(user._id)}
-                            className='p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors'>
-                            <Trash2 className='w-4 h-4' />
-                          </button>
+                        <td className='px-4 py-3 text-right whitespace-nowrap'>
+                          <div className='flex items-center justify-end gap-2'>
+                            <button
+                              onClick={() => openEditUser(user)}
+                              className='p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-all'>
+                              <Edit className='w-4 h-4' />
+                            </button>
+                            <button
+                              onClick={() => deleteUser(user._id)}
+                              className='p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all'>
+                              <Trash2 className='w-4 h-4' />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}

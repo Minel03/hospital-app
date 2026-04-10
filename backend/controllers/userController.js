@@ -115,6 +115,11 @@ export const updateUser = async (req, res) => {
       runValidators: true,
     });
 
+    let token = null;
+    if (req.user && req.user.id === userId) {
+      token = createToken(updatedUser);
+    }
+
     await createLog({
       entity: 'User',
       entityId: updatedUser._id,
@@ -126,6 +131,7 @@ export const updateUser = async (req, res) => {
       success: true,
       message: 'User updated successfully',
       user: updatedUser,
+      token,
     });
   } catch (error) {
     console.log(error);

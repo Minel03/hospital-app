@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
-import AdmissionsHeader from './components/AdmissionsHeader';
-import AdmissionsSearch from './components/AdmissionsSearch';
+import PageHeader from '../../components/PageHeader';
+import SearchBar from '../../components/SearchBar';
 import AdmissionsTable from './components/AdmissionsTable';
 import AdmissionsModal from './components/AdmissionsModal';
 import AdmissionsViewModal from './components/AdmissionsViewModal';
@@ -238,15 +238,19 @@ const Admissions = () => {
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      <AdmissionsHeader
-        openAddModal={openAddModal}
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Admissions'
+        subtitle='Manage patient admissions and discharges'
+        buttonLabel='New Admission'
+        onButtonClick={openAddModal}
         stats={stats}
       />
 
-      <AdmissionsSearch
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+      <SearchBar
+        placeholder='Search by patient, doctor, department, bed, diagnosis, status...'
+        value={searchQuery}
+        onChange={setSearchQuery}
       />
 
       <AdmissionsTable

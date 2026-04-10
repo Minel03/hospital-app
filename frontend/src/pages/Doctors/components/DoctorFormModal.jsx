@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import Modal from '../../../components/Modal';
+import { useAppContext } from '../../../context/AppContext';
 import Select from 'react-select';
-import { Icons, useAppContext } from '../../../context/AppContext';
+import { useEffect } from 'react';
 
 const DoctorFormModal = ({
   showModal,
@@ -13,10 +14,7 @@ const DoctorFormModal = ({
   departments = [],
   doctorUsers = [],
 }) => {
-  const { X } = Icons;
   const { getSelectStyles } = useAppContext();
-
-  if (!showModal) return null;
 
   const handleClose = () => {
     setShowModal(false);
@@ -50,7 +48,8 @@ const DoctorFormModal = ({
   }));
 
   // Pre-select user in edit mode
-  const selectedUser = userOptions.find((o) => o.value === formData.userId) || null;
+  const selectedUser =
+    userOptions.find((o) => o.value === formData.userId) || null;
 
   const handleUserSelect = (selected) => {
     if (selected) {
@@ -86,202 +85,194 @@ const DoctorFormModal = ({
   }, [mode, selectedDoctor, departments]);
 
   return (
-    <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-      <div className='bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
-        {/* Header */}
-        <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
-          <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
-            {mode === 'add' ? 'Add Doctor' : 'Edit Doctor'}
-          </h3>
-          <button
-            type='button'
-            onClick={handleClose}
-            className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
-            <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
-          </button>
+    <Modal
+      isOpen={showModal}
+      onClose={handleClose}
+      title={mode === 'add' ? 'Add Doctor' : 'Edit Doctor'}>
+      <form
+        onSubmit={handleSubmit}
+        className='space-y-4'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {/* User (Name) Picker */}
+          <div className='md:col-span-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Select Doctor (User Account)
+            </label>
+            <Select
+              styles={getSelectStyles()}
+              options={userOptions}
+              value={selectedUser}
+              onChange={handleUserSelect}
+              placeholder='Search and select a doctor user...'
+              isClearable
+              isDisabled={mode === 'edit'}
+            />
+            {mode === 'edit' && (
+              <p className='text-xs text-blue-500 mt-1 font-medium'>
+                User link cannot be changed after creation.
+              </p>
+            )}
+          </div>
+
+          {/* Age */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Age
+            </label>
+            <input
+              type='number'
+              required
+              value={formData.age || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, age: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+              placeholder='35'
+            />
+          </div>
+
+          {/* Gender */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Gender
+            </label>
+            <select
+              required
+              value={formData.gender || 'Male'}
+              onChange={(e) =>
+                setFormData({ ...formData, gender: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'>
+              <option value='Male'>Male</option>
+              <option value='Female'>Female</option>
+              <option value='Other'>Other</option>
+            </select>
+          </div>
+
+          {/* Specialty */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Specialty
+            </label>
+            <input
+              type='text'
+              required
+              value={formData.specialty || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, specialty: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+              placeholder='Cardiology'
+            />
+          </div>
+
+          {/* Department */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Department
+            </label>
+            <Select
+              styles={getSelectStyles()}
+              options={departmentOptions}
+              value={formData.department}
+              onChange={(selected) =>
+                setFormData({ ...formData, department: selected })
+              }
+              placeholder='Select Department'
+              isClearable
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Phone
+            </label>
+            <input
+              type='text'
+              value={formData.phone || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+              placeholder='(123) 456-7890'
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Email
+            </label>
+            <input
+              type='email'
+              value={formData.email || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+              placeholder='doctor@email.com'
+            />
+          </div>
+
+          {/* Experience */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Experience (years)
+            </label>
+            <input
+              type='number'
+              value={formData.experience || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, experience: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+            />
+          </div>
+
+          {/* Patients */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Number of Patients
+            </label>
+            <input
+              type='number'
+              value={formData.patients || 0}
+              onChange={(e) =>
+                setFormData({ ...formData, patients: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+            />
+          </div>
+
+          {/* Status */}
+          <div className='md:col-span-2'>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Status
+            </label>
+            <select
+              value={formData.status || 'Available'}
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'>
+              <option value='Available'>Available</option>
+              <option value='In Surgery'>In Surgery</option>
+              <option value='Offline'>Offline</option>
+            </select>
+          </div>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className='p-6 space-y-4'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          {/* User (Name) Picker */}
-            <div className='md:col-span-2'>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Select Doctor (User Account)
-              </label>
-              <Select styles={getSelectStyles()}
-                options={userOptions}
-                value={selectedUser}
-                onChange={handleUserSelect}
-                placeholder='Search and select a doctor user...'
-                isClearable
-                isDisabled={mode === 'edit'}
-              />
-              {mode === 'edit' && (
-                <p className='text-xs text-gray-400 mt-1 uppercase tracking-wider'>User link cannot be changed after creation.</p>
-              )}
-            </div>
-
-            {/* Age */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Age
-              </label>
-              <input
-                type='number'
-                required
-                value={formData.age || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, age: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                placeholder='35'
-              />
-            </div>
-
-            {/* Gender */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Gender
-              </label>
-              <select
-                required
-                value={formData.gender || 'Male'}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                <option value='Male'>Male</option>
-                <option value='Female'>Female</option>
-                <option value='Other'>Other</option>
-              </select>
-            </div>
-
-            {/* Specialty */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Specialty
-              </label>
-              <input
-                type='text'
-                required
-                value={formData.specialty || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, specialty: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                placeholder='Cardiology'
-              />
-            </div>
-
-            {/* Department */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Department
-              </label>
-              <Select styles={getSelectStyles()}
-                options={departmentOptions}
-                value={formData.department}
-                onChange={(selected) =>
-                  setFormData({ ...formData, department: selected })
-                }
-                placeholder='Select Department'
-                isClearable
-              />
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Phone
-              </label>
-              <input
-                type='text'
-                value={formData.phone || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                placeholder='(123) 456-7890'
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Email
-              </label>
-              <input
-                type='email'
-                value={formData.email || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                placeholder='doctor@email.com'
-              />
-            </div>
-
-            {/* Experience */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Experience (years)
-              </label>
-              <input
-                type='number'
-                value={formData.experience || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, experience: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-              />
-            </div>
-
-            {/* Patients */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Number of Patients
-              </label>
-              <input
-                type='number'
-                value={formData.patients || 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, patients: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-              />
-            </div>
-
-            {/* Status */}
-            <div>
-              <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-                Status
-              </label>
-              <select
-                value={formData.status || 'Available'}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                <option value='Available'>Available</option>
-                <option value='In Surgery'>In Surgery</option>
-                <option value='Offline'>Offline</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Submit */}
-          <div className='pt-4 flex justify-end'>
-            <button
-              type='submit'
-              className='bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
-              {mode === 'add' ? 'Add Doctor' : 'Update Doctor'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        {/* Submit */}
+        <div className='pt-4 flex justify-end'>
+          <button
+            type='submit'
+            className='bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none font-bold'>
+            {mode === 'add' ? 'Add Doctor' : 'Update Doctor'}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 };
 

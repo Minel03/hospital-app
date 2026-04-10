@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
-import DepartmentHeader from './components/DepartmentHeader';
+import PageHeader from '../../components/PageHeader';
 import DepartmentSearchFilter from './components/DepartmentSearchFilter';
 import DepartmentCardGrid from './components/DepartmentCardGrid';
 import DepartmentFormModal from './components/DepartmentFormModal';
 
 const Departments = () => {
   const { axios, fetchDoctors, doctors } = useAppContext();
+  const { Building2, Stethoscope, Users, HeartPulse } = Icons;
 
   const [departments, setDepartments] = useState([]);
   const [statsDepartment, setStatsDepartment] = useState([]);
@@ -45,26 +46,30 @@ const Departments = () => {
           {
             label: 'Total Departments',
             value: data.departments.length,
-            color: 'bg-blue-600',
-            icon: 'Building2',
+            bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+            textColor: 'text-blue-600 dark:text-blue-400',
+            icon: Building2,
           },
           {
             label: 'Total Doctors',
             value: totalDoctors,
-            color: 'bg-green-600',
-            icon: 'Stethoscope',
+            bgColor: 'bg-green-50 dark:bg-green-900/30',
+            textColor: 'text-green-600 dark:text-green-400',
+            icon: Stethoscope,
           },
           {
             label: 'Total Staff',
             value: totalStaff,
-            color: 'bg-purple-600',
-            icon: 'Users',
+            bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+            textColor: 'text-purple-600 dark:text-purple-400',
+            icon: Users,
           },
           {
             label: 'Active Patients',
             value: totalPatients,
-            color: 'bg-orange-500',
-            icon: 'HeartPulse',
+            bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+            textColor: 'text-orange-600 dark:text-orange-400',
+            icon: HeartPulse,
           },
         ]);
       } else {
@@ -142,9 +147,12 @@ const Departments = () => {
   });
 
   return (
-    <div className='p-8 space-y-6'>
-      <DepartmentHeader
-        onAddDepartment={handleAddDepartment}
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Departments'
+        subtitle='Manage hospital departments and their resources'
+        buttonLabel='Add Department'
+        onButtonClick={handleAddDepartment}
         stats={statsDepartment}
       />
 

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Icons, useAppContext } from '../../context/AppContext';
-import { toast } from 'react-toastify';
-import BillingHeader from './components/BillingHeader';
-import BillingSearch from './components/BillingSearch';
+import PageHeader from '../../components/PageHeader';
+import SearchBar from '../../components/SearchBar';
 import BillingTable from './components/BillingTable';
 import BillingModal from './components/BillingModal';
 import BillingViewModal from './components/BillingViewModal';
+import { Icons, useAppContext } from '../../context/AppContext';
+import { useState, useEffect } from 'react';
 
 const SERVICE_TYPES = [
   'Consultation',
@@ -366,26 +365,30 @@ const Billing = () => {
     {
       label: 'Total Invoices',
       value: invoices.length,
-      color: 'bg-blue-500',
       icon: ReceiptText,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       label: 'Draft',
       value: invoices.filter((i) => i.status === 'Draft').length,
-      color: 'bg-gray-500',
       icon: FileEdit,
+      bgColor: 'bg-gray-50 dark:bg-gray-900/30',
+      textColor: 'text-gray-600 dark:text-gray-400',
     },
     {
       label: 'Paid',
       value: invoices.filter((i) => i.status === 'Paid').length,
-      color: 'bg-green-500',
       icon: CircleDollarSign,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400',
     },
     {
       label: 'Pending',
       value: invoices.filter((i) => i.status === 'Pending').length,
-      color: 'bg-yellow-500',
       icon: Clock,
+      bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+      textColor: 'text-yellow-600 dark:text-yellow-400',
     },
     {
       label: 'Total Revenue',
@@ -393,21 +396,26 @@ const Billing = () => {
         .filter((i) => i.status === 'Paid')
         .reduce((s, i) => s + i.totalAmount, 0)
         .toLocaleString()}`,
-      color: 'bg-purple-500',
       icon: TrendingUp,
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+      textColor: 'text-purple-600 dark:text-purple-400',
     },
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      <BillingHeader
-        openAdd={openAdd}
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Financial Billing'
+        subtitle='Manage patient invoices, payments, and revenue records'
+        buttonLabel='New Invoice'
+        onButtonClick={openAdd}
         stats={stats}
       />
 
-      <BillingSearch
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+      <SearchBar
+        placeholder='Search by patient, ID, status...'
+        value={searchQuery}
+        onChange={setSearchQuery}
       />
 
       <BillingTable

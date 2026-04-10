@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
-import DoctorHeader from './components/DoctorHeader';
+import PageHeader from '../../components/PageHeader';
 import DoctorSearchFilter from './components/DoctorSearchFilter';
 import DoctorTable from './components/DoctorTable';
 import DoctorFormModal from './components/DoctorFormModal';
@@ -241,8 +241,14 @@ const Doctors = () => {
   ];
 
   return (
-    <div className='p-8 space-y-6'>
-      <DoctorHeader onAddDoctor={handleAddDoctor} stats={stats} />
+    <div className='p-8 space-y-8'>
+      <PageHeader
+        title='Doctors'
+        subtitle='Manage medical staff and their schedules'
+        buttonLabel='Add Doctor'
+        onButtonClick={handleAddDoctor}
+        stats={stats}
+      />
 
       <DoctorSearchFilter
         searchQuery={searchQuery}

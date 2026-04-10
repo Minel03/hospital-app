@@ -99,6 +99,32 @@ export const addAdmission = async (req, res) => {
 };
 
 /* =========================================================
+   GET ADMISSIONS BY PATIENT
+========================================================= */
+export const getPatientAdmissions = async (req, res) => {
+  try {
+    const { patientId } = req.query;
+    if (!patientId)
+      return res.json({ success: false, message: 'Patient ID is required' });
+
+    const admissions = await admissionModel
+      .find({ patient: patientId })
+      .populate('doctor', 'name')
+      .populate('department', 'name')
+      .populate({
+        path: 'bed',
+        select: 'bedNumber',
+        populate: { path: 'room', select: 'roomNumber roomType' },
+      })
+      .sort({ admissionDate: -1 });
+
+    res.json({ success: true, admissions });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+/* =========================================================
    DISCHARGE PATIENT
 ========================================================= */
 export const dischargePatient = async (req, res) => {

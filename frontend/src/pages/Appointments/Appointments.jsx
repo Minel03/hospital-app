@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
-import AppointmentHeader from './components/AppointmentHeader';
+import PageHeader from '../../components/PageHeader';
 import AppointmentSearchFilter from './components/AppointmentSearchFilter';
 import AppointmentTable from './components/AppointmentTable';
 import AppointmentFormModal from './components/AppointmentFormModal';
@@ -232,7 +232,13 @@ const Appointments = () => {
 
   return (
     <div className='p-8 space-y-8'>
-      <AppointmentHeader onAddAppointment={handleAddAppointment} stats={stats} />
+      <PageHeader
+        title='Appointments'
+        subtitle='Schedule and manage patient visits'
+        buttonLabel='New Appointment'
+        onButtonClick={handleAddAppointment}
+        stats={stats}
+      />
 
       <AppointmentSearchFilter
         searchQuery={searchQuery}

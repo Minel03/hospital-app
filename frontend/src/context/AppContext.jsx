@@ -1,7 +1,7 @@
-// src/context/AppContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import jwtDecode from 'jwt-decode';
 
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -74,6 +74,24 @@ export const AppProvider = ({ children }) => {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [globalSettings, setGlobalSettings] = useState(null);
+  const [userData, setUserData] = useState({ name: '', email: '', role: '' });
+
+  const refreshUserData = () => {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserData({
+          id: decoded.id,
+          name: decoded.name,
+          email: decoded.email,
+          role: decoded.role,
+        });
+      } catch (err) {
+        console.error('Invalid token', err);
+      }
+    }
+  };
 
   const fetchRooms = async () => {
     try {
@@ -145,6 +163,9 @@ export const AppProvider = ({ children }) => {
       const { data } = await axios.get('/api/settings/global');
       if (data.success) {
         setGlobalSettings(data.settings);
+        if (data.settings?.hospitalName) {
+           document.title = data.settings.hospitalName;
+        }
       }
     } catch (error) {
       console.error('Error fetching global settings:', error);
@@ -218,6 +239,7 @@ export const AppProvider = ({ children }) => {
     fetchAdmissions();
     fetchGlobalSettings();
     fetchUserSettings();
+    refreshUserData();
   }, []);
 
   const value = {
@@ -243,6 +265,8 @@ export const AppProvider = ({ children }) => {
     fetchUserSettings,
     getSelectStyles,
     Icons,
+    userData,
+    refreshUserData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

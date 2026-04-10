@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Icons, useAppContext } from '../context/AppContext';
 import { NavLink, useNavigate } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
 
 const Sidebar = () => {
   const {
@@ -23,9 +22,8 @@ const Sidebar = () => {
     FlaskConical,
   } = Icons;
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState({ name: '', email: '' });
   const navigate = useNavigate();
-  const { globalSettings } = useAppContext();
+  const { globalSettings, userData } = useAppContext();
 
   const menuItems = [
     { id: '', label: 'Dashboard', icon: Home },
@@ -42,18 +40,6 @@ const Sidebar = () => {
     { id: 'logs', label: 'Logs', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
-
-  useEffect(() => {
-    const token = sessionStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token); // works perfectly now
-        setUser({ name: decoded.name, email: decoded.email });
-      } catch (err) {
-        console.error('Invalid token', err);
-      }
-    }
-  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem('token'); // clear JWT
@@ -73,7 +59,9 @@ const Sidebar = () => {
               <h1 className='font-semibold text-gray-900 dark:text-white text-xl whitespace-nowrap'>
                 {globalSettings?.hospitalName || import.meta.env.VITE_APP_TITLE}
               </h1>
-              <p className='text-xs text-gray-500 dark:text-gray-400'>Hospital Management</p>
+              <p className='text-xs text-gray-500 dark:text-gray-400'>
+                Hospital Management
+              </p>
             </div>
           </div>
           <button
@@ -111,15 +99,15 @@ const Sidebar = () => {
           <div className='flex items-center gap-3 px-4 py-3'>
             <div className='w-10 h-10 shrink-0 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center'>
               <span className='font-semibold text-blue-600 dark:text-blue-400'>
-                {user.name ? user.name[0] : 'U'}
+                {userData.name ? userData.name[0] : 'U'}
               </span>
             </div>
             <div className='flex-1'>
               <p className='text-sm font-medium text-gray-900 dark:text-white'>
-                {user.name || 'User'}
+                {userData.name || 'User'}
               </p>
               <p className='text-xs text-gray-500 dark:text-gray-400'>
-                {user.email || 'user@example.com'}
+                {userData.email || 'user@example.com'}
               </p>
             </div>
             <button

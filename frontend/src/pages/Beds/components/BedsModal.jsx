@@ -1,6 +1,6 @@
-import React from 'react';
-import Select from 'react-select';
+import Modal from '../../../components/Modal';
 import { useAppContext } from '../../../context/AppContext';
+import Select from 'react-select';
 
 const BedsModal = ({
   showRoomModal,
@@ -18,8 +18,7 @@ const BedsModal = ({
   rooms,
   bedMode,
 }) => {
-  const { getSelectStyles, Icons } = useAppContext();
-  const { X } = Icons;
+  const { getSelectStyles } = useAppContext();
   const departmentOptions = departments.map((d) => ({
     value: d._id,
     label: d.name,
@@ -28,232 +27,199 @@ const BedsModal = ({
   return (
     <>
       {/* ---------------- ROOM MODAL ---------------- */}
-      {showRoomModal && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-          <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
-            {/* Header */}
-            <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
-              <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
-                {roomMode === 'add' ? 'Add Room' : 'Edit Room'}
-              </h2>
+      <Modal
+        isOpen={showRoomModal}
+        onClose={() => setShowRoomModal(false)}
+        title={roomMode === 'add' ? 'Add Room' : 'Edit Room'}>
+        <form
+          onSubmit={handleRoomSubmit}
+          className='space-y-4'>
+          {/* Room Number */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+              Room Number
+            </label>
+            <input
+              type='text'
+              value={roomForm.roomNumber}
+              required
+              onChange={(e) =>
+                setRoomForm({ ...roomForm, roomNumber: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+              placeholder='Enter room number'
+            />
+          </div>
 
-              <button
-                type='button'
-                onClick={() => setShowRoomModal(false)}
-                className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
-                <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
-              </button>
+          <div className='grid grid-cols-2 gap-4'>
+            {/* Floor */}
+            <div>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+                Floor
+              </label>
+              <input
+                type='number'
+                value={roomForm.floor}
+                required
+                onChange={(e) =>
+                  setRoomForm({ ...roomForm, floor: e.target.value })
+                }
+                className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+                placeholder='Floor'
+              />
             </div>
 
-            <form
-              onSubmit={handleRoomSubmit}
-              className='p-6 space-y-4'>
-              {/* Room Number */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Room Number
-                </label>
-                <input
-                  type='text'
-                  value={roomForm.roomNumber}
-                  required
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, roomNumber: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  placeholder='Enter room number'
-                />
-              </div>
-
-              {/* Floor */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Floor
-                </label>
-                <input
-                  type='number'
-                  value={roomForm.floor}
-                  required
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, floor: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  placeholder='Floor number'
-                />
-              </div>
-
-              {/* Room Type */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Room Type
-                </label>
-                <select
-                  value={roomForm.type}
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, type: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                  <option>General</option>
-                  <option>ICU</option>
-                  <option>Private</option>
-                  <option>Semi-Private</option>
-                  <option>Emergency</option>
-                </select>
-              </div>
-
-              {/* Department */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Department
-                </label>
-
-                <Select styles={getSelectStyles()}
-                  options={departmentOptions}
-                  value={
-                    departmentOptions.find(
-                      (o) => o.value === roomForm.department,
-                    ) || null
-                  }
-                  onChange={(selected) =>
-                    setRoomForm({
-                      ...roomForm,
-                      department: selected?.value || '',
-                    })
-                  }
-                  placeholder='Select Department'
-                  isClearable
-                  className='mt-1'
-                />
-              </div>
-
-              {/* Capacity */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Capacity
-                </label>
-
-                <input
-                  type='number'
-                  value={roomForm.capacity}
-                  required
-                  onChange={(e) =>
-                    setRoomForm({ ...roomForm, capacity: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  placeholder='Number of beds'
-                />
-              </div>
-
-              <div className='flex justify-end pt-3'>
-                <button
-                  type='submit'
-                  className='px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
-                  {roomMode === 'add' ? 'Add Room' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+            {/* Capacity */}
+            <div>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+                Capacity
+              </label>
+              <input
+                type='number'
+                value={roomForm.capacity}
+                required
+                onChange={(e) =>
+                  setRoomForm({ ...roomForm, capacity: e.target.value })
+                }
+                className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+                placeholder='Beds'
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          {/* Room Type */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+              Room Type
+            </label>
+            <select
+              value={roomForm.type}
+              onChange={(e) =>
+                setRoomForm({ ...roomForm, type: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'>
+              <option>General</option>
+              <option>ICU</option>
+              <option>Private</option>
+              <option>Semi-Private</option>
+              <option>Emergency</option>
+            </select>
+          </div>
+
+          {/* Department */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+              Department
+            </label>
+            <Select
+              styles={getSelectStyles()}
+              options={departmentOptions}
+              value={
+                departmentOptions.find(
+                  (o) => o.value === roomForm.department,
+                ) || null
+              }
+              onChange={(selected) =>
+                setRoomForm({
+                  ...roomForm,
+                  department: selected?.value || '',
+                })
+              }
+              placeholder='Select Department'
+              isClearable
+            />
+          </div>
+
+          <div className='flex justify-end pt-4'>
+            <button
+              type='submit'
+              className='bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none font-bold'>
+              {roomMode === 'add' ? 'Add Room' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* ---------------- BED MODAL ---------------- */}
-      {showBedModal && (
-        <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
-          <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
-            {/* Header */}
-            <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
-              <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
-                {bedMode === 'add' ? 'Add Bed(s)' : 'Edit Bed'}
-              </h2>
-
-              <button
-                type='button'
-                onClick={() => setShowBedModal(false)}
-                className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
-                <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
-              </button>
-            </div>
-
-            <form
-              onSubmit={handleBedSubmit}
-              className='p-6 space-y-4'>
-              {/* Room */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Room
-                </label>
-
-                <select
-                  value={bedForm.roomId}
-                  required
-                  onChange={(e) =>
-                    setBedForm({ ...bedForm, roomId: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                  <option value=''>Select Room</option>
-                  {rooms.map((r) => (
-                    <option
-                      key={r._id}
-                      value={r._id}>
-                      {r.roomNumber} - {r.type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Number of Beds (only when adding) */}
-              {bedMode === 'add' && (
-                <div>
-                  <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                    Number of Beds
-                  </label>
-
-                  <input
-                    type='number'
-                    min={1}
-                    value={bedForm.numberOfBeds}
-                    required
-                    onChange={(e) =>
-                      setBedForm({
-                        ...bedForm,
-                        numberOfBeds: e.target.value,
-                      })
-                    }
-                    className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                    placeholder='Enter number of beds'
-                  />
-                </div>
-              )}
-
-              {/* Status */}
-              <div>
-                <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                  Status
-                </label>
-
-                <select
-                  value={bedForm.status}
-                  onChange={(e) =>
-                    setBedForm({ ...bedForm, status: e.target.value })
-                  }
-                  className='mt-1 w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                  <option>Available</option>
-                  <option>Occupied</option>
-                  <option>Under Maintenance</option>
-                </select>
-              </div>
-
-              <div className='flex justify-end pt-3'>
-                <button
-                  type='submit'
-                  className='px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
-                  {bedMode === 'add' ? 'Add Bed(s)' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showBedModal}
+        onClose={() => setShowBedModal(false)}
+        title={bedMode === 'add' ? 'Add Bed(s)' : 'Edit Bed'}>
+        <form
+          onSubmit={handleBedSubmit}
+          className='p-6 space-y-4'>
+          {/* Room */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+              Room
+            </label>
+            <select
+              value={bedForm.roomId}
+              required
+              onChange={(e) =>
+                setBedForm({ ...bedForm, roomId: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'>
+              <option value=''>Select Room</option>
+              {rooms.map((r) => (
+                <option
+                  key={r._id}
+                  value={r._id}>
+                  {r.roomNumber} - {r.type}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-      )}
+
+          {/* Number of Beds (only when adding) */}
+          {bedMode === 'add' && (
+            <div>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+                Number of Beds
+              </label>
+              <input
+                type='number'
+                min={1}
+                value={bedForm.numberOfBeds}
+                required
+                onChange={(e) =>
+                  setBedForm({
+                    ...bedForm,
+                    numberOfBeds: e.target.value,
+                  })
+                }
+                className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'
+                placeholder='Enter number of beds'
+              />
+            </div>
+          )}
+
+          {/* Status */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block'>
+              Status
+            </label>
+            <select
+              value={bedForm.status}
+              onChange={(e) =>
+                setBedForm({ ...bedForm, status: e.target.value })
+              }
+              className='w-full px-4 py-2 border border-gray-100 dark:border-gray-700 rounded-2xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all font-medium'>
+              <option>Available</option>
+              <option>Occupied</option>
+              <option>Under Maintenance</option>
+            </select>
+          </div>
+
+          <div className='flex justify-end pt-4'>
+            <button
+              type='submit'
+              className='bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none font-bold'>
+              {bedMode === 'add' ? 'Add Bed(s)' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 };
