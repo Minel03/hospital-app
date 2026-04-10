@@ -19,7 +19,9 @@ const SERVICE_TYPES = [
 
 const Billing = () => {
   const { ReceiptText, FileEdit, CircleDollarSign, Clock, TrendingUp } = Icons;
-  const { axios, globalSettings } = useAppContext();
+  const { axios, globalSettings, userData } = useAppContext();
+  const canBilling = ['admin', 'accountant', 'receptionist'].includes(userData?.role);
+  const canViewClinical = ['admin', 'doctor', 'nurse', 'receptionist', 'accountant', 'medtech'].includes(userData?.role);
 
   const [invoices, setInvoices] = useState([]);
   const [patients, setPatients] = useState([]);
@@ -46,20 +48,37 @@ const Billing = () => {
   });
 
   const fetchAll = async () => {
-    const [inv, pat, doc, adm, appt, med] = await Promise.all([
-      axios.get('/api/invoice/list'),
-      axios.get('/api/patient/all'),
-      axios.get('/api/doctor/list'),
-      axios.get('/api/admission/list'),
-      axios.get('/api/appointment/list'),
-      axios.get('/api/pharmacy/inventory'),
-    ]);
-    if (inv.data.success) setInvoices(inv.data.invoices);
-    if (pat.data.success) setPatients(pat.data.patients);
-    if (doc.data.success) setDoctors(doc.data.doctors);
-    if (adm.data.success) setAdmissions(adm.data.admissions);
-    if (appt.data.success) setAppointments(appt.data.appointments);
-    if (med.data.success) setMedicines(med.data.medicines || []);
+    try {
+      // Priority 1: Invoices, Patients, Doctors, Medicines (Crucial for Billing)
+      const [inv, pat, doc, med] = await Promise.all([
+        axios.get('/api/invoice/list'),
+        axios.get('/api/patient/all'),
+        axios.get('/api/doctor/list'),
+        axios.get('/api/pharmacy/inventory'),
+      ]);
+      
+      if (inv.data.success) setInvoices(inv.data.invoices);
+      if (pat.data.success) setPatients(pat.data.patients);
+      if (doc.data.success) setDoctors(doc.data.doctors);
+      if (med.data.success) setMedicines(med.data.medicines || []);
+
+      // Priority 2: Admissions and Appointments (Optional clinical context)
+      if (canViewClinical) {
+        try {
+          const [adm, appt] = await Promise.all([
+            axios.get('/api/admission/list'),
+            axios.get('/api/appointment/list'),
+          ]);
+          if (adm.data.success) setAdmissions(adm.data.admissions);
+          if (appt.data.success) setAppointments(appt.data.appointments);
+        } catch (err) {
+          console.warn('Optional clinical data could not be loaded for this role.');
+        }
+      }
+    } catch (err) {
+      console.error('Core billing data load failed:', err);
+      toast.error('Failed to load core billing data.');
+    }
   };
 
   useEffect(() => {
@@ -659,8 +678,8 @@ const Billing = () => {
       <PageHeader
         title='Financial Billing'
         subtitle='Manage patient invoices, payments, and revenue records'
-        buttonLabel='New Invoice'
-        onButtonClick={openAdd}
+        buttonLabel={canBilling ? 'New Invoice' : null}
+        onButtonClick={canBilling ? openAdd : null}
         stats={stats}
       />
 
@@ -678,6 +697,7 @@ const Billing = () => {
         openEdit={openEdit}
         openView={openView}
         handlePrint={handlePrint}
+        userData={userData}
       />
 
       <BillingModal

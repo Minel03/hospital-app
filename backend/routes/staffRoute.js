@@ -6,11 +6,14 @@ import {
   deleteStaff,
 } from '../controllers/staffController.js';
 
+import { authUser, restrictTo } from '../middleware/authMiddleware.js';
+
 const staffRouter = express.Router();
 
-staffRouter.post('/add', addStaff);
-staffRouter.put('/update', updateStaff);
-staffRouter.get('/list', getAllStaff);
-staffRouter.delete('/delete', deleteStaff);
+staffRouter.use(authUser);
+staffRouter.get('/list', restrictTo('admin', 'doctor', 'nurse', 'receptionist', 'pharmacist', 'medtech', 'accountant'), getAllStaff);
+staffRouter.post('/add', restrictTo('admin'), addStaff);
+staffRouter.put('/update', restrictTo('admin'), updateStaff);
+staffRouter.delete('/delete', restrictTo('admin'), deleteStaff);
 
 export default staffRouter;

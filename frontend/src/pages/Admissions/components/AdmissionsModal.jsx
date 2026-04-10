@@ -14,6 +14,7 @@ const AdmissionsModal = ({
   doctors,
   departments,
   beds,
+  admissions = [],
 }) => {
   const { getSelectStyles, setPatients, patients } = useAppContext();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -22,6 +23,15 @@ const AdmissionsModal = ({
     setPatients((prev) => (prev ? [...prev, newPatient] : [newPatient]));
     setFormData((prev) => ({ ...prev, patient: newPatient._id }));
   };
+  
+  // Combine all active patient IDs (status 'Admitted')
+  const admittedPatientIds = admissions
+    .filter(a => a.status === 'Admitted')
+    .map(a => a.patient?._id);
+
+  const filteredPatients = patients?.filter(p => 
+    !admittedPatientIds.includes(p._id) || (mode === 'edit' && p._id === formData.patient)
+  );
 
   return (
     <>
@@ -45,7 +55,7 @@ const AdmissionsModal = ({
           </div>
           <Select
             styles={getSelectStyles()}
-            options={patients?.map((p) => ({
+            options={filteredPatients?.map((p) => ({
               value: p._id,
               label: p.name,
             }))}

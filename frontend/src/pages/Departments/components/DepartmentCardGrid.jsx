@@ -1,8 +1,9 @@
 import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
-const DepartmentCardGrid = ({ departments, onEdit, onDelete }) => {
+const DepartmentCardGrid = ({ departments, onEdit, onDelete, userData }) => {
   const { Stethoscope, Phone, Edit, Trash } = Icons;
+  const isAdmin = userData?.role === 'admin';
 
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
@@ -61,18 +62,22 @@ const DepartmentCardGrid = ({ departments, onEdit, onDelete }) => {
             </div>
           </div>
 
-          <div className='flex gap-3 mt-4'>
-            <button
-              onClick={() => onEdit(dept)}
-              className='flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors'>
-              <Edit className='w-4 h-4 inline mr-1' />
-            </button>
-            <button
-              onClick={() => onDelete(dept._id)}
-              className='flex-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors'>
-              <Trash className='w-4 h-4 inline mr-1' />
-            </button>
-          </div>
+          {isAdmin && (
+            <div className='flex gap-3 mt-4'>
+              <button
+                onClick={() => onEdit(dept)}
+                className='flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors'
+                title='Edit Department'>
+                <Edit className='w-4 h-4 inline mr-1' />
+              </button>
+              <button
+                onClick={() => onDelete(dept._id)}
+                className='flex-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors'
+                title='Delete Department'>
+                <Trash className='w-4 h-4 inline mr-1' />
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>

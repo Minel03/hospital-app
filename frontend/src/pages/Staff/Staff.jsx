@@ -8,7 +8,8 @@ import StaffTable from './components/StaffTable';
 import StaffFormModal from './components/StaffFormModal';
 
 const Staff = () => {
-  const { axios } = useAppContext();
+  const { axios, userData } = useAppContext();
+  const isAdmin = userData?.role === 'admin';
 
   const [staff, setStaff] = useState([]);
   const [staffUsers, setStaffUsers] = useState([]);
@@ -208,12 +209,12 @@ const Staff = () => {
       <PageHeader
         title='Hospital Staff'
         subtitle='Manage hospital personnel and roles'
-        buttonLabel='Add Staff'
-        onButtonClick={() => {
+        buttonLabel={isAdmin ? 'Add Staff' : null}
+        onButtonClick={isAdmin ? () => {
           resetForm();
           setEditingStaff(null);
           setShowAddModal(true);
-        }}
+        } : null}
         stats={stats}
       />
 
@@ -228,9 +229,10 @@ const Staff = () => {
       />
 
       <StaffTable
-        filteredStaff={filteredStaff}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        staff={filteredStaff}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        userData={userData}
       />
 
       <StaffFormModal

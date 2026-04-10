@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
-const DoctorTable = ({ doctors, onEdit, onDelete }) => {
+const DoctorTable = ({ doctors, onEdit, onDelete, userData }) => {
   const { Star, Phone, Mail, Edit, Trash, Eye } = Icons;
 
   return (
@@ -68,16 +68,20 @@ const DoctorTable = ({ doctors, onEdit, onDelete }) => {
           </div>
 
           <div className='flex gap-2 mt-4'>
-            <button
-              onClick={() => onEdit(doctor)}
-              className='flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors'>
-              <Edit className='w-4 h-4 inline mr-1' />
-            </button>
-            <button
-              onClick={() => onDelete(doctor._id)}
-              className='flex-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors'>
-              <Trash className='w-4 h-4 inline mr-1' />
-            </button>
+            {(userData?.role === 'admin' || userData?.id === doctor.userId?.toString()) && (
+              <button
+                onClick={() => onEdit(doctor)}
+                className='flex-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 py-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors'>
+                <Edit className='w-4 h-4 inline mr-1' />
+              </button>
+            )}
+            {userData?.role === 'admin' && (
+              <button
+                onClick={() => onDelete(doctor._id)}
+                className='flex-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 py-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors'>
+                <Trash className='w-4 h-4 inline mr-1' />
+              </button>
+            )}
           </div>
         </div>
       ))}

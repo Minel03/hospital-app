@@ -8,7 +8,8 @@ import DepartmentCardGrid from './components/DepartmentCardGrid';
 import DepartmentFormModal from './components/DepartmentFormModal';
 
 const Departments = () => {
-  const { axios, fetchDoctors, doctors } = useAppContext();
+  const { axios, fetchDoctors, doctors, userData } = useAppContext();
+  const isAdmin = userData?.role === 'admin';
   const { Building2, Stethoscope, Users, HeartPulse } = Icons;
 
   const [departments, setDepartments] = useState([]);
@@ -151,8 +152,8 @@ const Departments = () => {
       <PageHeader
         title='Departments'
         subtitle='Manage hospital departments and their resources'
-        buttonLabel='Add Department'
-        onButtonClick={handleAddDepartment}
+        buttonLabel={isAdmin ? 'Add Department' : null}
+        onButtonClick={isAdmin ? handleAddDepartment : null}
         stats={statsDepartment}
       />
 
@@ -172,6 +173,7 @@ const Departments = () => {
         onEdit={handleEditDepartment}
         onDelete={handleDeleteDepartment}
         doctors={doctors}
+        userData={userData}
       />
 
       <DepartmentFormModal

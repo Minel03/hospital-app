@@ -81,16 +81,19 @@ export const AppProvider = ({ children }) => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setUserData({
+        const data = {
           id: decoded.id,
           name: decoded.name,
           email: decoded.email,
           role: decoded.role,
-        });
+        };
+        setUserData(data);
+        return data; // Return for immediate use in fetchAllData
       } catch (err) {
         console.error('Invalid token', err);
       }
     }
+    return null;
   };
 
   const fetchRooms = async () => {
@@ -230,16 +233,55 @@ export const AppProvider = ({ children }) => {
     };
   };
 
-  useEffect(() => {
-    fetchRooms();
-    fetchPatients();
+  const fetchAllData = () => {
+    const currentData = refreshUserData();
+    if (!currentData) return;
+
+    const { role } = currentData;
+
+    // Admin and Clinical coordination
+    if (['admin', 'doctor', 'nurse', 'receptionist'].includes(role)) {
+      fetchStaff();
+    }
+
+    if (role === 'admin') {
+      fetchGlobalSettings();
+    }
+
+    // Clinical and Administrative
+    if (['admin', 'doctor', 'nurse', 'receptionist'].includes(role)) {
+      fetchRooms();
+      fetchAdmissions();
+    }
+
+    // Role-specific patients access
+    if (['admin', 'doctor', 'nurse', 'receptionist', 'medtech'].includes(role)) {
+      fetchPatients();
+    }
+
+    // Always fetch
     fetchDoctors();
     fetchDepartments();
-    fetchStaff();
-    fetchAdmissions();
-    fetchGlobalSettings();
     fetchUserSettings();
-    refreshUserData();
+  };
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token');
+    
+    // Always fetch public settings (hospital name) for login page
+    const fetchPublicName = async () => {
+      try {
+        const { data } = await axios.get('/api/settings/public');
+        if (data.success && data.hospitalName && !globalSettings) {
+          setGlobalSettings({ hospitalName: data.hospitalName });
+        }
+      } catch (err) {}
+    };
+    fetchPublicName();
+
+    if (token) {
+      fetchAllData();
+    }
   }, []);
 
   const value = {
@@ -267,6 +309,7 @@ export const AppProvider = ({ children }) => {
     Icons,
     userData,
     refreshUserData,
+    fetchAllData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

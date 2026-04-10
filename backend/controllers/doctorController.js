@@ -15,6 +15,7 @@ export const addDoctor = async (req, res) => {
       rating,
       status,
       department,
+      userId,
     } = req.body;
 
     const doctor = new doctorModel({
@@ -29,6 +30,7 @@ export const addDoctor = async (req, res) => {
       rating,
       status,
       department,
+      userId,
     });
     await doctor.save();
 
@@ -52,6 +54,17 @@ export const updateDoctor = async (req, res) => {
 
     if (!doctorId)
       return res.json({ success: false, message: 'Doctor ID is required' });
+
+    // Security Check: If the user is a doctor, they can only edit their own profile
+    if (req.user.role === 'doctor') {
+      const targetDoctor = await doctorModel.findById(doctorId);
+      if (!targetDoctor || targetDoctor.userId?.toString() !== req.user.id) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'You are only allowed to edit your own profile' 
+        });
+      }
+    }
 
     // Get old doctor to check if department changed
     const oldDoctor = await doctorModel.findById(doctorId);

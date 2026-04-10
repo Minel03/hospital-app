@@ -7,12 +7,17 @@ import {
   updateDepartment,
 } from '../controllers/departmentController.js';
 
+import { authUser, restrictTo } from '../middleware/authMiddleware.js';
+
 const departmentRouter = express.Router();
 
-departmentRouter.post('/add', createDepartment);
-departmentRouter.post('/update', updateDepartment);
+departmentRouter.use(authUser);
+departmentRouter.use(restrictTo('admin', 'doctor', 'nurse', 'receptionist', 'pharmacist', 'medtech', 'accountant'));
+
+departmentRouter.post('/add', restrictTo('admin'), createDepartment);
+departmentRouter.post('/update', restrictTo('admin'), updateDepartment);
 departmentRouter.get('/list', getAllDepartments);
 departmentRouter.post('/get', getDepartmentById);
-departmentRouter.delete('/delete', deleteDepartment);
+departmentRouter.delete('/delete', restrictTo('admin'), deleteDepartment);
 
 export default departmentRouter;

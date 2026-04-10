@@ -8,7 +8,8 @@ import BedsModal from './components/BedsModal';
 
 const Beds = () => {
   const { Search, Filter, Plus, BedSingle, BedDouble, DoorOpen } = Icons;
-  const { axios } = useAppContext();
+  const { axios, userData } = useAppContext();
+  const isAdmin = userData?.role === 'admin';
 
   // --- State ---
   const [rooms, setRooms] = useState([]);
@@ -249,19 +250,19 @@ const Beds = () => {
         title='Rooms & Beds'
         subtitle='Manage hospital rooms and bed allocation'
         actions={[
-          {
+          isAdmin && {
             label: 'Add Room',
             onClick: openAddRoomModal,
             icon: Plus,
             color: 'bg-blue-600 hover:bg-blue-700 shadow-blue-200'
           },
-          {
+          isAdmin && {
             label: 'Add Bed',
             onClick: openAddBedModal,
             icon: Plus,
             color: 'bg-green-600 hover:bg-green-700 shadow-green-200'
           }
-        ]}
+        ].filter(Boolean)}
         stats={statsConfig}
       />
 
@@ -274,6 +275,7 @@ const Beds = () => {
         filteredRooms={filteredRooms}
         openEditRoomModal={openEditRoomModal}
         openEditBedModal={openEditBedModal}
+        userData={userData}
       />
 
       <BedsModal

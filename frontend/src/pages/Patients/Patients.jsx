@@ -9,7 +9,7 @@ import PatientFormModal from '../Patients/components/PatientFormModal';
 import PatientViewModal from '../Patients/components/PatientViewModal';
 
 const Patients = () => {
-  const { axios, patients, fetchPatients } = useAppContext();
+  const { axios, patients, fetchPatients, userData } = useAppContext();
 
   const [showModal, setShowModal] = useState(false);
   const [mode, setMode] = useState('add');
@@ -218,8 +218,8 @@ const Patients = () => {
       <PageHeader
         title='Patients'
         subtitle='Manage and view all patient records'
-        buttonLabel='Add Patient'
-        onButtonClick={handleAddPatient}
+        buttonLabel={['admin', 'doctor', 'nurse', 'receptionist', 'medtech'].includes(userData.role) ? 'Add Patient' : null}
+        onButtonClick={['admin', 'doctor', 'nurse', 'receptionist', 'medtech'].includes(userData.role) ? handleAddPatient : null}
         stats={stats}
       />
 
@@ -239,6 +239,7 @@ const Patients = () => {
         onView={handleViewPatient}
         onEdit={handleEditPatient}
         onDelete={deletePatient}
+        userData={userData}
       />
 
       <PatientFormModal

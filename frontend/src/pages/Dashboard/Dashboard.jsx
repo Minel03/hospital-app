@@ -19,6 +19,14 @@ const Dashboard = () => {
     try {
       setLoading(true);
 
+      // Define which roles can fetch what
+      const canSeePatients = ['admin', 'doctor', 'nurse', 'receptionist', 'medtech'].includes(userData.role);
+      const canSeeDepts = ['admin'].includes(userData.role);
+      const canSeeAppointments = ['admin', 'doctor', 'nurse', 'receptionist', 'accountant'].includes(userData.role);
+      const canSeeAdmissions = ['admin', 'doctor', 'nurse', 'receptionist', 'accountant'].includes(userData.role);
+      const canSeeAnalytics = ['admin', 'doctor', 'accountant', 'receptionist', 'pharmacist', 'nurse', 'medtech'].includes(userData.role);
+      const isMedtech = userData.role === 'medtech';
+
       const [
         patientsRes,
         departmentsRes,
@@ -27,12 +35,12 @@ const Dashboard = () => {
         analyticsRes,
         labOrdersRes,
       ] = await Promise.all([
-        axios.get('/api/patient/all'),
-        axios.get('/api/department/list'),
-        axios.get('/api/appointment/list'),
-        axios.get('/api/admission/list'),
-        axios.get('/api/analytics/dashboard-summary'),
-        userData.role === 'medtech' ? axios.get('/api/lab/orders/pending') : Promise.resolve({ data: { orders: [] } }),
+        canSeePatients ? axios.get('/api/patient/all') : Promise.resolve({ data: { patients: [] } }),
+        canSeeDepts ? axios.get('/api/department/list') : Promise.resolve({ data: { departments: [] } }),
+        canSeeAppointments ? axios.get('/api/appointment/list') : Promise.resolve({ data: { appointments: [] } }),
+        canSeeAdmissions ? axios.get('/api/admission/list') : Promise.resolve({ data: { admissions: [] } }),
+        canSeeAnalytics ? axios.get('/api/analytics/dashboard-summary') : Promise.resolve({ data: { data: null } }),
+        isMedtech ? axios.get('/api/lab/orders/pending') : Promise.resolve({ data: { orders: [] } }),
       ]);
 
       setPatients(patientsRes.data.patients || []);
@@ -49,8 +57,10 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (userData.role) {
+      fetchData();
+    }
+  }, [userData.role]);
 
   // Filter appointments to today only
   const todaysAppointments = appointments.filter((a) => {

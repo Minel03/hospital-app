@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
-const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
+const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal, userData }) => {
   const { BedSingle, DoorOpen } = Icons;
   return (
     <div>
@@ -35,12 +35,14 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
                   <div className='text-sm text-gray-500 dark:text-gray-400'>
                     {occupied} / {roomBeds.length} Occupied
                   </div>
-                  {/* ✅ Edit Room Button */}
-                  <button
-                    onClick={() => openEditRoomModal(firstBed.room)}
-                    className='flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'>
-                    Edit Room
-                  </button>
+                  {/* ✅ Edit Room Button - Admin Only */}
+                  {userData?.role === 'admin' && (
+                    <button
+                      onClick={() => openEditRoomModal(firstBed.room)}
+                      className='flex items-center gap-1 text-sm px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors'>
+                      Edit Room
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -56,8 +58,8 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal }) => {
                   return (
                     <div
                       key={bed._id}
-                      className={`p-4 rounded-lg border ${statusColor} hover:shadow-md transition cursor-pointer`}
-                      onClick={() => openEditBedModal(bed)}>
+                      className={`p-4 rounded-lg border ${statusColor} hover:shadow-md transition ${userData?.role === 'admin' ? 'cursor-pointer' : 'cursor-default'}`}
+                      onClick={() => userData?.role === 'admin' && openEditBedModal(bed)}>
                       <div className='flex items-center justify-between mb-2'>
                         <BedSingle className='w-5 h-5' />
                         <span className='text-xs font-medium'>

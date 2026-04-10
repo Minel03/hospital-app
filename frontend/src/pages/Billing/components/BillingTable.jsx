@@ -8,9 +8,13 @@ const BillingTable = ({
   openEdit,
   handleMarkPaid,
   openView,
-  handlePrint, // Print handler
+  handlePrint,
+  userData,
 }) => {
   const { Edit, Trash, Check, Download, ReceiptText, Printer } = Icons;
+
+  const canManage = ['admin', 'accountant'].includes(userData?.role);
+  const isAdmin = userData?.role === 'admin';
 
   return (
     <div>
@@ -112,11 +116,12 @@ const BillingTable = ({
 
                 {/* Actions */}
                 <div className='flex gap-2 mt-4 md:mt-0 md:w-32 flex-wrap pt-3 md:pt-0 border-t border-gray-100 dark:border-gray-700 md:border-0 justify-start md:justify-center'>
-                  {/* Edit - only show if not Paid */}
-                  {inv.status !== 'Paid' && (
+                  {/* Edit - only show if not Paid and can manage */}
+                  {inv.status !== 'Paid' && canManage && (
                     <button
                       onClick={() => openEdit(inv)}
-                      className='p-2 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 flex justify-center transition-colors'>
+                      className='p-2 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 flex justify-center transition-colors'
+                      title='Edit Invoice'>
                       <Edit className='w-4 h-4 text-blue-700 dark:text-blue-400' />
                     </button>
                   )}
@@ -128,11 +133,12 @@ const BillingTable = ({
                     <ReceiptText className='w-4 h-4 text-gray-700 dark:text-gray-300' />
                   </button>
 
-                  {/* Mark Paid - only if not Paid */}
-                  {inv.status !== 'Paid' && (
+                  {/* Mark Paid - only if not Paid and can manage */}
+                  {inv.status !== 'Paid' && canManage && (
                     <button
                       onClick={() => handleMarkPaid(inv._id)}
-                      className='p-2 bg-green-50 dark:bg-green-900/30 rounded hover:bg-green-100 dark:hover:bg-green-900/50 flex justify-center transition-colors'>
+                      className='p-2 bg-green-50 dark:bg-green-900/30 rounded hover:bg-green-100 dark:hover:bg-green-900/50 flex justify-center transition-colors'
+                      title='Mark Paid'>
                       <Check className='w-4 h-4 text-green-700 dark:text-green-400' />
                     </button>
                   )}
@@ -151,11 +157,12 @@ const BillingTable = ({
                     <Printer className='w-4 h-4 text-gray-700 dark:text-gray-300' />
                   </button>
 
-                  {/* Delete - only show if not Paid */}
-                  {inv.status !== 'Paid' && (
+                  {/* Delete - only show if not Paid and is admin */}
+                  {inv.status !== 'Paid' && isAdmin && (
                     <button
                       onClick={() => handleDelete(inv._id)}
-                      className='p-2 bg-red-50 dark:bg-red-900/30 rounded hover:bg-red-100 dark:hover:bg-red-900/50 flex justify-center transition-colors'>
+                      className='p-2 bg-red-50 dark:bg-red-900/30 rounded hover:bg-red-100 dark:hover:bg-red-900/50 flex justify-center transition-colors'
+                      title='Delete Invoice'>
                       <Trash className='w-4 h-4 text-red-600 dark:text-red-400' />
                     </button>
                   )}

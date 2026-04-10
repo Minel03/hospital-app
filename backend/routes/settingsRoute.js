@@ -7,7 +7,7 @@ import {
   saveUserSettings,
   saveUserNotifications,
 } from '../controllers/settingsController.js';
-import authMiddleware from '../middleware/authMiddleware.js';
+import { authUser, restrictTo } from '../middleware/authMiddleware.js';
 
 const settingsRouter = express.Router();
 
@@ -15,15 +15,15 @@ const settingsRouter = express.Router();
 settingsRouter.get('/public', fetchPublicSettings);
 
 // GLOBAL SETTINGS (admin only)
-settingsRouter.get('/global', authMiddleware, fetchGlobalSettings);
-settingsRouter.put('/global', authMiddleware, saveGlobalSettings);
+settingsRouter.get('/global', authUser, restrictTo('admin'), fetchGlobalSettings);
+settingsRouter.put('/global', authUser, restrictTo('admin'), saveGlobalSettings);
 
 // USER SETTINGS (per logged-in user)
-settingsRouter.get('/user', authMiddleware, fetchUserSettings);
-settingsRouter.put('/user', authMiddleware, saveUserSettings);
+settingsRouter.get('/user', authUser, fetchUserSettings);
+settingsRouter.put('/user', authUser, saveUserSettings);
 settingsRouter.put(
   '/user/notifications',
-  authMiddleware,
+  authUser,
   saveUserNotifications,
 );
 

@@ -8,13 +8,17 @@ import {
   getAvailableBeds,
 } from '../controllers/bedController.js';
 
+import { authUser, restrictTo } from '../middleware/authMiddleware.js';
+
 const bedRouter = express.Router();
 
-bedRouter.post('/add', addBed);
-bedRouter.get('/list', getAllBeds);
-bedRouter.get('/available', getAvailableBeds);
-bedRouter.post('/available-by-department', getAvailableBedsByDepartment);
-bedRouter.put('/update', updateBed);
-bedRouter.post('/delete', deleteBed);
+bedRouter.use(authUser);
+
+bedRouter.post('/add', restrictTo('admin'), addBed);
+bedRouter.get('/list', restrictTo('admin', 'doctor', 'nurse', 'receptionist'), getAllBeds);
+bedRouter.get('/available', restrictTo('admin', 'doctor', 'nurse', 'receptionist'), getAvailableBeds);
+bedRouter.post('/available-by-department', restrictTo('admin', 'doctor', 'nurse', 'receptionist'), getAvailableBedsByDepartment);
+bedRouter.put('/update', restrictTo('admin'), updateBed);
+bedRouter.post('/delete', restrictTo('admin'), deleteBed);
 
 export default bedRouter;

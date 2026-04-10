@@ -26,19 +26,19 @@ const Sidebar = () => {
   const { globalSettings, userData } = useAppContext();
 
   const menuItems = [
-    { id: '', label: 'Dashboard', icon: Home },
-    { id: 'patients', label: 'Patients', icon: Users },
-    { id: 'appointments', label: 'Appointments', icon: Calendar },
-    { id: 'admissions', label: 'Admissions', icon: ClipboardList },
-    { id: 'doctors', label: 'Doctors', icon: Stethoscope },
-    { id: 'staffs', label: 'Staff', icon: UserCog },
-    { id: 'pharmacy', label: 'Pharmacy', icon: Package },
-    { id: 'laboratory', label: 'Laboratory', icon: FlaskConical },
-    { id: 'departments', label: 'Departments', icon: Activity },
-    { id: 'beds', label: 'Rooms & Beds', icon: Bed },
-    { id: 'billing', label: 'Billing', icon: DollarSign },
-    { id: 'logs', label: 'Logs', icon: FileText },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: '', label: 'Dashboard', icon: Home, allowedRoles: ['admin', 'doctor', 'nurse', 'pharmacist', 'medtech', 'receptionist', 'accountant'] },
+    { id: 'patients', label: 'Patients', icon: Users, allowedRoles: ['admin', 'doctor', 'nurse', 'receptionist', 'medtech'] },
+    { id: 'appointments', label: 'Appointments', icon: Calendar, allowedRoles: ['admin', 'doctor', 'nurse', 'receptionist'] },
+    { id: 'admissions', label: 'Admissions', icon: ClipboardList, allowedRoles: ['admin', 'doctor', 'nurse', 'receptionist'] },
+    { id: 'doctors', label: 'Doctors', icon: Stethoscope, allowedRoles: ['admin', 'doctor'] },
+    { id: 'staffs', label: 'Staff', icon: UserCog, allowedRoles: ['admin'] },
+    { id: 'pharmacy', label: 'Pharmacy', icon: Package, allowedRoles: ['admin', 'doctor', 'nurse', 'pharmacist'] },
+    { id: 'laboratory', label: 'Laboratory', icon: FlaskConical, allowedRoles: ['admin', 'doctor', 'medtech'] },
+    { id: 'departments', label: 'Departments', icon: Activity, allowedRoles: ['admin'] },
+    { id: 'beds', label: 'Rooms & Beds', icon: Bed, allowedRoles: ['admin', 'doctor', 'nurse', 'receptionist'] },
+    { id: 'billing', label: 'Billing', icon: DollarSign, allowedRoles: ['admin', 'receptionist', 'accountant'] },
+    { id: 'logs', label: 'Logs', icon: FileText, allowedRoles: ['admin'] },
+    { id: 'settings', label: 'Settings', icon: Settings, allowedRoles: ['admin', 'doctor', 'nurse', 'pharmacist', 'medtech', 'receptionist', 'accountant'] },
   ];
 
   const handleLogout = () => {
@@ -74,15 +74,7 @@ const Sidebar = () => {
         {/* Navigation */}
         <nav className='flex-1 p-4 overflow-y-auto'>
           {menuItems
-            .filter((item) => {
-              if (userData.role === 'medtech') {
-                return !['admissions', 'staffs', 'departments', 'beds', 'billing', 'logs', 'settings'].includes(item.id);
-              }
-              if (userData.role === 'doctor') {
-                return !['staffs', 'billing', 'logs', 'settings'].includes(item.id);
-              }
-              return true;
-            })
+            .filter((item) => !item.allowedRoles || item.allowedRoles.includes(userData.role))
             .map((item) => {
               const Icon = item.icon;
               return (

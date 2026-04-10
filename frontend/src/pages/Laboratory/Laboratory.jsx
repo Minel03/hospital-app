@@ -10,10 +10,14 @@ const {
   CheckCircle,
   Clock,
   Activity,
+  Plus,
 } = Icons;
 
 const Laboratory = () => {
-  const { axios, patients, doctors } = useAppContext();
+  const { axios, patients, doctors, userData } = useAppContext();
+  const isMedTech = ['admin', 'medtech'].includes(userData?.role);
+  const isDoctor = ['admin', 'doctor'].includes(userData?.role);
+  const isAdmin = userData?.role === 'admin';
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
   const [tests, setTests] = useState([]);
@@ -162,17 +166,17 @@ const Laboratory = () => {
         title='Laboratory & Diagnostics'
         subtitle='Manage test orders, diagnostic catalogs, and results entry'
         actions={[
-          {
+          isDoctor && {
             label: 'Create Order',
             onClick: () => setShowOrderModal(true),
             color: 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200',
-            icon: Activity,
+            icon: Plus,
           },
-          {
+          isAdmin && {
             label: 'Add New Test',
             onClick: () => setShowModal(true),
           },
-        ]}
+        ].filter(Boolean)}
         stats={stats}
       />
 
@@ -299,8 +303,9 @@ const Laboratory = () => {
                   </button>
                   <button
                     type='submit'
-                    className='bg-purple-600 text-white py-4 rounded-2xl font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-200 dark:shadow-none'>
-                    Submit Results
+                    disabled={!isMedTech}
+                    className={`text-white py-4 rounded-2xl font-bold transition-all shadow-lg ${isMedTech ? 'bg-purple-600 hover:bg-purple-700 shadow-purple-200 dark:shadow-none' : 'bg-gray-400 cursor-not-allowed shadow-none'}`}>
+                    {isMedTech ? 'Submit Results' : 'MedTech Access Only'}
                   </button>
                 </div>
               </form>

@@ -49,7 +49,15 @@ const StatsCard = ({
   // Role-specific stats
   let displayStats = [];
 
-  if (userData.role === 'admin') {
+  const isAdmin = userData.role === 'admin';
+  const isDoctor = userData.role === 'doctor';
+  const isMedtech = userData.role === 'medtech';
+  const isNurse = userData.role === 'nurse';
+  const isPharmacist = userData.role === 'pharmacist';
+  const isReceptionist = userData.role === 'receptionist';
+  const isAccountant = userData.role === 'accountant';
+
+  if (isAdmin) {
     displayStats = [
       {
         id: 1,
@@ -84,7 +92,7 @@ const StatsCard = ({
         textColor: 'text-purple-600 dark:text-purple-400',
       },
     ];
-  } else if (userData.role === 'doctor') {
+  } else if (isDoctor) {
     displayStats = [
       {
         id: 1,
@@ -119,7 +127,77 @@ const StatsCard = ({
         textColor: 'text-purple-600 dark:text-purple-400',
       },
     ];
-  } else if (userData.role === 'medtech') {
+  } else if (isNurse) {
+    displayStats = [
+      {
+        id: 1,
+        label: 'Total Patients',
+        value: totalPatients,
+        icon: Users,
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        textColor: 'text-blue-600 dark:text-blue-400',
+      },
+      {
+        id: 2,
+        label: 'Active Admissions',
+        value: activeAdmissionsCount,
+        icon: Bed,
+        bgColor: 'bg-green-50 dark:bg-green-900/30',
+        textColor: 'text-green-600 dark:text-green-400',
+      },
+      {
+        id: 3,
+        label: 'Available Beds',
+        value: analytics?.beds?.available || 0,
+        icon: Activity,
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+        textColor: 'text-yellow-600 dark:text-yellow-400',
+      },
+      {
+        id: 4,
+        label: "Today's Schedule",
+        value: todayAppointmentsCount,
+        icon: CalendarCheck,
+        bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        textColor: 'text-purple-600 dark:text-purple-400',
+      },
+    ];
+  } else if (isPharmacist) {
+    displayStats = [
+      {
+        id: 1,
+        label: 'Low Stock Alerts',
+        value: 12, // Simulated for now
+        icon: Icons.AlertTriangle || Icons.Activity,
+        bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+        textColor: 'text-orange-600 dark:text-orange-400',
+      },
+      {
+        id: 2,
+        label: 'Pending Prescriptions',
+        value: 5, // Simulated for now
+        icon: Icons.ClipboardList,
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        textColor: 'text-blue-600 dark:text-blue-400',
+      },
+      {
+        id: 3,
+        label: 'Total Medicines',
+        value: 156, // Simulated for now
+        icon: Icons.Package,
+        bgColor: 'bg-green-50 dark:bg-green-900/30',
+        textColor: 'text-green-600 dark:text-green-400',
+      },
+      {
+        id: 4,
+        label: 'Dispensed Today',
+        value: 28, // Simulated for now
+        icon: Icons.CheckCircle || Icons.Activity,
+        bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        textColor: 'text-purple-600 dark:text-purple-400',
+      },
+    ];
+  } else if (isMedtech) {
     displayStats = [
       {
         id: 1,
@@ -132,7 +210,7 @@ const StatsCard = ({
       {
         id: 2,
         label: 'Total Tests (Today)',
-        value: labOrders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length + 12, // +12 for simulation of completed
+        value: labOrders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length + 12,
         icon: Icons.Activity,
         bgColor: 'bg-blue-50 dark:bg-blue-900/30',
         textColor: 'text-blue-600 dark:text-blue-400',
@@ -140,7 +218,7 @@ const StatsCard = ({
       {
         id: 3,
         label: 'Critical Results',
-        value: 2, // Hardcoded simulation
+        value: 2,
         icon: Icons.AlertCircle || Icons.Activity,
         bgColor: 'bg-red-50 dark:bg-red-900/30',
         textColor: 'text-red-600 dark:text-red-400',
@@ -154,8 +232,78 @@ const StatsCard = ({
         textColor: 'text-green-600 dark:text-green-400',
       },
     ];
+  } else if (isReceptionist) {
+    displayStats = [
+      {
+        id: 1,
+        label: "Today's Appointments",
+        value: todayAppointmentsCount,
+        icon: CalendarCheck,
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        textColor: 'text-blue-600 dark:text-blue-400',
+      },
+      {
+        id: 2,
+        label: 'New Admissions',
+        value: admissions.filter(a => new Date(a.createdAt).toDateString() === new Date().toDateString()).length,
+        icon: Icons.PlusCircle || Icons.Activity,
+        bgColor: 'bg-green-50 dark:bg-green-900/30',
+        textColor: 'text-green-600 dark:text-green-400',
+      },
+      {
+        id: 3,
+        label: 'Total Patients',
+        value: totalPatients,
+        icon: Users,
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+        textColor: 'text-yellow-600 dark:text-yellow-400',
+      },
+      {
+        id: 4,
+        label: 'Available Beds',
+        value: analytics?.beds?.available || 0,
+        icon: Bed,
+        bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        textColor: 'text-purple-600 dark:text-purple-400',
+      },
+    ];
+  } else if (isAccountant) {
+    displayStats = [
+      {
+        id: 1,
+        label: 'Monthly Revenue',
+        value: `$${analytics?.revenue?.reduce((a, b) => a + b.amount, 0).toLocaleString() || '0'}`,
+        icon: DollarSign,
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        textColor: 'text-blue-600 dark:text-blue-400',
+      },
+      {
+        id: 2,
+        label: 'Pending Invoices',
+        value: analytics?.appointments?.pending || 0, // Using appointment pending as a proxy if invoice pending not avail
+        icon: Icons.Clock,
+        bgColor: 'bg-green-50 dark:bg-green-900/30',
+        textColor: 'text-green-600 dark:text-green-400',
+      },
+      {
+        id: 3,
+        label: 'Collections (Today)',
+        value: '$1,240', // Simulated for now
+        icon: Icons.TrendingUp || Icons.Activity,
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+        textColor: 'text-yellow-600 dark:text-yellow-400',
+      },
+      {
+        id: 4,
+        label: 'Paid Invoices',
+        value: 14, // Simulated for now
+        icon: Icons.CheckCircle || Icons.Activity,
+        bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        textColor: 'text-purple-600 dark:text-purple-400',
+      },
+    ];
   } else {
-    // Staff
+    // Default / Staff fallback
     displayStats = [
       {
         id: 1,
@@ -219,8 +367,8 @@ const StatsCard = ({
 
       {/* Charts Row 1: Revenue & Bed Occupancy */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-        {/* Revenue Line Chart - Only for Admin */}
-        {userData.role === 'admin' ? (
+        {/* Revenue Line Chart - Only for Admin and Accountant */}
+        {(userData.role === 'admin' || userData.role === 'accountant') ? (
           <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm'>
             <div className='flex items-center gap-2 mb-6'>
               <DollarSign className='w-5 h-5 text-purple-500' />

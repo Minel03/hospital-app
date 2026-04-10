@@ -7,7 +7,7 @@ import { useAppContext } from '../../context/AppContext';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { fetchUserSettings } = useAppContext();
+  const { fetchAllData } = useAppContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [hospitalName, setHospitalName] = useState('MediCare');
@@ -37,7 +37,7 @@ const Login = () => {
       const res = await axios.post('/api/user/login', { email, password });
       if (res.data.success) {
         sessionStorage.setItem('token', res.data.token);
-        await fetchUserSettings(); // Fetch and apply their theme instantly!
+        await fetchAllData(); 
         navigate('/');
       } else {
         alert(res.data.message);

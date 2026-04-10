@@ -13,11 +13,12 @@ const {
   Edit,
   Trash2,
   CheckCircle,
-  Plus,
 } = Icons;
 
 const Pharmacy = () => {
-  const { axios } = useAppContext();
+  const { axios, userData } = useAppContext();
+  const isPharmacist = ['admin', 'pharmacist'].includes(userData?.role);
+  const isAdmin = userData?.role === 'admin';
   const [activeTab, setActiveTab] = useState('inventory');
   const [inventory, setInventory] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
@@ -116,33 +117,37 @@ const Pharmacy = () => {
   );
 
   const stats = [
-    { 
-      label: 'Total Medicines', 
-      value: inventory.length, 
+    {
+      label: 'Total Medicines',
+      value: inventory.length,
       icon: Package,
       bgColor: 'bg-blue-50 dark:bg-blue-900/30',
-      textColor: 'text-blue-600 dark:text-blue-400'
+      textColor: 'text-blue-600 dark:text-blue-400',
     },
-    { 
-      label: 'Pending Prescriptions', 
-      value: prescriptions.length, 
+    {
+      label: 'Pending Prescriptions',
+      value: prescriptions.length,
       icon: Clipboard,
       bgColor: 'bg-orange-50 dark:bg-orange-900/30',
-      textColor: 'text-orange-600 dark:text-orange-400'
+      textColor: 'text-orange-600 dark:text-orange-400',
     },
-    { 
-      label: 'Low Stock Items', 
-      value: inventory.filter(m => m.stock < 10).length, 
+    {
+      label: 'Low Stock Items',
+      value: inventory.filter((m) => m.stock < 10).length,
       icon: AlertTriangle,
       bgColor: 'bg-red-50 dark:bg-red-900/30',
-      textColor: 'text-red-600 dark:text-red-400'
+      textColor: 'text-red-600 dark:text-red-400',
     },
-    { 
-      label: 'Expired/Near Expiry', 
-      value: inventory.filter(m => new Date(m.expiryDate) < new Date(Date.now() + 30*24*60*60*1000)).length, 
+    {
+      label: 'Expired/Near Expiry',
+      value: inventory.filter(
+        (m) =>
+          new Date(m.expiryDate) <
+          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      ).length,
       icon: Calendar,
       bgColor: 'bg-purple-50 dark:bg-purple-900/30',
-      textColor: 'text-purple-600 dark:text-purple-400'
+      textColor: 'text-purple-600 dark:text-purple-400',
     },
   ];
 
@@ -151,8 +156,10 @@ const Pharmacy = () => {
       <PageHeader
         title='Pharmacy Management'
         subtitle='Manage medicine inventory and digital prescriptions'
-        buttonLabel={activeTab === 'inventory' ? 'Add Medicine' : ''}
-        onButtonClick={() => setShowModal(true)}
+        buttonLabel={
+          activeTab === 'inventory' && isPharmacist ? 'Add Medicine' : ''
+        }
+        onButtonClick={isPharmacist ? () => setShowModal(true) : null}
         stats={stats}
       />
 
@@ -241,12 +248,21 @@ const Pharmacy = () => {
                       )}
                     </td>
                     <td className='px-6 py-4 text-right space-x-2'>
-                      <button className='p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-colors'>
-                        <Edit className='w-4 h-4' />
-                      </button>
-                      <button className='p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors'>
-                        <Trash2 className='w-4 h-4' />
-                      </button>
+                      {isPharmacist && (
+                        <button className='p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl transition-colors'>
+                          <Edit className='w-4 h-4' />
+                        </button>
+                      )}
+                      {isAdmin && (
+                        <button className='p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors'>
+                          <Trash2 className='w-4 h-4' />
+                        </button>
+                      )}
+                      {!isPharmacist && !isAdmin && (
+                        <span className='text-xs text-gray-400 italic font-medium'>
+                          View Only
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -297,12 +313,19 @@ const Pharmacy = () => {
                 ))}
               </div>
 
-              <button
-                onClick={() => handleDispense(p._id)}
-                className='w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2'>
-                <CheckCircle className='w-5 h-5' />
-                Dispense Medicines
-              </button>
+              {isPharmacist ? (
+                <button
+                  onClick={() => handleDispense(p._id)}
+                  className='w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2'>
+                  <CheckCircle className='w-5 h-5' />
+                  Dispense Medicines
+                </button>
+              ) : (
+                <div className='w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 py-3 rounded-2xl font-bold text-center flex items-center justify-center gap-2 cursor-not-allowed'>
+                  <AlertTriangle className='w-5 h-5' />
+                  Pharmacist Access Only
+                </div>
+              )}
             </div>
           ))}
           {prescriptions.length === 0 && (

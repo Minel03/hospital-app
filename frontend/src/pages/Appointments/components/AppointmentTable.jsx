@@ -7,8 +7,11 @@ const AppointmentTable = ({
   searchQuery,
   onEditAppointment,
   onCancelAppointment,
+  userData,
 }) => {
   const { Calendar, Edit, X } = Icons;
+
+  const canManage = ['admin', 'doctor', 'nurse', 'receptionist'].includes(userData?.role);
 
   // Format datetime to MM/DD/YYYY hh:mm AM/PM
   const formatDateTime = (datetime) => {
@@ -123,7 +126,7 @@ const AppointmentTable = ({
             </div>
 
             {/* Actions */}
-            {isFuture && appointment.status !== 'Cancelled' ? (
+            {isFuture && appointment.status !== 'Cancelled' && canManage ? (
               <div className='grid grid-cols-2 gap-3 pt-4 border-t border-gray-50 dark:border-gray-700/50'>
                 <button
                   onClick={() => onEditAppointment(appointment)}
@@ -140,7 +143,9 @@ const AppointmentTable = ({
               </div>
             ) : (
               <div className='pt-4 border-t border-gray-50 dark:border-gray-700/50 text-center'>
-                 <p className='text-xs text-gray-400 italic'>No actions available</p>
+                 <p className='text-xs text-gray-400 italic font-medium'>
+                   {appointment.status === 'Cancelled' ? 'Appointment Cancelled' : !isFuture ? 'Appointment Passed' : 'No management access'}
+                 </p>
               </div>
             )}
           </div>

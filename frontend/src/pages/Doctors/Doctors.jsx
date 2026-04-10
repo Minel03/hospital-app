@@ -8,7 +8,7 @@ import DoctorTable from './components/DoctorTable';
 import DoctorFormModal from './components/DoctorFormModal';
 
 const Doctors = () => {
-  const { axios, doctors, fetchDoctors } = useAppContext();
+  const { axios, doctors, fetchDoctors, userData } = useAppContext();
 
   const [departments, setDepartments] = useState([]);
   const [doctorUsers, setDoctorUsers] = useState([]);
@@ -41,7 +41,9 @@ const Doctors = () => {
   useEffect(() => {
     fetchDoctors();
     fetchDepartments();
-    fetchDoctorUsers();
+    if (userData?.role === 'admin') {
+      fetchDoctorUsers();
+    }
 
     const handleClickOutside = (event) => {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
@@ -245,8 +247,8 @@ const Doctors = () => {
       <PageHeader
         title='Doctors'
         subtitle='Manage medical staff and their schedules'
-        buttonLabel='Add Doctor'
-        onButtonClick={handleAddDoctor}
+        buttonLabel={userData.role === 'admin' ? 'Add Doctor' : null}
+        onButtonClick={userData.role === 'admin' ? handleAddDoctor : null}
         stats={stats}
       />
 
@@ -265,6 +267,7 @@ const Doctors = () => {
         doctors={filteredDoctors}
         onEdit={handleEditDoctor}
         onDelete={deleteDoctor}
+        userData={userData}
       />
 
       <DoctorFormModal

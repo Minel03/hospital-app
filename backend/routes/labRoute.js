@@ -19,8 +19,8 @@ labRouter.post('/tests/add', restrictTo('admin'), addLabTest);
 
 // ORDERS & REPORTS
 labRouter.post('/order', restrictTo('doctor', 'admin'), createLabOrder);
-labRouter.get('/orders/pending', restrictTo('admin', 'staff', 'doctor'), getPendingOrders);
-labRouter.post('/results/upload', restrictTo('admin', 'staff'), uploadLabResults);
-labRouter.get('/patient/reports', getPatientReports);
+labRouter.get('/orders/pending', restrictTo('admin', 'medtech', 'doctor'), getPendingOrders);
+labRouter.post('/results/upload', restrictTo('admin', 'medtech'), uploadLabResults);
+labRouter.get('/patient/reports', restrictTo('admin', 'doctor', 'nurse', 'medtech'), getPatientReports);
 
 export default labRouter;

@@ -8,7 +8,7 @@ import AppointmentTable from './components/AppointmentTable';
 import AppointmentFormModal from './components/AppointmentFormModal';
 
 const Appointments = () => {
-  const { axios, patients, fetchPatients } = useAppContext();
+  const { axios, patients, fetchPatients, userData } = useAppContext();
   const { Search, Filter, Calendar, Clock } = Icons;
 
   const [appointments, setAppointments] = useState([]);
@@ -234,8 +234,8 @@ const Appointments = () => {
       <PageHeader
         title='Appointments'
         subtitle='Schedule and manage patient visits'
-        buttonLabel='New Appointment'
-        onButtonClick={handleAddAppointment}
+        buttonLabel={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? 'New Appointment' : null}
+        onButtonClick={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? handleAddAppointment : null}
         stats={stats}
       />
 
@@ -256,6 +256,7 @@ const Appointments = () => {
           searchQuery={searchQuery}
           onEditAppointment={handleEditAppointment}
           onCancelAppointment={handleCancelAppointment}
+          userData={userData}
         />
       </div>
 
@@ -269,6 +270,7 @@ const Appointments = () => {
         patients={patients}
         doctors={doctors}
         departments={departments}
+        appointments={appointments}
       />
     </div>
   );

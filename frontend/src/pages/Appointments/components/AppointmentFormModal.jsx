@@ -13,6 +13,7 @@ const AppointmentFormModal = ({
   handleSubmit,
   doctors,
   departments,
+  appointments = [],
 }) => {
   const { getSelectStyles, setPatients, patients } = useAppContext();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -21,6 +22,15 @@ const AppointmentFormModal = ({
     setPatients((prev) => (prev ? [...prev, newPatient] : [newPatient]));
     setFormData((prev) => ({ ...prev, patient: newPatient._id }));
   };
+
+  // Combine all active patient IDs (status 'Pending' or 'Confirmed')
+  const activePatientIds = appointments
+    .filter(a => a.status === 'Pending' || a.status === 'Confirmed')
+    .map(a => a.patient?._id);
+
+  const filteredPatients = patients?.filter(p => 
+    !activePatientIds.includes(p._id) || (mode === 'edit' && p._id === formData.patient)
+  );
 
   const today = new Date();
   const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
@@ -47,7 +57,7 @@ const AppointmentFormModal = ({
           </div>
           <Select
             styles={getSelectStyles()}
-            options={patients?.map((p) => ({ value: p._id, label: p.name }))}
+            options={filteredPatients?.map((p) => ({ value: p._id, label: p.name }))}
             value={
               formData.patient
                 ? {

@@ -18,8 +18,8 @@ const {
 } = Icons;
 
 const Settings = () => {
-  const { axios, fetchGlobalSettings, refreshUserData } = useAppContext();
-  const [activeSection, setActiveSection] = useState('General');
+  const { axios, fetchGlobalSettings, refreshUserData, userData } = useAppContext();
+  const [activeSection, setActiveSection] = useState(userData.role === 'admin' ? 'General' : 'Appearance');
 
   // ---------------- General / Appearance / Notifications / Email ----------------
   const [general, setGeneral] = useState({
@@ -54,22 +54,30 @@ const Settings = () => {
   });
 
   const sidebarItems = [
-    { name: 'General', icon: Building },
-    { name: 'Appearance', icon: Palette },
-    { name: 'Notifications', icon: Bell },
-    { name: 'Email Settings', icon: Mail },
-    { name: 'User Management', icon: Users },
+    { name: 'General', icon: Building, adminOnly: true },
+    { name: 'Appearance', icon: Palette, adminOnly: false },
+    { name: 'Notifications', icon: Bell, adminOnly: false },
+    { name: 'Email Settings', icon: Mail, adminOnly: true },
+    { name: 'User Management', icon: Users, adminOnly: true },
   ];
+
+  const filteredSidebarItems = sidebarItems.filter(item => !item.adminOnly || userData.role === 'admin');
 
   // ---------------- Fetch Settings / Users ----------------
   const fetchSettings = async () => {
     try {
-      const [globalRes, userRes] = await Promise.all([
-        axios.get('/api/settings/global'),
-        axios.get('/api/settings/user'),
-      ]);
+      const isAdmin = userData.role === 'admin';
+      const fetches = [axios.get('/api/settings/user')];
+      
+      if (isAdmin) {
+        fetches.push(axios.get('/api/settings/global'));
+      }
 
-      if (globalRes.data.success) {
+      const results = await Promise.all(fetches);
+      const userRes = results[0];
+      const globalRes = isAdmin ? results[1] : null;
+
+      if (globalRes && globalRes.data.success) {
         const data = globalRes.data.settings;
         setGeneral({
           hospitalName: data.hospitalName,
@@ -105,9 +113,13 @@ const Settings = () => {
   };
 
   useEffect(() => {
-    fetchSettings();
-    fetchUsers();
-  }, []);
+    if (userData.role) {
+      fetchSettings();
+      if (userData.role === 'admin') {
+        fetchUsers();
+      }
+    }
+  }, [userData]);
 
   // ---------------- Handlers ----------------
   const handleGeneralChange = (key, value) => {
@@ -224,7 +236,7 @@ const Settings = () => {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'>
         {/* Sidebar */}
         <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-4 space-y-1 h-fit sticky top-8'>
-          {sidebarItems.map((item, i) => {
+          {filteredSidebarItems.map((item, i) => {
             const Icon = item.icon;
             return (
               <button
@@ -523,16 +535,20 @@ const Settings = () => {
                       <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
                         User Role
                       </label>
-                      <select
-                        value={formData.role}
-                        onChange={(e) =>
-                          setFormData({ ...formData, role: e.target.value })
-                        }
-                        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all selection:bg-blue-500'>
-                        <option value='admin'>Admin</option>
-                        <option value='doctor'>Doctor</option>
-                        <option value='staff'>Staff</option>
-                      </select>
+                        <select
+                          value={formData.role}
+                          onChange={(e) =>
+                            setFormData({ ...formData, role: e.target.value })
+                          }
+                          className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all selection:bg-blue-500'>
+                          <option value='admin'>Admin</option>
+                          <option value='doctor'>Doctor</option>
+                          <option value='nurse'>Nurse</option>
+                          <option value='pharmacist'>Pharmacist</option>
+                          <option value='medtech'>MedTech</option>
+                          <option value='receptionist'>Receptionist</option>
+                          <option value='accountant'>Accountant</option>
+                        </select>
                     </div>
                   </div>
                   <div className='mt-3 flex gap-2'>

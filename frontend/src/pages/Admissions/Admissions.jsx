@@ -8,7 +8,7 @@ import AdmissionsModal from './components/AdmissionsModal';
 import AdmissionsViewModal from './components/AdmissionsViewModal';
 
 const Admissions = () => {
-  const { axios, patients, fetchPatients } = useAppContext();
+  const { axios, patients, fetchPatients, userData } = useAppContext();
 
   const [admissions, setAdmissions] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -237,8 +237,8 @@ const Admissions = () => {
       <PageHeader
         title='Admissions'
         subtitle='Manage patient admissions and discharges'
-        buttonLabel='New Admission'
-        onButtonClick={openAddModal}
+        buttonLabel={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? 'New Admission' : null}
+        onButtonClick={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? openAddModal : null}
         stats={stats}
       />
 
@@ -254,6 +254,7 @@ const Admissions = () => {
         openViewModal={openViewModal}
         deleteAdmission={deleteAdmission}
         dischargePatient={dischargePatient}
+        userData={userData}
       />
 
       <AdmissionsModal
@@ -267,6 +268,7 @@ const Admissions = () => {
         doctors={doctors}
         departments={departments}
         beds={beds}
+        admissions={admissions}
       />
 
       <AdmissionsViewModal

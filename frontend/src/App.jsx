@@ -52,47 +52,91 @@ const App = () => {
                     />
                     <Route
                       path='patients'
-                      element={<Patients />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'nurse', 'receptionist', 'medtech']}>
+                          <Patients />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='appointments'
-                      element={<Appointments />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'nurse', 'receptionist']}>
+                          <Appointments />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='admissions'
-                      element={<Admissions />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'nurse', 'receptionist']}>
+                          <Admissions />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='doctors'
-                      element={<Doctors />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor']}>
+                          <Doctors />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='staffs'
-                      element={<Staff />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin']}>
+                          <Staff />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='departments'
-                      element={<Departments />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin']}>
+                          <Departments />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='beds'
-                      element={<Beds />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'nurse', 'receptionist']}>
+                          <Beds />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='billing'
-                      element={<Billing />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'receptionist', 'accountant']}>
+                          <Billing />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='logs'
-                      element={<Logs />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin']}>
+                          <Logs />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='pharmacy'
-                      element={<Pharmacy />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'nurse', 'pharmacist']}>
+                          <Pharmacy />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='laboratory'
-                      element={<Laboratory />}
+                      element={
+                        <PrivateRoute allowedRoles={['admin', 'doctor', 'medtech']}>
+                          <Laboratory />
+                        </PrivateRoute>
+                      }
                     />
                     <Route
                       path='settings'

@@ -1,14 +1,17 @@
 import React from 'react';
 import { Icons } from '../../../context/AppContext';
 
-const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
+const PatientTable = ({ patients, onView, onEdit, onDelete, userData }) => {
   const { Eye, Edit, Trash, Phone, Mail } = Icons;
+
+  const canEdit = ['admin', 'doctor', 'nurse', 'receptionist', 'medtech'].includes(userData?.role);
+  const isAdmin = userData?.role === 'admin';
 
   return (
     <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden'>
       <div className='w-full'>
         <div className='min-w-full md:min-w-[900px]'>
-          {/* ------------ List Table Title (Desktop Only) ------------ */}
+          {/* ------------ Table Header ------------ */}
           <div className='hidden md:grid grid-cols-[2fr_1fr_1fr_2fr_2fr_1fr_auto] items-center py-3 px-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700 text-sm font-semibold text-gray-500 dark:text-gray-400'>
             <b>Patient</b>
             <b>Age</b>
@@ -16,7 +19,7 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
             <b>Contact</b>
             <b>Last Visit</b>
             <b>Status</b>
-            <b className='w-28 text-center'>Actions</b>
+            <b className='w-32 text-center'>Actions</b>
           </div>
 
           {/* ------------ Patient List ------------ */}
@@ -32,7 +35,7 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
                 <div className='flex items-center gap-2'>
                   <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0'>
                     <span className='text-sm font-medium text-blue-600 dark:text-blue-400'>
-                      {patient.name
+                      {(patient.name || 'P')
                         .split(' ')
                         .map((n) => n[0])
                         .join('')}
@@ -43,7 +46,7 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
                     <p className='text-xs text-gray-500 dark:text-gray-400'>
                       ID:{' '}
                       {patient._id
-                        .toString()
+                        ?.toString()
                         .padStart(4, '0')
                         .slice(-4)
                         .toUpperCase()}
@@ -107,22 +110,29 @@ const PatientTable = ({ patients, onView, onEdit, onDelete }) => {
               </div>
 
               {/* Actions */}
-              <div className='flex gap-2 mt-4 md:mt-0 md:w-28 pt-3 md:pt-0 border-t border-gray-100 dark:border-gray-700 md:border-0 justify-start md:justify-center'>
+              <div className='flex gap-2 mt-4 md:mt-0 md:w-32 pt-3 md:pt-0 border-t border-gray-100 dark:border-gray-700 md:border-0 justify-start md:justify-center'>
                 <button
                   onClick={() => onView(patient)}
-                  className='p-2 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex justify-center transition-colors'>
+                  className='p-2 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600 flex justify-center transition-colors'
+                  title='View Profile'>
                   <Eye className='w-4 h-4 text-gray-700 dark:text-gray-300' />
                 </button>
-                <button
-                  onClick={() => onEdit(patient)}
-                  className='p-2 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 flex justify-center transition-colors'>
-                  <Edit className='w-4 h-4 text-blue-700 dark:text-blue-400' />
-                </button>
-                <button
-                  onClick={() => onDelete(patient._id)}
-                  className='p-2 bg-red-50 dark:bg-red-900/30 rounded hover:bg-red-100 dark:hover:bg-red-900/50 flex justify-center transition-colors'>
-                  <Trash className='w-4 h-4 text-red-600 dark:text-red-400' />
-                </button>
+                {canEdit && (
+                  <button
+                    onClick={() => onEdit(patient)}
+                    className='p-2 bg-blue-50 dark:bg-blue-900/30 rounded hover:bg-blue-100 dark:hover:bg-blue-900/50 flex justify-center transition-colors'
+                    title='Edit Record'>
+                    <Edit className='w-4 h-4 text-blue-700 dark:text-blue-400' />
+                  </button>
+                )}
+                {isAdmin && (
+                  <button
+                    onClick={() => onDelete(patient._id)}
+                    className='p-2 bg-red-50 dark:bg-red-900/30 rounded hover:bg-red-100 dark:hover:bg-red-900/50 flex justify-center transition-colors'
+                    title='Delete Record'>
+                    <Trash className='w-4 h-4 text-red-600 dark:text-red-400' />
+                  </button>
+                )}
               </div>
             </div>
           ))}

@@ -15,12 +15,12 @@ pharmacyRouter.use(authUser);
 
 // INVENTORY
 pharmacyRouter.get('/inventory', getAllMedicines);
-pharmacyRouter.post('/inventory/add', restrictTo('admin', 'staff'), addMedicine);
-pharmacyRouter.put('/inventory/update', restrictTo('admin', 'staff'), updateMedicine);
+pharmacyRouter.post('/inventory/add', restrictTo('admin', 'pharmacist'), addMedicine);
+pharmacyRouter.put('/inventory/update', restrictTo('admin', 'pharmacist'), updateMedicine);
 
 // PRESCRIPTIONS
 pharmacyRouter.post('/prescribe', restrictTo('doctor', 'admin'), createPrescription);
-pharmacyRouter.get('/prescriptions/pending', restrictTo('admin', 'staff', 'doctor'), getPendingPrescriptions);
-pharmacyRouter.post('/dispense', restrictTo('admin', 'staff'), dispensePrescription);
+pharmacyRouter.get('/prescriptions/pending', restrictTo('admin', 'pharmacist', 'doctor', 'nurse'), getPendingPrescriptions);
+pharmacyRouter.post('/dispense', restrictTo('admin', 'pharmacist'), dispensePrescription);
 
 export default pharmacyRouter;
