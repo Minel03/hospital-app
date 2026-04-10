@@ -83,20 +83,21 @@ const DoctorFormModal = ({
         department: deptOption || null,
       }));
     }
-  }, [mode, selectedDoctor, departments]); // departmentOptions removed — use departments directly
+  }, [mode, selectedDoctor, departments]);
 
   return (
     <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
       <div className='bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
         {/* Header */}
-        <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between'>
-          <h3 className='text-xl font-semibold'>
+        <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
+          <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
             {mode === 'add' ? 'Add Doctor' : 'Edit Doctor'}
           </h3>
           <button
+            type='button'
             onClick={handleClose}
-            className='p-2 hover:bg-gray-100 rounded-lg transition-colors'>
-            <X className='w-5 h-5' />
+            className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
+            <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
           </button>
         </div>
 
@@ -118,7 +119,7 @@ const DoctorFormModal = ({
                 isDisabled={mode === 'edit'}
               />
               {mode === 'edit' && (
-                <p className='text-xs text-gray-400 mt-1'>User link cannot be changed after creation.</p>
+                <p className='text-xs text-gray-400 mt-1 uppercase tracking-wider'>User link cannot be changed after creation.</p>
               )}
             </div>
 
@@ -134,7 +135,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, age: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                 placeholder='35'
               />
             </div>
@@ -150,7 +151,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, gender: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
                 <option value='Male'>Male</option>
                 <option value='Female'>Female</option>
                 <option value='Other'>Other</option>
@@ -169,7 +170,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, specialty: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                 placeholder='Cardiology'
               />
             </div>
@@ -201,7 +202,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, phone: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                 placeholder='(123) 456-7890'
               />
             </div>
@@ -217,7 +218,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
                 placeholder='doctor@email.com'
               />
             </div>
@@ -233,7 +234,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, experience: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
             </div>
 
@@ -248,7 +249,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, patients: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
             </div>
 
@@ -262,7 +263,7 @@ const DoctorFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
                 }
-                className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'>
+                className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'>
                 <option value='Available'>Available</option>
                 <option value='In Surgery'>In Surgery</option>
                 <option value='Offline'>Offline</option>
@@ -270,17 +271,11 @@ const DoctorFormModal = ({
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className='flex gap-3 pt-4'>
-            <button
-              type='button'
-              onClick={handleClose}
-              className='flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50'>
-              Cancel
-            </button>
+          {/* Submit */}
+          <div className='pt-4 flex justify-end'>
             <button
               type='submit'
-              className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700'>
+              className='bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
               {mode === 'add' ? 'Add Doctor' : 'Update Doctor'}
             </button>
           </div>

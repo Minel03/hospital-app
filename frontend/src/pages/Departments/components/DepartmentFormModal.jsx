@@ -12,8 +12,7 @@ const DepartmentFormModal = ({
   doctors = [], // 👈 pass doctors here
 }) => {
   const { X } = Icons;
-  const { getSelectStyles } = useAppContext();
-  const { axios } = useAppContext();
+  const { getSelectStyles, axios } = useAppContext();
 
   const initialForm = {
     name: '',
@@ -107,24 +106,27 @@ const DepartmentFormModal = ({
 
   return (
     <div
-      className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'
+      className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'
       onClick={() => setShowModal(false)}>
       <div
-        className='bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg p-6 relative dark:border dark:border-gray-700'
+        className='bg-white dark:bg-gray-800 rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto relative dark:border dark:border-gray-700'
         onClick={(e) => e.stopPropagation()}>
-        <button
-          onClick={() => setShowModal(false)}
-          className='absolute top-3 right-3 text-gray-500 hover:text-gray-700 dark:text-gray-300'>
-          <X className='w-5 h-5' />
-        </button>
-
-        <h2 className='text-xl font-semibold mb-4'>
-          {mode === 'add' ? 'Add Department' : 'Edit Department'}
-        </h2>
+        {/* Header */}
+        <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
+          <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
+            {mode === 'add' ? 'Add Department' : 'Edit Department'}
+          </h2>
+          <button
+            type='button'
+            onClick={() => setShowModal(false)}
+            className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
+            <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
+          </button>
+        </div>
 
         <form
           onSubmit={handleSubmit}
-          className='space-y-4'>
+          className='p-6 space-y-4'>
           {/* Name */}
           <div>
             <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Name</label>
@@ -134,7 +136,7 @@ const DepartmentFormModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className='w-full border border-gray-300 rounded-lg px-3 py-2'
+              className='w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
               required
             />
           </div>
@@ -149,7 +151,7 @@ const DepartmentFormModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className='w-full border border-gray-300 rounded-lg px-3 py-2'
+              className='w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
             />
           </div>
 
@@ -182,7 +184,7 @@ const DepartmentFormModal = ({
                 onChange={(e) =>
                   setFormData({ ...formData, status: e.target.value })
                 }
-                className='w-full border border-gray-300 rounded-lg px-3 py-2'>
+                className='w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'>
                 <option>Active</option>
                 <option>Inactive</option>
               </select>
@@ -199,21 +201,14 @@ const DepartmentFormModal = ({
                 setFormData({ ...formData, phone: e.target.value })
               }
               placeholder='Enter phone number'
-              className='w-full border border-gray-300 rounded-lg px-3 py-2'
+              className='w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
             />
           </div>
 
-          <div className='flex justify-end gap-3 pt-4 border-t border-gray-200'>
-            <button
-              type='button'
-              onClick={() => setShowModal(false)}
-              className='bg-gray-50 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg'>
-              Cancel
-            </button>
-
+          <div className='flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700'>
             <button
               type='submit'
-              className='bg-blue-600 text-white py-2 px-4 rounded-lg'>
+              className='bg-blue-600 text-white py-2 px-5 rounded-lg hover:bg-blue-700 transition-colors'>
               {mode === 'add' ? 'Add Department' : 'Update Department'}
             </button>
           </div>

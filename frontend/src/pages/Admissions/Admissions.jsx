@@ -171,8 +171,8 @@ const Admissions = () => {
       doctor: admission.doctor._id,
       department: admission.department._id,
       bed: admission.bed._id,
-      admissionDate: admission.admissionDate.slice(0, 10),
-      expectedDischargeDate: admission.expectedDischargeDate.slice(0, 10),
+      admissionDate: admission.admissionDate ? admission.admissionDate.slice(0, 16) : '',
+      expectedDischargeDate: admission.expectedDischargeDate ? admission.expectedDischargeDate.slice(0, 16) : '',
       diagnosis: admission.diagnosis,
     });
 

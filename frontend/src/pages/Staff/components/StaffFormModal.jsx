@@ -61,7 +61,7 @@ const StaffFormModal = ({
             type='button'
             onClick={() => setShowAddModal(false)}
             className='p-2 hover:bg-gray-100 rounded-lg transition-colors'>
-            <X className='w-5 h-5' />
+            <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
           </button>
         </div>
 
@@ -96,7 +96,9 @@ const StaffFormModal = ({
           {/* Age */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Age</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                Age
+              </label>
               <input
                 type='number'
                 value={formData.age}
@@ -128,7 +130,9 @@ const StaffFormModal = ({
             </div>
 
             <div>
-              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Phone</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                Phone
+              </label>
               <input
                 type='text'
                 value={formData.phone}
@@ -158,7 +162,9 @@ const StaffFormModal = ({
           {/* Role + Department */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             <div>
-              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Role</label>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                Role
+              </label>
               <input
                 type='text'
                 value={formData.role}

@@ -18,7 +18,8 @@ const BedsModal = ({
   rooms,
   bedMode,
 }) => {
-  const { getSelectStyles } = useAppContext();
+  const { getSelectStyles, Icons } = useAppContext();
+  const { X } = Icons;
   const departmentOptions = departments.map((d) => ({
     value: d._id,
     label: d.name,
@@ -31,15 +32,16 @@ const BedsModal = ({
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
           <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
             {/* Header */}
-            <div className='flex justify-between items-center px-6 py-4'>
-              <h2 className='text-lg font-semibold'>
+            <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
+              <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
                 {roomMode === 'add' ? 'Add Room' : 'Edit Room'}
               </h2>
 
               <button
+                type='button'
                 onClick={() => setShowRoomModal(false)}
-                className='text-gray-500 hover:text-gray-700 dark:text-gray-300'>
-                ✕
+                className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
+                <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
               </button>
             </div>
 
@@ -142,18 +144,10 @@ const BedsModal = ({
                 />
               </div>
 
-              {/* Buttons */}
-              <div className='flex justify-end gap-2 pt-3'>
-                <button
-                  type='button'
-                  onClick={() => setShowRoomModal(false)}
-                  className='px-4 py-2 rounded-lg border hover:bg-gray-100'>
-                  Cancel
-                </button>
-
+              <div className='flex justify-end pt-3'>
                 <button
                   type='submit'
-                  className='px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700'>
+                  className='px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
                   {roomMode === 'add' ? 'Add Room' : 'Save Changes'}
                 </button>
               </div>
@@ -167,15 +161,16 @@ const BedsModal = ({
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4'>
           <div className='bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
             {/* Header */}
-            <div className='flex justify-between items-center border-b px-6 py-4'>
-              <h2 className='text-lg font-semibold'>
+            <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
+              <h2 className='text-xl font-semibold text-gray-900 dark:text-white'>
                 {bedMode === 'add' ? 'Add Bed(s)' : 'Edit Bed'}
               </h2>
 
               <button
+                type='button'
                 onClick={() => setShowBedModal(false)}
-                className='text-gray-500 hover:text-gray-700 dark:text-gray-300'>
-                ✕
+                className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
+                <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
               </button>
             </div>
 
@@ -248,18 +243,10 @@ const BedsModal = ({
                 </select>
               </div>
 
-              {/* Buttons */}
-              <div className='flex justify-end gap-2 pt-3'>
-                <button
-                  type='button'
-                  onClick={() => setShowBedModal(false)}
-                  className='px-4 py-2 rounded-lg border hover:bg-gray-100'>
-                  Cancel
-                </button>
-
+              <div className='flex justify-end pt-3'>
                 <button
                   type='submit'
-                  className='px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700'>
+                  className='px-5 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
                   {bedMode === 'add' ? 'Add Bed(s)' : 'Save Changes'}
                 </button>
               </div>

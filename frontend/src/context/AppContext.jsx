@@ -242,6 +242,7 @@ export const AppProvider = ({ children }) => {
     fetchGlobalSettings,
     fetchUserSettings,
     getSelectStyles,
+    Icons,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

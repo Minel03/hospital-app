@@ -14,19 +14,29 @@ const AdmissionsModal = ({
   departments,
   beds,
 }) => {
-  const { getSelectStyles } = useAppContext();
+  const { getSelectStyles, Icons } = useAppContext();
+  const { X } = Icons;
   return (
     <div>
       {showModal && (
         <div className='fixed inset-0 bg-black/50 flex justify-center items-center z-50'>
-          <div className='bg-white dark:bg-gray-800 p-6 rounded-lg w-125 dark:border dark:border-gray-700'>
-            <h3 className='text-xl font-semibold mb-4'>
-              {mode === 'add' ? 'New Admission' : 'Edit Admission'}
-            </h3>
+          <div className='bg-white dark:bg-gray-800 rounded-lg w-125 max-h-[90vh] overflow-y-auto dark:border dark:border-gray-700'>
+            {/* Header */}
+            <div className='sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 flex items-center justify-between z-10'>
+              <h3 className='text-xl font-semibold text-gray-900 dark:text-white'>
+                {mode === 'add' ? 'New Admission' : 'Edit Admission'}
+              </h3>
+              <button
+                type='button'
+                onClick={closeModal}
+                className='p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors'>
+                <X className='w-5 h-5 text-gray-500 dark:text-gray-400' />
+              </button>
+            </div>
 
             <form
               onSubmit={handleSubmit}
-              className='space-y-3'>
+              className='p-6 space-y-3'>
               {/* PATIENT */}
               <div>
                 <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Patient</label>
@@ -99,7 +109,7 @@ const AdmissionsModal = ({
               {/* BED */}
               <div>
                 <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Bed</label>
-                <Select styles={getSelectStyles()}
+                <Select
                   options={[
                     // Only available beds + current bed (for edit)
                     ...beds
@@ -204,7 +214,7 @@ const AdmissionsModal = ({
                 </label>
                 <input
                   type='datetime-local'
-                  className='w-full border p-2 rounded'
+                  className='w-full border p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 [color-scheme:light] dark:[color-scheme:dark]'
                   value={formData.admissionDate}
                   onChange={(e) =>
                     setFormData({ ...formData, admissionDate: e.target.value })
@@ -220,7 +230,7 @@ const AdmissionsModal = ({
                 </label>
                 <input
                   type='datetime-local'
-                  className='w-full border p-2 rounded'
+                  className='w-full border p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 [color-scheme:light] dark:[color-scheme:dark]'
                   value={formData.expectedDischargeDate}
                   onChange={(e) =>
                     setFormData({
@@ -236,7 +246,7 @@ const AdmissionsModal = ({
               <div>
                 <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>Diagnosis</label>
                 <textarea
-                  className='w-full border p-2 rounded'
+                  className='w-full border p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
                   value={formData.diagnosis}
                   onChange={(e) =>
                     setFormData({ ...formData, diagnosis: e.target.value })
@@ -247,13 +257,9 @@ const AdmissionsModal = ({
 
               {/* ACTION BUTTONS */}
               <div className='flex justify-end gap-3 pt-3'>
-                <button
-                  type='button'
-                  onClick={closeModal}
-                  className='border px-4 py-2 rounded'>
-                  Cancel
-                </button>
-                <button className='bg-blue-600 text-white px-4 py-2 rounded'>
+                <button 
+                  type='submit'
+                  className='bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
                   {mode === 'add' ? 'Admit Patient' : 'Update'}
                 </button>
               </div>
