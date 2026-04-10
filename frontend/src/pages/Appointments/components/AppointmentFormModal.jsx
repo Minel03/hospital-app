@@ -100,9 +100,18 @@ const AppointmentFormModal = ({
                 value: dep._id,
                 label: dep.name,
               }))}
-              value={formData.department || null}
+              value={
+                formData.department
+                  ? {
+                      value: formData.department,
+                      label: departments?.find(
+                        (d) => d._id === formData.department,
+                      )?.name,
+                    }
+                  : null
+              }
               onChange={(selected) =>
-                setFormData({ ...formData, department: selected || null })
+                setFormData({ ...formData, department: selected?.value || '' })
               }
               placeholder='Select Department'
               isClearable
@@ -111,12 +120,15 @@ const AppointmentFormModal = ({
 
           {/* Date & Time */}
           <div>
-            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+            <label
+              htmlFor='appointmentDateTime'
+              className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
               Date & Time
             </label>
             <input
+              id='appointmentDateTime'
               type='datetime-local'
-              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 [color-scheme:light] dark:[color-scheme:dark]'
+              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 scheme-light dark:scheme-dark'
               min={localToday}
               value={formData.datetime || ''}
               onChange={(e) =>
