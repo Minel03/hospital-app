@@ -18,6 +18,8 @@ const BillingModal = ({
   removeService,
   totalAmount,
   SERVICE_TYPES,
+  medicines = [],
+  handleAutoCalculate,
 }) => {
   const { getSelectStyles, Icons } = useAppContext();
   const { X } = Icons;
@@ -87,31 +89,41 @@ const BillingModal = ({
               </div>
 
               {/* Admission (optional) */}
-              <div>
-                <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
-                  Admission{' '}
-                  <span className='text-gray-400 font-normal'>(optional)</span>
-                </label>
-                <Select styles={getSelectStyles()}
-                  options={admissions.map((a) => ({
-                    value: a._id,
-                    label: `${a.patient?.name} - ${new Date(a.admissionDate).toLocaleDateString()}`,
-                  }))}
-                  value={
-                    admissions
-                      .map((a) => ({
-                        value: a._id,
-                        label: `${a.patient?.name} - ${new Date(a.admissionDate).toLocaleDateString()}`,
-                      }))
-                      .find((o) => o.value === formData.admission) || null
-                  }
-                  onChange={(s) =>
-                    setFormData({ ...formData, admission: s ? s.value : null })
-                  }
-                  placeholder='Select Admission'
-                  isSearchable
-                  isClearable
-                />
+              <div className='flex items-end gap-2'>
+                <div className='flex-1'>
+                  <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
+                    Admission{' '}
+                    <span className='text-gray-400 font-normal'>(optional)</span>
+                  </label>
+                  <Select styles={getSelectStyles()}
+                    options={admissions.map((a) => ({
+                      value: a._id,
+                      label: `${a.patient?.name} - ${new Date(a.admissionDate).toLocaleDateString()}`,
+                    }))}
+                    value={
+                      admissions
+                        .map((a) => ({
+                          value: a._id,
+                          label: `${a.patient?.name} - ${new Date(a.admissionDate).toLocaleDateString()}`,
+                        }))
+                        .find((o) => o.value === formData.admission) || null
+                    }
+                    onChange={(s) =>
+                      setFormData({ ...formData, admission: s ? s.value : null })
+                    }
+                    placeholder='Select Admission'
+                    isSearchable
+                    isClearable
+                  />
+                </div>
+                <button
+                  type='button'
+                  onClick={handleAutoCalculate}
+                  className='bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 p-2.5 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200 dark:border-blue-800 flex items-center gap-2'
+                  title='Auto-calculate bill based on admission days and lab tests'>
+                  <Icons.Calculator className='w-5 h-5' />
+                  <span className='text-sm font-medium'>Auto-Bill</span>
+                </button>
               </div>
 
               {/* Appointment (optional) */}
@@ -181,34 +193,80 @@ const BillingModal = ({
                   {formData.services.map((s, i) => (
                     <div
                       key={i}
-                      className='flex gap-2 items-center'>
-                      <select
-                        className='flex-1 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                        value={s.name}
-                        onChange={(e) =>
-                          updateService(i, 'name', e.target.value)
-                        }>
-                        {SERVICE_TYPES.map((t) => (
-                          <option key={t}>{t}</option>
-                        ))}
-                      </select>
-                      <input
-                        type='number'
-                        placeholder='Amount'
-                        className='w-28 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
-                        value={s.amount}
-                        onChange={(e) =>
-                          updateService(i, 'amount', e.target.value)
-                        }
-                        required
-                      />
-                      {formData.services.length > 1 && (
-                        <button
-                          type='button'
-                          onClick={() => removeService(i)}
-                          className='text-red-500 hover:text-red-700'>
-                          ✕
-                        </button>
+                      className='space-y-2 border-b border-gray-100 dark:border-gray-700 pb-2 last:border-0'>
+                      <div className='flex gap-2 items-center'>
+                        <select
+                          className='flex-1 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          value={s.name}
+                          onChange={(e) =>
+                            updateService(i, 'name', e.target.value)
+                          }>
+                          {SERVICE_TYPES.map((t) => (
+                            <option key={t}>{t}</option>
+                          ))}
+                        </select>
+                        <input
+                          type='number'
+                          placeholder='Qty'
+                          className='w-20 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          value={s.quantity}
+                          onChange={(e) => {
+                            const qty = parseInt(e.target.value) || 1;
+                            updateService(i, 'quantity', qty);
+                            // If it's a medicine, we can try to re-calculate amount
+                            if (s.medicine) {
+                              const med = medicines.find(m => m._id === s.medicine);
+                              if (med) updateService(i, 'amount', med.price * qty);
+                            }
+                          }}
+                          min='1'
+                          required
+                        />
+                        <input
+                          type='number'
+                          placeholder='Amount'
+                          className='w-28 border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500'
+                          value={s.amount}
+                          onChange={(e) =>
+                            updateService(i, 'amount', e.target.value)
+                          }
+                          required
+                        />
+                        {formData.services.length > 1 && (
+                          <button
+                            type='button'
+                            onClick={() => removeService(i)}
+                            className='text-red-500 hover:text-red-700'>
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                      
+                      {s.name === 'Pharmacy' && (
+                        <div className='pl-2 border-l-2 border-blue-500'>
+                          <Select
+                            styles={getSelectStyles()}
+                            options={medicines.map((m) => ({
+                              value: m._id,
+                              label: `${m.name} - $${m.price} (${m.stock} in stock)`,
+                              price: m.price
+                            }))}
+                            value={
+                              medicines
+                                .map((m) => ({ value: m._id, label: `${m.name} - $${m.price} (${m.stock} in stock)`, price: m.price }))
+                                .find((o) => o.value === s.medicine) || null
+                            }
+                            onChange={(opt) => {
+                              updateService(i, 'medicine', opt?.value || '');
+                              if (opt?.price) {
+                                updateService(i, 'amount', opt.price * (s.quantity || 1));
+                              }
+                            }}
+                            placeholder='Search Medicine...'
+                            isSearchable
+                            isClearable
+                          />
+                        </div>
                       )}
                     </div>
                   ))}

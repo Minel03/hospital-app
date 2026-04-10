@@ -36,6 +36,10 @@ const labReportSchema = new mongoose.Schema(
       default: '',
     },
     completedAt: Date,
+    isBilled: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

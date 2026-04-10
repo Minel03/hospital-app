@@ -1,5 +1,7 @@
 // controllers/invoiceController.js
 import invoiceModel from '../models/invoiceModel.js';
+import medicineModel from '../models/medicineModel.js';
+import labReportModel from '../models/labReportModel.js';
 import { createLog } from './auditLogController.js';
 
 export const createInvoice = async (req, res) => {
@@ -16,6 +18,16 @@ export const createInvoice = async (req, res) => {
       admission: admission || null,
       appointment: appointment || null,
     });
+
+    // Mark lab reports as billed
+    for (const service of services) {
+      if (service.name === 'Laboratory' && service.labTest) {
+        await labReportModel.updateMany(
+          { patient: patient, test: service.labTest, isBilled: false },
+          { isBilled: true }
+        );
+      }
+    }
 
     await createLog({
       entity: 'Invoice',
@@ -77,6 +89,18 @@ export const updateInvoice = async (req, res) => {
     if (!updated)
       return res.json({ success: false, message: 'Invoice not found' });
 
+    // Mark lab reports as billed for updated services
+    if (services) {
+      for (const service of services) {
+        if (service.name === 'Laboratory' && service.labTest) {
+          await labReportModel.updateMany(
+            { patient: updated.patient, test: service.labTest, isBilled: false },
+            { isBilled: true }
+          );
+        }
+      }
+    }
+
     await createLog({
       entity: 'Invoice',
       entityId: invoiceId,
@@ -116,13 +140,29 @@ export const deleteInvoice = async (req, res) => {
 export const markAsPaid = async (req, res) => {
   try {
     const { invoiceId } = req.body;
-    const invoice = await invoiceModel.findByIdAndUpdate(
-      invoiceId,
-      { status: 'Paid' },
-      { new: true },
-    );
+    const invoice = await invoiceModel.findById(invoiceId);
+
     if (!invoice)
       return res.json({ success: false, message: 'Invoice not found' });
+
+    if (invoice.status === 'Paid') {
+      return res.json({ success: false, message: 'Invoice already paid' });
+    }
+
+    // Update status to Paid
+    invoice.status = 'Paid';
+    await invoice.save();
+
+    // Decrement stock for medicines in the invoice
+    for (const service of invoice.services) {
+      if (service.medicine && service.quantity) {
+        const medicine = await medicineModel.findById(service.medicine);
+        if (medicine) {
+          medicine.stock = Math.max(0, medicine.stock - service.quantity);
+          await medicine.save();
+        }
+      }
+    }
 
     await createLog({
       entity: 'Invoice',
@@ -130,7 +170,7 @@ export const markAsPaid = async (req, res) => {
       action: 'Invoice Paid',
       patient: invoice.patient,
       doctor: invoice.doctor,
-      details: `Invoice marked as paid.`,
+      details: `Invoice marked as paid. Stock deducted for pharmacy items.`,
     });
 
     res.json({ success: true, message: 'Marked as paid', invoice });

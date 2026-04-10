@@ -25,6 +25,7 @@ const Billing = () => {
   const [doctors, setDoctors] = useState([]);
   const [admissions, setAdmissions] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [medicines, setMedicines] = useState([]);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewInvoice, setViewInvoice] = useState(null);
 
@@ -40,22 +41,24 @@ const Billing = () => {
     appointment: null,
     dueDate: '',
     status: 'Pending',
-    services: [{ name: 'Consultation', amount: '' }],
+    services: [{ name: 'Consultation', amount: '', quantity: 1 }],
   });
 
   const fetchAll = async () => {
-    const [inv, pat, doc, adm, appt] = await Promise.all([
+    const [inv, pat, doc, adm, appt, med] = await Promise.all([
       axios.get('/api/invoice/list'),
       axios.get('/api/patient/all'),
       axios.get('/api/doctor/list'),
       axios.get('/api/admission/list'),
       axios.get('/api/appointment/list'),
+      axios.get('/api/pharmacy/inventory'),
     ]);
     if (inv.data.success) setInvoices(inv.data.invoices);
     if (pat.data.success) setPatients(pat.data.patients);
     if (doc.data.success) setDoctors(doc.data.doctors);
     if (adm.data.success) setAdmissions(adm.data.admissions);
     if (appt.data.success) setAppointments(appt.data.appointments);
+    if (med.data.success) setMedicines(med.data.medicines || []);
   };
 
   useEffect(() => {
@@ -114,6 +117,39 @@ const Billing = () => {
     if (data.success) {
       toast.success(data.message);
       fetchAll();
+    }
+  };
+
+  const handleAutoCalculate = async () => {
+    if (!formData.patient) return toast.error('Please select a patient first');
+    try {
+      const { data } = await axios.get(
+        `/api/invoice/auto-calculate/${formData.patient}`
+      );
+      if (data.success) {
+        if (data.billingItems.length === 0) {
+          toast.info('No auto-billable items found for this patient.');
+          return;
+        }
+
+        const newServices = data.billingItems.map((item) => ({
+          name: item.name,
+          amount: item.amount,
+          labTest: item.labTest || null,
+          quantity: item.quantity || 1,
+          details: item.details || '',
+        }));
+
+        setFormData({
+          ...formData,
+          services: [...formData.services, ...newServices],
+          admission: data.admission?._id || formData.admission,
+        });
+
+        toast.success(`Fetched ${newServices.length} billing items.`);
+      }
+    } catch (err) {
+      toast.error('Failed to auto-calculate bill');
     }
   };
 
@@ -316,7 +352,7 @@ const Billing = () => {
       appointment: null,
       dueDate: '',
       status: 'Pending',
-      services: [{ name: 'Consultation', amount: '' }],
+      services: [{ name: 'Consultation', amount: '', quantity: 1 }],
     });
     setShowModal(true);
   };
@@ -339,7 +375,7 @@ const Billing = () => {
   const addService = () =>
     setFormData({
       ...formData,
-      services: [...formData.services, { name: 'Consultation', amount: '' }],
+      services: [...formData.services, { name: 'Consultation', amount: '', quantity: 1 }],
     });
   const removeService = (i) =>
     setFormData({
@@ -347,9 +383,11 @@ const Billing = () => {
       services: formData.services.filter((_, idx) => idx !== i),
     });
   const updateService = (i, field, value) => {
-    const updated = [...formData.services];
-    updated[i] = { ...updated[i], [field]: value };
-    setFormData({ ...formData, services: updated });
+    setFormData((prev) => {
+      const updated = [...prev.services];
+      updated[i] = { ...updated[i], [field]: value };
+      return { ...prev, services: updated };
+    });
   };
 
   const filtered = invoices.filter((inv) => {
@@ -444,6 +482,8 @@ const Billing = () => {
         removeService={removeService}
         totalAmount={totalAmount}
         SERVICE_TYPES={SERVICE_TYPES}
+        medicines={medicines}
+        handleAutoCalculate={handleAutoCalculate}
       />
 
       <BillingViewModal

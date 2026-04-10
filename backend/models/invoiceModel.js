@@ -40,6 +40,17 @@ const invoiceSchema = new mongoose.Schema(
           required: true,
         },
         amount: { type: Number, required: true },
+        medicine: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Medicine',
+          default: null,
+        },
+        labTest: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'LabTest',
+          default: null,
+        },
+        quantity: { type: Number, default: 1 },
       },
     ],
     totalAmount: { type: Number, required: true },

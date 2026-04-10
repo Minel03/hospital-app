@@ -227,16 +227,16 @@ const Pharmacy = () => {
                     </td>
                     <td className='px-6 py-4'>
                       {m.stock > 20 ? (
-                        <span className='flex items-center gap-1 text-green-600 text-xs font-bold'>
-                          <CheckCircle className='w-4 h-4' /> In Stock
+                        <span className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider border border-green-100 dark:border-green-800/50'>
+                          <CheckCircle className='w-3.5 h-3.5' /> In Stock
                         </span>
                       ) : m.stock > 0 ? (
-                        <span className='flex items-center gap-1 text-orange-600 text-xs font-bold'>
-                          <AlertTriangle className='w-4 h-4' /> Low Stock
+                        <span className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold uppercase tracking-wider border border-orange-100 dark:border-orange-800/50 animate-pulse'>
+                          <AlertTriangle className='w-3.5 h-3.5' /> Low Stock
                         </span>
                       ) : (
-                        <span className='flex items-center gap-1 text-red-600 text-xs font-bold'>
-                          <AlertTriangle className='w-4 h-4' /> Out of Stock
+                        <span className='inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider border border-red-100 dark:border-red-800/50'>
+                          <AlertTriangle className='w-3.5 h-3.5' /> Out of Stock
                         </span>
                       )}
                     </td>
