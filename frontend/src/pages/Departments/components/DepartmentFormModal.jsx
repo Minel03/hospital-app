@@ -25,6 +25,7 @@ const DepartmentFormModal = ({
     occupiedBeds: 0,
     phone: '',
     status: 'Active',
+    color: '#3b82f6',
   };
 
   const [formData, setFormData] = useState(initialForm);
@@ -42,12 +43,13 @@ const DepartmentFormModal = ({
         occupiedBeds,
         phone,
         status,
+        color,
       } = selectedDepartment;
 
       setFormData({
         name: name || '',
         description: description || '',
-        head: head?._id || head || '', // 👈 supports populated doctor
+        head: head?._id || head || '',
         doctors: doctors || 0,
         staff: staff || 0,
         patients: patients || 0,
@@ -55,6 +57,7 @@ const DepartmentFormModal = ({
         occupiedBeds: occupiedBeds || 0,
         phone: phone || '',
         status: status || 'Active',
+        color: color || '#3b82f6',
       });
     } else {
       setFormData(initialForm);
@@ -155,25 +158,26 @@ const DepartmentFormModal = ({
             />
           </div>
 
-          <div className='grid grid-cols-2 gap-4'>
-            {/* 👇 UPDATED HEAD (React Select) */}
-            <div>
-              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
-                Head (Doctor)
-              </label>
-              <Select styles={getSelectStyles()}
-                options={doctorOptions}
-                value={doctorOptions.find((opt) => opt.value === formData.head)}
-                onChange={(selected) =>
-                  setFormData({
-                    ...formData,
-                    head: selected?.value || '',
-                  })
-                }
-                placeholder='Select doctor...'
-              />
-            </div>
+          {/* Head (Doctor) */}
+          <div>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+              Head (Doctor)
+            </label>
+            <Select 
+              styles={getSelectStyles()}
+              options={doctorOptions}
+              value={doctorOptions.find((opt) => opt.value === formData.head)}
+              onChange={(selected) =>
+                setFormData({
+                  ...formData,
+                  head: selected?.value || '',
+                })
+              }
+              placeholder='Select doctor...'
+            />
+          </div>
 
+          <div className='grid grid-cols-2 gap-4'>
             {/* Status */}
             <div>
               <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
@@ -188,6 +192,31 @@ const DepartmentFormModal = ({
                 <option>Active</option>
                 <option>Inactive</option>
               </select>
+            </div>
+
+            {/* Department Color */}
+            <div>
+              <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                Chart Color
+              </label>
+              <div className='flex items-center gap-2'>
+                <input
+                  type='color'
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
+                  className='w-10 h-10 border-none bg-transparent cursor-pointer p-0'
+                />
+                <input
+                  type='text'
+                  value={formData.color}
+                  onChange={(e) =>
+                    setFormData({ ...formData, color: e.target.value })
+                  }
+                  className='flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1 bg-white dark:bg-gray-700 text-xs font-mono text-gray-900 dark:text-white uppercase'
+                />
+              </div>
             </div>
           </div>
 

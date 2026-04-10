@@ -3,6 +3,7 @@ import bedModel from '../models/bedModel.js';
 import patientModel from '../models/patientModel.js';
 import appointmentModel from '../models/appointmentModel.js';
 import departmentModel from '../models/departmentModel.js';
+import admissionModel from '../models/admissionModel.js';
 
 export const getDashboardSummary = async (req, res) => {
   try {
@@ -63,8 +64,22 @@ export const getDashboardSummary = async (req, res) => {
       },
     ]);
 
-    // 5. Department Distribution
-    const departmentDistribution = await departmentModel.find({}, 'name patients color');
+    // 5. Department Distribution (Dynamically calculate load)
+    const [departments, activeAdmissions] = await Promise.all([
+      departmentModel.find({}, 'name color'),
+      admissionModel.find({ status: 'Admitted' }, 'department'),
+    ]);
+
+    const departmentDistribution = departments.map((dept) => {
+      const load = activeAdmissions.filter(
+        (a) => a.department?.toString() === dept._id.toString()
+      ).length;
+      return {
+        name: dept.name,
+        patients: load,
+        color: dept.color,
+      };
+    });
 
     const boundaries = [0, 18, 35, 50, 65, 100];
     const boundariesMap = {

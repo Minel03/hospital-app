@@ -11,6 +11,7 @@ const departmentSchema = new mongoose.Schema(
     roomsAndBeds: { type: Number, default: 0 }, // ← renamed
     phone: { type: String, trim: true },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
+    color: { type: String, default: '#3b82f6' },
     description: { type: String, trim: true },
   },
   { timestamps: true },

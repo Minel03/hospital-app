@@ -506,21 +506,23 @@ const StatsCard = ({
               </h3>
             </div>
             {analytics?.departments?.length > 0 ? (
-              <ResponsiveContainer
-                width='100%'
-                height={250}>
+              <ResponsiveContainer width='100%' height={300}>
                 <PieChart>
                   <Pie
-                    data={analytics.departments}
+                    data={analytics.departments.filter(d => d.patients > 0)}
                     cx='50%'
-                    cy='50%'
-                    label={({ name }) => name}
-                    outerRadius={80}
-                    dataKey='patients'>
-                    {analytics.departments.map((entry, index) => (
+                    cy='45%'
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey='patients'
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    stroke='none'
+                  >
+                    {analytics.departments.filter(d => d.patients > 0).map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                        fill={entry.color || COLORS[index % COLORS.length]}
                       />
                     ))}
                   </Pie>
