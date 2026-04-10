@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 import AdmissionsHeader from './components/AdmissionsHeader';
 import AdmissionsSearch from './components/AdmissionsSearch';
@@ -211,10 +211,30 @@ const Admissions = () => {
   const admitted = admissions.filter((a) => a.status === 'Admitted').length;
   const discharged = admissions.filter((a) => a.status === 'Discharged').length;
 
+  const { Users, Bed, CheckCircle } = Icons;
+
   const stats = [
-    { label: 'Total Admissions', value: admissions.length },
-    { label: 'Currently Admitted', value: admitted },
-    { label: 'Discharged', value: discharged },
+    { 
+      label: 'Total Admissions', 
+      value: admissions.length, 
+      icon: Users,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
+    },
+    { 
+      label: 'Currently Admitted', 
+      value: admitted, 
+      icon: Bed,
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+      textColor: 'text-orange-600 dark:text-orange-400'
+    },
+    { 
+      label: 'Discharged', 
+      value: discharged, 
+      icon: CheckCircle,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
+    },
   ];
 
   return (

@@ -17,6 +17,8 @@ import Admissions from './pages/Admissions/Admissions';
 import Staff from './pages/Staff/Staff';
 import Beds from './pages/Beds/Beds';
 import Logs from './pages/Logs/Logs';
+import Pharmacy from './pages/Pharmacy/Pharmacy';
+import Laboratory from './pages/Laboratory/Laboratory';
 
 const App = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -83,6 +85,14 @@ const App = () => {
                     <Route
                       path='logs'
                       element={<Logs />}
+                    />
+                    <Route
+                      path='pharmacy'
+                      element={<Pharmacy />}
+                    />
+                    <Route
+                      path='laboratory'
+                      element={<Laboratory />}
                     />
                     <Route
                       path='settings'

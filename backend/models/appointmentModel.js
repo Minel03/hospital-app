@@ -30,6 +30,10 @@ const appointmentSchema = new mongoose.Schema({
     enum: ['Check-up', 'Consultation', 'Follow-up', 'Emergency'],
     default: 'Check-up',
   },
+  meetingLink: {
+    type: String,
+    default: '',
+  },
 });
 
 const appointmentModel =

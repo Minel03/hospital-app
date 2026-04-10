@@ -219,9 +219,9 @@ const Settings = () => {
         </button>
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 items-start'>
         {/* Sidebar */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-1'>
+        <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-4 space-y-1 h-fit sticky top-8'>
           {sidebarItems.map((item, i) => {
             const Icon = item.icon;
             return (

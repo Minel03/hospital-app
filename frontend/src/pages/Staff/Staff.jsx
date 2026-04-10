@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, Icons } from '../../context/AppContext';
 import StaffHeader from './components/StaffHeader';
 import StaffSearchFilter from './components/StaffSearchFilter';
 import StaffTable from './components/StaffTable';
@@ -170,22 +170,36 @@ const Staff = () => {
     });
   };
 
+  const { Users, User, Clock, XCircle } = Icons;
+
   const stats = [
-    { label: 'Total Staff', value: staff.length, color: 'bg-blue-500' },
+    { 
+      label: 'Total Staff', 
+      value: staff.length, 
+      icon: Users,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
+    },
     {
       label: 'Active',
       value: staff.filter((s) => s.status === 'Active').length,
-      color: 'bg-green-500',
+      icon: User,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
     },
     {
       label: 'On Leave',
       value: staff.filter((s) => s.status === 'On Leave').length,
-      color: 'bg-yellow-500',
+      icon: Clock,
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+      textColor: 'text-orange-600 dark:text-orange-400'
     },
     {
       label: 'Inactive',
       value: staff.filter((s) => s.status === 'Inactive').length,
-      color: 'bg-gray-500',
+      icon: XCircle,
+      bgColor: 'bg-gray-50 dark:bg-gray-900/30',
+      textColor: 'text-gray-600 dark:text-gray-400'
     },
   ];
 

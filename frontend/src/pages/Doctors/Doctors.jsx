@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
 import DoctorHeader from './components/DoctorHeader';
@@ -208,9 +208,41 @@ const Doctors = () => {
     return matchesSearch && matchesStatus && matchesSpecialty;
   });
 
+  const { Users, User, Activity, Clock } = Icons;
+  const stats = [
+    { 
+      label: 'Medical Staff', 
+      value: doctors.length, 
+      icon: Users,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
+    },
+    { 
+      label: 'Available', 
+      value: doctors.filter(d => d.status === 'Available').length, 
+      icon: User,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
+    },
+    { 
+      label: 'On Leave', 
+      value: doctors.filter(d => d.status === 'On Leave').length, 
+      icon: Clock,
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+      textColor: 'text-orange-600 dark:text-orange-400'
+    },
+    { 
+      label: 'Total Consultations', 
+      value: doctors.reduce((acc, curr) => acc + (curr.patients || 0), 0), 
+      icon: Activity,
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+      textColor: 'text-purple-600 dark:text-purple-400'
+    },
+  ];
+
   return (
     <div className='p-8 space-y-6'>
-      <DoctorHeader onAddDoctor={handleAddDoctor} />
+      <DoctorHeader onAddDoctor={handleAddDoctor} stats={stats} />
 
       <DoctorSearchFilter
         searchQuery={searchQuery}

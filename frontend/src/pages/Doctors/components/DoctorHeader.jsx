@@ -1,25 +1,25 @@
-import React from 'react';
+import SummaryStats from '../../../components/SummaryStats';
 import Title from '../../../components/Title';
 import { Icons } from '../../../context/AppContext';
 
-const DoctorHeader = ({ onAddDoctor }) => {
+const DoctorHeader = ({ onAddDoctor, stats }) => {
   const { Plus } = Icons;
   return (
-    <div>
-      <div className='flex items-center justify-between'>
-        <div>
-          <Title
-            title='Doctors'
-            subtitle='Manage medical staff and their schedules'
-          />
-        </div>
+    <div className='space-y-8'>
+      <div className='flex flex-col md:flex-row md:items-center justify-between gap-4'>
+        <Title
+          title='Doctors'
+          subtitle='Manage medical staff and their schedules'
+        />
         <button
           onClick={onAddDoctor}
-          className='flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors'>
+          className='flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 dark:shadow-none font-bold'>
           <Plus className='w-5 h-5' />
-          <span className='hidden sm:inline'>Add Doctor</span>
+          <span>Add Doctor</span>
         </button>
       </div>
+
+      <SummaryStats stats={stats} />
     </div>
   );
 };

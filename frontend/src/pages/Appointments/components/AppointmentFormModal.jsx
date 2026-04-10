@@ -172,6 +172,22 @@ const AppointmentFormModal = ({
             </select>
           </div>
 
+          {/* Meeting Link (Telemedicine) */}
+          <div>
+            <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
+              Telemedicine Meeting Link (Optional)
+            </label>
+            <input
+              type='url'
+              value={formData.meetingLink || ''}
+              onChange={(e) =>
+                setFormData({ ...formData, meetingLink: e.target.value })
+              }
+              placeholder='https://zoom.us/j/...'
+              className='w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600'
+            />
+          </div>
+
           {/* Buttons */}
           <div className='flex justify-end gap-2 mt-2'>
             <button

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useAppContext } from '../../context/AppContext';
+import { useAppContext, Icons } from '../../context/AppContext';
 import { toast } from 'react-toastify';
 
 import PatientHeader from '../Patients/components/PatientHeader';
@@ -181,9 +181,41 @@ const Patients = () => {
     return matchesSearch && matchesGender && matchesBlood && matchesStatus;
   });
 
+  const { Users, User, Activity } = Icons;
+  const stats = [
+    { 
+      label: 'Total Patients', 
+      value: patients.length, 
+      icon: Users,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
+    },
+    { 
+      label: 'Male', 
+      value: patients.filter(p => p.gender === 'Male').length, 
+      icon: User,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
+    },
+    { 
+      label: 'Female', 
+      value: patients.filter(p => p.gender === 'Female').length, 
+      icon: User,
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+      textColor: 'text-purple-600 dark:text-purple-400'
+    },
+    { 
+      label: 'Active Records', 
+      value: patients.length, 
+      icon: Activity,
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+      textColor: 'text-orange-600 dark:text-orange-400'
+    },
+  ];
+
   return (
     <div className='p-8 space-y-6'>
-      <PatientHeader onAddPatient={handleAddPatient} />
+      <PatientHeader onAddPatient={handleAddPatient} stats={stats} />
 
       <PatientSearchFilter
         searchQuery={searchQuery}

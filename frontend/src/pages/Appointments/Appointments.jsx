@@ -6,7 +6,6 @@ import AppointmentHeader from './components/AppointmentHeader';
 import AppointmentSearchFilter from './components/AppointmentSearchFilter';
 import AppointmentTable from './components/AppointmentTable';
 import AppointmentFormModal from './components/AppointmentFormModal';
-import AppointmentQuickStats from './components/AppointmentQuickStats';
 
 const Appointments = () => {
   const { axios } = useAppContext();
@@ -33,6 +32,7 @@ const Appointments = () => {
     datetime: '', // single datetime field
     status: 'Pending',
     type: 'Check-up',
+    meetingLink: '',
   });
 
   // Fetch appointments & related data
@@ -79,6 +79,7 @@ const Appointments = () => {
         datetime: formData.datetime, // ← send single datetime
         status: formData.status,
         type: formData.type,
+        meetingLink: formData.meetingLink || '',
       };
 
       if (mode === 'add') {
@@ -103,6 +104,7 @@ const Appointments = () => {
         datetime: '',
         status: 'Pending',
         type: 'Check-up',
+        meetingLink: '',
       });
 
       loadAppointmentsData();
@@ -122,6 +124,7 @@ const Appointments = () => {
       datetime: '',
       status: 'Pending',
       type: 'Check-up',
+      meetingLink: '',
     });
     setShowModal(true);
   };
@@ -148,6 +151,7 @@ const Appointments = () => {
       datetime: formattedDatetime,
       status: appointment.status || 'Pending',
       type: appointment.type || 'Check-up',
+      meetingLink: appointment.meetingLink || '',
     });
 
     setShowModal(true);
@@ -168,9 +172,67 @@ const Appointments = () => {
     }
   };
 
+  const filteredAppointments = appointments.filter((appointment) => {
+    const query = searchQuery.toLowerCase();
+    const matchesSearch =
+      appointment.patient?.name?.toLowerCase().includes(query) ||
+      appointment.doctor?.name?.toLowerCase().includes(query) ||
+      appointment.department?.name?.toLowerCase().includes(query);
+
+    const matchesStatus =
+      filters.status.length === 0 ||
+      filters.status.includes(appointment.status);
+
+    const matchesType =
+      filters.type.length === 0 || filters.type.includes(appointment.type);
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
+
+  /* ================= STATS ================= */
+  const today = new Date();
+  const countToday = appointments.filter(
+    (a) => new Date(a.datetime).toDateString() === today.toDateString()
+  ).length;
+
+  const countPending = appointments.filter(a => a.status === 'Pending').length;
+  const countTelemedicine = appointments.filter(a => a.type === 'Telemedicine' || a.meetingLink).length;
+
+  const { Activity, Video } = Icons;
+  const stats = [
+    { 
+      label: 'Total Appointments', 
+      value: appointments.length, 
+      icon: Calendar,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+      textColor: 'text-blue-600 dark:text-blue-400'
+    },
+    { 
+      label: "Today's", 
+      value: countToday, 
+      icon: Clock,
+      bgColor: 'bg-green-50 dark:bg-green-900/30',
+      textColor: 'text-green-600 dark:text-green-400'
+    },
+    { 
+      label: 'Pending', 
+      value: countPending, 
+      icon: Activity,
+      bgColor: 'bg-orange-50 dark:bg-orange-900/30',
+      textColor: 'text-orange-600 dark:text-orange-400'
+    },
+    { 
+      label: 'Telemedicine', 
+      value: countTelemedicine, 
+      icon: Video,
+      bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+      textColor: 'text-purple-600 dark:text-purple-400'
+    },
+  ];
+
   return (
-    <div className='p-8 space-y-6'>
-      <AppointmentHeader onAddAppointment={handleAddAppointment} />
+    <div className='p-8 space-y-8'>
+      <AppointmentHeader onAddAppointment={handleAddAppointment} stats={stats} />
 
       <AppointmentSearchFilter
         searchQuery={searchQuery}
@@ -182,16 +244,14 @@ const Appointments = () => {
         filterRef={filterRef}
       />
 
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 gap-8'>
         <AppointmentTable
-          appointments={appointments}
+          appointments={filteredAppointments}
           filters={filters}
           searchQuery={searchQuery}
           onEditAppointment={handleEditAppointment}
           onCancelAppointment={handleCancelAppointment}
         />
-
-        <AppointmentQuickStats appointments={appointments} />
       </div>
 
       <AppointmentFormModal

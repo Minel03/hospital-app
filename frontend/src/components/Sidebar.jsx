@@ -19,6 +19,8 @@ const Sidebar = () => {
     UserCog,
     FileText,
     LogOut,
+    Package,
+    FlaskConical,
   } = Icons;
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState({ name: '', email: '' });
@@ -32,6 +34,8 @@ const Sidebar = () => {
     { id: 'admissions', label: 'Admissions', icon: ClipboardList },
     { id: 'doctors', label: 'Doctors', icon: Stethoscope },
     { id: 'staffs', label: 'Staff', icon: UserCog },
+    { id: 'pharmacy', label: 'Pharmacy', icon: Package },
+    { id: 'laboratory', label: 'Laboratory', icon: FlaskConical },
     { id: 'departments', label: 'Departments', icon: Activity },
     { id: 'beds', label: 'Rooms & Beds', icon: Bed },
     { id: 'billing', label: 'Billing', icon: DollarSign },

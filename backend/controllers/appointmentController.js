@@ -1,13 +1,13 @@
-// controllers/appointmentController.js
 import appointmentModel from '../models/appointmentModel.js';
 import { createLog } from './auditLogController.js';
+import { sendAppointmentEmail } from '../utils/emailHelper.js';
 
 /* =========================================================
    CREATE APPOINTMENT
 ========================================================= */
 export const createAppointment = async (req, res) => {
   try {
-    const { patient, doctor, department, datetime, status, type } = req.body;
+    const { patient, doctor, department, datetime, status, type, meetingLink } = req.body;
 
     if (!patient || !doctor || !department || !datetime) {
       return res.json({ success: false, message: 'Missing required fields' });
@@ -20,7 +20,22 @@ export const createAppointment = async (req, res) => {
       datetime: new Date(datetime),
       status: status || 'Pending',
       type: type || 'Check-up',
+      meetingLink: meetingLink || '',
     });
+
+    // Fetch details for email
+    const fullAppointment = await appointmentModel.findById(appointment._id)
+      .populate('patient')
+      .populate('doctor');
+
+    // Trigger Email Notification (Non-blocking)
+    if (fullAppointment.patient?.email) {
+      sendAppointmentEmail(fullAppointment.patient.email, {
+        date: new Date(datetime).toLocaleDateString(),
+        time: new Date(datetime).toLocaleTimeString(),
+        doctorName: fullAppointment.doctor?.name || 'Assigned Doctor',
+      }).catch(err => console.error('Appointment Email Error:', err));
+    }
 
     // Create audit log
     await createLog({

@@ -15,6 +15,8 @@ import auditLogRouter from './routes/auditLogRoute.js';
 import analyticsRouter from './routes/analyticsRoute.js';
 import settingsRouter from './routes/settingsRoute.js';
 import userRouter from './routes/userRoute.js';
+import pharmacyRouter from './routes/pharmacyRoute.js';
+import labRouter from './routes/labRoute.js';
 
 // App Config
 const app = express();
@@ -39,6 +41,8 @@ app.use('/api/logs', auditLogRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/analytics', analyticsRouter);
 app.use('/api/user', userRouter);
+app.use('/api/pharmacy', pharmacyRouter);
+app.use('/api/lab', labRouter);
 
 app.get('/', (req, res) => {
   res.send('API Working');

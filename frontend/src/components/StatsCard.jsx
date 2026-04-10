@@ -1,5 +1,6 @@
 import React from 'react';
 import { Icons, Charts } from '../context/AppContext';
+import SummaryStats from './SummaryStats';
 
 const { Users, CalendarCheck, Bed, DollarSign, Activity } = Icons;
 const {
@@ -17,7 +18,14 @@ const {
   Bar,
 } = Charts;
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+const COLORS = [
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#06b6d4',
+];
 
 const StatsCard = ({
   patients = [],
@@ -27,8 +35,12 @@ const StatsCard = ({
   analytics = null,
 }) => {
   // Use analytics data for stats if available, fallback to counts
-  const totalPatients = analytics?.demographics?.reduce((a, b) => a + b.count, 0) || patients.length;
-  const activeAdmissionsCount = analytics?.beds?.occupied || admissions.filter((a) => a.status === 'Admitted').length;
+  const totalPatients =
+    analytics?.demographics?.reduce((a, b) => a + b.count, 0) ||
+    patients.length;
+  const activeAdmissionsCount =
+    analytics?.beds?.occupied ||
+    admissions.filter((a) => a.status === 'Admitted').length;
   const todayAppointmentsCount = appointments.length;
 
   const stats = [
@@ -67,11 +79,21 @@ const StatsCard = ({
   ];
 
   // Bed data for Pie Chart
-  const bedData = analytics ? [
-    { name: 'Available', value: analytics.beds.available, color: '#10b981' },
-    { name: 'Occupied', value: analytics.beds.occupied, color: '#ef4444' },
-    { name: 'Maintenance', value: analytics.beds.maintenance, color: '#f59e0b' },
-  ] : [];
+  const bedData = analytics
+    ? [
+        {
+          name: 'Available',
+          value: analytics.beds.available,
+          color: '#10b981',
+        },
+        { name: 'Occupied', value: analytics.beds.occupied, color: '#ef4444' },
+        {
+          name: 'Maintenance',
+          value: analytics.beds.maintenance,
+          color: '#f59e0b',
+        },
+      ]
+    : [];
 
   // Demographics for Bar Chart
   const demoData = analytics?.demographics || [];
@@ -79,62 +101,80 @@ const StatsCard = ({
   return (
     <div className='space-y-6'>
       {/* Stats Numbers */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={stat.id}
-              className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 flex items-center gap-4 transition-colors shadow-sm'>
-              <div className={`p-3 rounded-full ${stat.bgColor}`}>
-                <Icon className={`w-6 h-6 ${stat.textColor}`} />
-              </div>
-              <div>
-                <p className='text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider'>{stat.name}</p>
-                <p className='text-xl font-bold text-gray-900 dark:text-white'>
-                  {stat.value}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      <SummaryStats stats={stats} />
 
       {/* Charts Row 1: Revenue & Bed Occupancy */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Revenue Line Chart */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm'>
+        <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm'>
           <div className='flex items-center gap-2 mb-6'>
             <DollarSign className='w-5 h-5 text-purple-500' />
-            <h3 className='font-semibold text-gray-900 dark:text-white'>Monthly Revenue Trends</h3>
+            <h3 className='font-semibold text-gray-900 dark:text-white'>
+              Monthly Revenue Trends
+            </h3>
           </div>
           {analytics?.revenue?.length > 0 ? (
-            <ResponsiveContainer width='100%' height={250}>
+            <ResponsiveContainer
+              width='100%'
+              height={250}>
               <LineChart data={analytics.revenue}>
-                <CartesianGrid strokeDasharray='3 3' stroke='rgba(156, 163, 175, 0.1)' vertical={false} />
-                <XAxis dataKey='month' stroke='#9ca3af' fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke='#9ca3af' fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip 
-                   contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px', color: '#fff' }}
-                   itemStyle={{ color: '#8b5cf6' }}
+                <CartesianGrid
+                  strokeDasharray='3 3'
+                  stroke='rgba(156, 163, 175, 0.1)'
+                  vertical={false}
                 />
-                <Line type='monotone' dataKey='amount' stroke='#8b5cf6' strokeWidth={3} dot={{ r: 4, fill: '#8b5cf6' }} activeDot={{ r: 6 }} />
+                <XAxis
+                  dataKey='month'
+                  stroke='#9ca3af'
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke='#9ca3af'
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f2937',
+                    borderColor: '#374151',
+                    borderRadius: '8px',
+                    color: '#fff',
+                  }}
+                  itemStyle={{ color: '#8b5cf6' }}
+                />
+                <Line
+                  type='monotone'
+                  dataKey='amount'
+                  stroke='#8b5cf6'
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: '#8b5cf6' }}
+                  activeDot={{ r: 6 }}
+                />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p className='text-center text-gray-400 py-20'>No revenue data available.</p>
+            <p className='text-center text-gray-400 py-20'>
+              No revenue data available.
+            </p>
           )}
         </div>
 
         {/* Bed Occupancy Pie Chart */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm'>
+        <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm'>
           <div className='flex items-center gap-2 mb-6'>
             <Bed className='w-5 h-5 text-blue-500' />
-            <h3 className='font-semibold text-gray-900 dark:text-white'>Bed Capacity Status</h3>
+            <h3 className='font-semibold text-gray-900 dark:text-white'>
+              Bed Capacity Status
+            </h3>
           </div>
           {bedData.length > 0 ? (
             <div className='flex flex-col md:flex-row items-center'>
-              <ResponsiveContainer width='100%' height={250}>
+              <ResponsiveContainer
+                width='100%'
+                height={250}>
                 <PieChart>
                   <Pie
                     data={bedData}
@@ -143,10 +183,12 @@ const StatsCard = ({
                     innerRadius={60}
                     outerRadius={80}
                     paddingAngle={5}
-                    dataKey='value'
-                  >
+                    dataKey='value'>
                     {bedData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.color}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -154,18 +196,28 @@ const StatsCard = ({
               </ResponsiveContainer>
               <div className='w-full md:w-48 space-y-2 mt-4 md:mt-0'>
                 {bedData.map((d) => (
-                  <div key={d.name} className='flex items-center justify-between text-sm'>
+                  <div
+                    key={d.name}
+                    className='flex items-center justify-between text-sm'>
                     <div className='flex items-center gap-2'>
-                       <div className='w-3 h-3 rounded-full' style={{ backgroundColor: d.color }}></div>
-                       <span className='text-gray-500 dark:text-gray-400'>{d.name}</span>
+                      <div
+                        className='w-3 h-3 rounded-full'
+                        style={{ backgroundColor: d.color }}></div>
+                      <span className='text-gray-500 dark:text-gray-400'>
+                        {d.name}
+                      </span>
                     </div>
-                    <span className='font-semibold text-gray-900 dark:text-white'>{d.value}</span>
+                    <span className='font-semibold text-gray-900 dark:text-white'>
+                      {d.value}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <p className='text-center text-gray-400 py-20'>No bed data available.</p>
+            <p className='text-center text-gray-400 py-20'>
+              No bed data available.
+            </p>
           )}
         </div>
       </div>
@@ -173,34 +225,64 @@ const StatsCard = ({
       {/* Charts Row 2: Demographics & Departments */}
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
         {/* Patient Demographics Bar Chart */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm'>
+        <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm'>
           <div className='flex items-center gap-2 mb-6'>
             <Users className='w-5 h-5 text-green-500' />
-            <h3 className='font-semibold text-gray-900 dark:text-white'>Patient Age Distribution</h3>
+            <h3 className='font-semibold text-gray-900 dark:text-white'>
+              Patient Age Distribution
+            </h3>
           </div>
           {demoData.length > 0 ? (
-            <ResponsiveContainer width='100%' height={250}>
+            <ResponsiveContainer
+              width='100%'
+              height={250}>
               <BarChart data={demoData}>
-                <CartesianGrid strokeDasharray='3 3' stroke='rgba(156, 163, 175, 0.1)' vertical={false} />
-                <XAxis dataKey='range' stroke='#9ca3af' fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke='#9ca3af' fontSize={12} tickLine={false} axisLine={false} />
+                <CartesianGrid
+                  strokeDasharray='3 3'
+                  stroke='rgba(156, 163, 175, 0.1)'
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey='range'
+                  stroke='#9ca3af'
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke='#9ca3af'
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <Tooltip cursor={{ fill: 'transparent' }} />
-                <Bar dataKey='count' fill='#10b981' radius={[4, 4, 0, 0]} barSize={40} />
+                <Bar
+                  dataKey='count'
+                  fill='#10b981'
+                  radius={[4, 4, 0, 0]}
+                  barSize={40}
+                />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className='text-center text-gray-400 py-20'>No demographic data available.</p>
+            <p className='text-center text-gray-400 py-20'>
+              No demographic data available.
+            </p>
           )}
         </div>
 
         {/* Department Distribution (Original Chart updated) */}
-        <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm'>
+        <div className='bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm'>
           <div className='flex items-center gap-2 mb-6'>
             <Activity className='w-5 h-5 text-blue-500' />
-            <h3 className='font-semibold text-gray-900 dark:text-white'>Departmental Patient Load</h3>
+            <h3 className='font-semibold text-gray-900 dark:text-white'>
+              Departmental Patient Load
+            </h3>
           </div>
           {analytics?.departments?.length > 0 ? (
-            <ResponsiveContainer width='100%' height={250}>
+            <ResponsiveContainer
+              width='100%'
+              height={250}>
               <PieChart>
                 <Pie
                   data={analytics.departments}
@@ -208,17 +290,21 @@ const StatsCard = ({
                   cy='50%'
                   label={({ name }) => name}
                   outerRadius={80}
-                  dataKey='patients'
-                >
+                  dataKey='patients'>
                   {analytics.departments.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-             <p className='text-center text-gray-400 py-20'>No department data available.</p>
+            <p className='text-center text-gray-400 py-20'>
+              No department data available.
+            </p>
           )}
         </div>
       </div>
