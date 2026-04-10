@@ -8,11 +8,10 @@ import AppointmentTable from './components/AppointmentTable';
 import AppointmentFormModal from './components/AppointmentFormModal';
 
 const Appointments = () => {
-  const { axios } = useAppContext();
+  const { axios, patients, fetchPatients } = useAppContext();
   const { Search, Filter, Calendar, Clock } = Icons;
 
   const [appointments, setAppointments] = useState([]);
-  const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
 
@@ -48,7 +47,7 @@ const Appointments = () => {
 
       if (appointmentsRes.data.success)
         setAppointments(appointmentsRes.data.appointments || []);
-      setPatients(patientsRes.data.patients || []);
+      fetchPatients(); // This updates the global state
       setDoctors(doctorsRes.data.doctors || []);
       setDepartments(departmentsRes.data.departments || []);
     } catch (error) {

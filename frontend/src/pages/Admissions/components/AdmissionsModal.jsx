@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
 import { useAppContext } from '../../../context/AppContext';
 import Select from 'react-select';
+import QuickAddPatientModal from '../../../components/QuickAddPatientModal';
 
 const AdmissionsModal = ({
   showModal,
@@ -9,15 +11,21 @@ const AdmissionsModal = ({
   setFormData,
   handleSubmit,
   closeModal,
-  patients,
   doctors,
   departments,
   beds,
 }) => {
-  const { getSelectStyles } = useAppContext();
+  const { getSelectStyles, setPatients, patients } = useAppContext();
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  const handlePatientCreated = (newPatient) => {
+    setPatients((prev) => (prev ? [...prev, newPatient] : [newPatient]));
+    setFormData((prev) => ({ ...prev, patient: newPatient._id }));
+  };
 
   return (
-    <Modal
+    <>
+      <Modal
       isOpen={showModal}
       onClose={closeModal}
       title={mode === 'add' ? 'New Admission' : 'Edit Admission'}>
@@ -26,9 +34,15 @@ const AdmissionsModal = ({
         className='space-y-4'>
         {/* PATIENT */}
         <div>
-          <label className='block mb-1 font-medium text-gray-700 dark:text-gray-300'>
-            Patient
-          </label>
+          <div className='flex items-center justify-between mb-1'>
+            <label className='font-medium text-gray-700 dark:text-gray-300'>Patient</label>
+            <button
+              type='button'
+              onClick={() => setShowQuickAdd(true)}
+              className='text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline flex items-center gap-1'>
+              + New Patient
+            </button>
+          </div>
           <Select
             styles={getSelectStyles()}
             options={patients?.map((p) => ({
@@ -286,6 +300,12 @@ const AdmissionsModal = ({
         </div>
       </form>
     </Modal>
+      <QuickAddPatientModal
+        isOpen={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
+        onPatientCreated={handlePatientCreated}
+      />
+    </>
   );
 };
 

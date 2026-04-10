@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import Modal from '../../../components/Modal';
 import { useAppContext } from '../../../context/AppContext';
 import Select from 'react-select';
+import QuickAddPatientModal from '../../../components/QuickAddPatientModal';
 
 const AppointmentFormModal = ({
   showModal,
@@ -9,17 +11,23 @@ const AppointmentFormModal = ({
   formData,
   setFormData,
   handleSubmit,
-  patients,
   doctors,
   departments,
 }) => {
-  const { getSelectStyles } = useAppContext();
+  const { getSelectStyles, setPatients, patients } = useAppContext();
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+
+  const handlePatientCreated = (newPatient) => {
+    setPatients((prev) => (prev ? [...prev, newPatient] : [newPatient]));
+    setFormData((prev) => ({ ...prev, patient: newPatient._id }));
+  };
 
   const today = new Date();
   const localToday = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`;
 
   return (
-    <Modal
+    <>
+      <Modal
       isOpen={showModal}
       onClose={() => setShowModal(false)}
       title={mode === 'add' ? 'Add Appointment' : 'Edit Appointment'}>
@@ -28,9 +36,15 @@ const AppointmentFormModal = ({
         className='space-y-4'>
         {/* Patient */}
         <div>
-          <label className='block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2'>
-            Patient
-          </label>
+          <div className='flex items-center justify-between mb-2'>
+            <label className='text-sm font-medium text-gray-700 dark:text-gray-300'>Patient</label>
+            <button
+              type='button'
+              onClick={() => setShowQuickAdd(true)}
+              className='text-xs text-blue-600 dark:text-blue-400 font-semibold hover:underline'>
+              + New Patient
+            </button>
+          </div>
           <Select
             styles={getSelectStyles()}
             options={patients?.map((p) => ({ value: p._id, label: p.name }))}
@@ -186,6 +200,12 @@ const AppointmentFormModal = ({
         </div>
       </form>
     </Modal>
+      <QuickAddPatientModal
+        isOpen={showQuickAdd}
+        onClose={() => setShowQuickAdd(false)}
+        onPatientCreated={handlePatientCreated}
+      />
+    </>
   );
 };
 

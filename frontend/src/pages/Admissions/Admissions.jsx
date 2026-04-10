@@ -8,10 +8,9 @@ import AdmissionsModal from './components/AdmissionsModal';
 import AdmissionsViewModal from './components/AdmissionsViewModal';
 
 const Admissions = () => {
-  const { axios } = useAppContext();
+  const { axios, patients, fetchPatients } = useAppContext();
 
   const [admissions, setAdmissions] = useState([]);
-  const [patients, setPatients] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [beds, setBeds] = useState([]);
@@ -39,10 +38,6 @@ const Admissions = () => {
     if (data.success) setAdmissions(data.admissions);
   };
 
-  const fetchPatients = async () => {
-    const { data } = await axios.get('/api/patient/list');
-    if (data.success) setPatients(data.patients);
-  };
 
   const fetchDoctors = async () => {
     const { data } = await axios.get('/api/doctor/list');
@@ -164,7 +159,7 @@ const Admissions = () => {
     ]);
 
     if (bedsRes.data.success) setBeds(bedsRes.data.beds);
-    if (patientsRes.data.success) setPatients(patientsRes.data.patients);
+    if (patientsRes.data.success) fetchPatients(); // Update global patients if needed
 
     setFormData({
       patient: admission.patient._id,
