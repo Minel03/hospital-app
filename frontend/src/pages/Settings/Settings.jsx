@@ -308,7 +308,9 @@ const Settings = () => {
           )}
           {activeSection === 'Appearance' && (
             <div className='bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-4'>
-              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>Appearance</h3>
+              <h3 className='font-semibold text-gray-900 dark:text-white mb-1'>
+                Appearance
+              </h3>
               <p className='text-sm text-gray-500 dark:text-gray-400 mb-4'>
                 Customize how the dashboard looks on your device.
               </p>
@@ -418,9 +420,15 @@ const Settings = () => {
                   </thead>
                   <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
                     {users.map((user) => (
-                      <tr key={user._id} className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
-                        <td className='px-4 py-3 text-sm text-gray-900 dark:text-gray-200'>{user.name}</td>
-                        <td className='px-4 py-3 text-sm text-gray-600 dark:text-gray-400'>{user.email}</td>
+                      <tr
+                        key={user._id}
+                        className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
+                        <td className='px-4 py-3 text-sm text-gray-900 dark:text-gray-200'>
+                          {user.name}
+                        </td>
+                        <td className='px-4 py-3 text-sm text-gray-600 dark:text-gray-400'>
+                          {user.email}
+                        </td>
                         <td className='px-4 py-3 text-sm capitalize'>
                           <span className='px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-medium'>
                             {user.role}
@@ -457,48 +465,71 @@ const Settings = () => {
                       <XCircle className='w-5 h-5' />
                     </button>
                   </div>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
-                    <input
-                      type='text'
-                      placeholder='Name'
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
-                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg w-full'
-                    />
-                    <input
-                      type='email'
-                      placeholder='Email'
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg w-full'
-                    />
-                    <input
-                      type='password'
-                      placeholder={
-                        editingUser
-                          ? 'New password (leave blank to keep)'
-                          : 'Password'
-                      }
-                      value={formData.password}
-                      onChange={(e) =>
-                        setFormData({ ...formData, password: e.target.value })
-                      }
-                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500'
-                    />
-                    <select
-                      value={formData.role}
-                      onChange={(e) =>
-                        setFormData({ ...formData, role: e.target.value })
-                      }
-                      className='px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500'>
-                      <option value='admin'>Admin</option>
-                      <option value='doctor'>Doctor</option>
-                      <option value='staff'>Staff</option>
-                    </select>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                    <div className='space-y-1'>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                        Full Name
+                      </label>
+                      <input
+                        type='text'
+                        placeholder='Enter full name'
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
+                      />
+                    </div>
+
+                    <div className='space-y-1'>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                        Email Address
+                      </label>
+                      <input
+                        type='email'
+                        placeholder='Enter email address'
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
+                      />
+                    </div>
+
+                    <div className='space-y-1'>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                        Password
+                      </label>
+                      <input
+                        type='password'
+                        placeholder={
+                          editingUser
+                            ? 'New password (leave blank to keep)'
+                            : 'Enter password'
+                        }
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all'
+                      />
+                    </div>
+
+                    <div className='space-y-1'>
+                      <label className='block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider'>
+                        User Role
+                      </label>
+                      <select
+                        value={formData.role}
+                        onChange={(e) =>
+                          setFormData({ ...formData, role: e.target.value })
+                        }
+                        className='w-full px-4 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all selection:bg-blue-500'>
+                        <option value='admin'>Admin</option>
+                        <option value='doctor'>Doctor</option>
+                        <option value='staff'>Staff</option>
+                      </select>
+                    </div>
                   </div>
                   <div className='mt-3 flex gap-2'>
                     <button

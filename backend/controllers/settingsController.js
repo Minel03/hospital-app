@@ -1,6 +1,15 @@
 import { GlobalSettings, UserSettings } from '../models/settingsModel.js';
 
 /* ================== GLOBAL SETTINGS ================== */
+export const fetchPublicSettings = async (req, res) => {
+  try {
+    const settings = await GlobalSettings.findOne({}, 'hospitalName');
+    res.json({ success: true, hospitalName: settings?.hospitalName || 'MediCare' });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export const fetchGlobalSettings = async (req, res) => {
   try {
     let settings = await GlobalSettings.findOne();

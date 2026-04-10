@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  fetchPublicSettings,
   fetchGlobalSettings,
   saveGlobalSettings,
   fetchUserSettings,
@@ -9,6 +10,9 @@ import {
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const settingsRouter = express.Router();
+
+// PUBLIC SETTINGS
+settingsRouter.get('/public', fetchPublicSettings);
 
 // GLOBAL SETTINGS (admin only)
 settingsRouter.get('/global', authMiddleware, fetchGlobalSettings);

@@ -10,6 +10,20 @@ const Login = () => {
   const { fetchUserSettings } = useAppContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [hospitalName, setHospitalName] = useState('MediCare');
+
+  // Fetch hospital name for display
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const { data } = await axios.get('/api/settings/public');
+        if (data.success) setHospitalName(data.hospitalName);
+      } catch (err) {
+        console.error('Failed to fetch hospital name');
+      }
+    };
+    fetchName();
+  }, []);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -42,7 +56,9 @@ const Login = () => {
             <div className='w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mb-4'>
               <Activity className='w-10 h-10 text-white' />
             </div>
-            <h1 className='text-gray-900 text-2xl font-semibold'>MediCare</h1>
+            <h1 className='text-gray-900 dark:text-gray-200 text-2xl font-semibold'>
+              {hospitalName}
+            </h1>
             <p className='text-gray-500 mt-1'>Hospital Management System</p>
           </div>
 
