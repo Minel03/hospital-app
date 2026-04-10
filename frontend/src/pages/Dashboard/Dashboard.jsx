@@ -12,24 +12,27 @@ const Dashboard = () => {
   const [departments, setDepartments] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [admissions, setAdmissions] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      const [patientsRes, departmentsRes, appointmentsRes, admissionsRes] =
+      const [patientsRes, departmentsRes, appointmentsRes, admissionsRes, analyticsRes] =
         await Promise.all([
           axios.get('/api/patient/all'),
           axios.get('/api/department/list'),
           axios.get('/api/appointment/list'),
           axios.get('/api/admission/list'),
+          axios.get('/api/analytics/dashboard-summary'),
         ]);
 
       setPatients(patientsRes.data.patients || []);
       setDepartments(departmentsRes.data.departments || []);
       setAppointments(appointmentsRes.data.appointments || []);
-      setAdmissions(admissionsRes.data.admissions || []); // ✅ add this
+      setAdmissions(admissionsRes.data.admissions || []);
+      setAnalytics(analyticsRes.data.data || null);
     } catch (err) {
       console.error('Dashboard fetch error:', err);
     } finally {
@@ -63,6 +66,7 @@ const Dashboard = () => {
         appointments={todaysAppointments}
         departments={departments}
         admissions={admissions}
+        analytics={analytics}
       />
 
       {/* Today's Appointments Table */}

@@ -76,6 +76,16 @@ export const updateInvoice = async (req, res) => {
     );
     if (!updated)
       return res.json({ success: false, message: 'Invoice not found' });
+
+    await createLog({
+      entity: 'Invoice',
+      entityId: invoiceId,
+      action: 'Invoice Updated',
+      patient: updated.patient,
+      doctor: updated.doctor,
+      details: `Invoice details updated. Total amount: $${updated.totalAmount}.`,
+    });
+
     res.json({ success: true, message: 'Invoice updated', invoice: updated });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -85,6 +95,17 @@ export const updateInvoice = async (req, res) => {
 export const deleteInvoice = async (req, res) => {
   try {
     const { invoiceId } = req.body;
+    const invoice = await invoiceModel.findById(invoiceId);
+    if (invoice) {
+      await createLog({
+        entity: 'Invoice',
+        entityId: invoiceId,
+        action: 'Invoice Deleted',
+        patient: invoice.patient,
+        doctor: invoice.doctor,
+        details: `Invoice for $${invoice.totalAmount} was deleted.`,
+      });
+    }
     await invoiceModel.findByIdAndDelete(invoiceId);
     res.json({ success: true, message: 'Invoice deleted' });
   } catch (error) {

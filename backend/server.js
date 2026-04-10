@@ -12,6 +12,7 @@ import bedRouter from './routes/bedRoute.js';
 import roomRouter from './routes/roomRoute.js';
 import invoiceRouter from './routes/invoiceRoute.js';
 import auditLogRouter from './routes/auditLogRoute.js';
+import analyticsRouter from './routes/analyticsRoute.js';
 import settingsRouter from './routes/settingsRoute.js';
 import userRouter from './routes/userRoute.js';
 
@@ -36,6 +37,7 @@ app.use('/api/room', roomRouter);
 app.use('/api/invoice', invoiceRouter);
 app.use('/api/logs', auditLogRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/analytics', analyticsRouter);
 app.use('/api/user', userRouter);
 
 app.get('/', (req, res) => {
