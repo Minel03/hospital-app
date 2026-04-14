@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import PageHeader from '../../components/PageHeader';
 import SearchBar from '../../components/SearchBar';
 import PharmacyModal from './components/PharmacyModal';
+import Pagination from '../../components/Pagination';
 
 const {
   Package,
@@ -25,6 +26,9 @@ const Pharmacy = () => {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +68,10 @@ const Pharmacy = () => {
     if (activeTab === 'inventory') fetchInventory();
     else fetchPrescriptions();
   }, [activeTab]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchTerm]);
 
   const handleAddMedicine = async (e) => {
     e.preventDefault();
@@ -208,7 +216,7 @@ const Pharmacy = () => {
                 </tr>
               </thead>
               <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
-                {filteredInventory.map((m) => (
+                {filteredInventory.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((m) => (
                   <tr
                     key={m._id}
                     className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
@@ -269,72 +277,92 @@ const Pharmacy = () => {
               </tbody>
             </table>
           </div>
+          <div className='p-6'>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(filteredInventory.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
+              totalItems={filteredInventory.length}
+            />
+          </div>
         </div>
       ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {prescriptions.map((p) => (
-            <div
-              key={p._id}
-              className='bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4'>
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-3'>
-                  <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 font-bold'>
-                    {p.patient.name[0]}
-                  </div>
-                  <div>
-                    <div className='font-bold text-gray-900 dark:text-white line-clamp-1'>
-                      {p.patient.name}
+        <>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+            {prescriptions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((p) => (
+              <div
+                key={p._id}
+                className='bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 font-bold'>
+                      {p.patient.name[0]}
                     </div>
-                    <div className='text-xs text-gray-500'>
-                      By Dr. {p.doctor.name}
-                    </div>
-                  </div>
-                </div>
-                <span className='px-2 py-1 bg-orange-100 text-orange-600 text-[10px] font-bold uppercase rounded-md tracking-wider'>
-                  Pending
-                </span>
-              </div>
-
-              <div className='space-y-2 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl'>
-                {p.items.map((item, i) => (
-                  <div
-                    key={i}
-                    className='flex justify-between items-start'>
-                    <div className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
-                      {item.medicine.name}
-                      <div className='text-[10px] text-gray-500 font-normal'>
-                        {item.dosage} ({item.duration})
+                    <div>
+                      <div className='font-bold text-gray-900 dark:text-white line-clamp-1'>
+                        {p.patient.name}
+                      </div>
+                      <div className='text-xs text-gray-500'>
+                        By Dr. {p.doctor.name}
                       </div>
                     </div>
-                    <div className='text-sm font-bold text-gray-900 dark:text-white'>
-                      x{item.quantity}
-                    </div>
                   </div>
-                ))}
-              </div>
-
-              {isPharmacist ? (
-                <button
-                  onClick={() => handleDispense(p._id)}
-                  className='w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2'>
-                  <CheckCircle className='w-5 h-5' />
-                  Dispense Medicines
-                </button>
-              ) : (
-                <div className='w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 py-3 rounded-2xl font-bold text-center flex items-center justify-center gap-2 cursor-not-allowed'>
-                  <AlertTriangle className='w-5 h-5' />
-                  Pharmacist Access Only
+                  <span className='px-2 py-1 bg-orange-100 text-orange-600 text-[10px] font-bold uppercase rounded-md tracking-wider'>
+                    Pending
+                  </span>
                 </div>
-              )}
-            </div>
-          ))}
-          {prescriptions.length === 0 && (
-            <div className='col-span-full py-20 text-center text-gray-500 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700'>
-              <Clipboard className='w-12 h-12 mx-auto mb-4 opacity-20 text-gray-400' />
-              <p className='font-medium'>No pending prescriptions found.</p>
-            </div>
-          )}
-        </div>
+
+                <div className='space-y-2 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-2xl'>
+                  {p.items.map((item, i) => (
+                    <div
+                      key={i}
+                      className='flex justify-between items-start'>
+                      <div className='text-sm font-semibold text-gray-700 dark:text-gray-300'>
+                        {item.medicine.name}
+                        <div className='text-[10px] text-gray-500 font-normal'>
+                          {item.dosage} ({item.duration})
+                        </div>
+                      </div>
+                      <div className='text-sm font-bold text-gray-900 dark:text-white'>
+                        x{item.quantity}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {isPharmacist ? (
+                  <button
+                    onClick={() => handleDispense(p._id)}
+                    className='w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2'>
+                    <CheckCircle className='w-5 h-5' />
+                    Dispense Medicines
+                  </button>
+                ) : (
+                  <div className='w-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 py-3 rounded-2xl font-bold text-center flex items-center justify-center gap-2 cursor-not-allowed'>
+                    <AlertTriangle className='w-5 h-5' />
+                    Pharmacist Access Only
+                  </div>
+                )}
+              </div>
+            ))}
+            {prescriptions.length === 0 && (
+              <div className='col-span-full py-20 text-center text-gray-500 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700'>
+                <Clipboard className='w-12 h-12 mx-auto mb-4 opacity-20 text-gray-400' />
+                <p className='font-medium'>No pending prescriptions found.</p>
+              </div>
+            )}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(prescriptions.length / itemsPerPage)}
+            onPageChange={setCurrentPage}
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+            totalItems={prescriptions.length}
+          />
+        </>
       )}
 
       <PharmacyModal

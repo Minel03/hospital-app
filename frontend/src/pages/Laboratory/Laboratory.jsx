@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import PageHeader from '../../components/PageHeader';
 import LaboratoryModal from './components/LaboratoryModal';
 import LaboratoryOrderModal from './components/LaboratoryOrderModal';
+import Pagination from '../../components/Pagination';
 
 const {
   FlaskConical,
@@ -25,6 +26,9 @@ const Laboratory = () => {
   const [showModal, setShowModal] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [orderData, setOrderData] = useState({
     patient: '',
@@ -70,6 +74,7 @@ const Laboratory = () => {
   useEffect(() => {
     if (activeTab === 'orders') fetchOrders();
     else fetchTests();
+    setCurrentPage(1);
   }, [activeTab]);
 
   const handleAddTest = async (e) => {
@@ -200,7 +205,7 @@ const Laboratory = () => {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
           {/* Orders List */}
           <div className='space-y-4'>
-            {orders.map((order) => (
+            {orders.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((order) => (
               <div
                 key={order._id}
                 onClick={() => setSelectedOrder(order)}
@@ -228,6 +233,16 @@ const Laboratory = () => {
                 </div>
               </div>
             ))}
+            
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(orders.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
+              totalItems={orders.length}
+            />
+
             {orders.length === 0 && (
               <div className='py-20 text-center text-gray-400 bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700'>
                 <Clock className='w-12 h-12 mx-auto mb-4 opacity-20' />
@@ -331,7 +346,7 @@ const Laboratory = () => {
               </tr>
             </thead>
             <tbody className='divide-y divide-gray-100 dark:divide-gray-700'>
-              {tests.map((test) => (
+              {tests.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((test) => (
                 <tr
                   key={test._id}
                   className='hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors'>
@@ -356,6 +371,18 @@ const Laboratory = () => {
               ))}
             </tbody>
           </table>
+
+          <div className="px-6 pb-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(tests.length / itemsPerPage)}
+              onPageChange={setCurrentPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
+              totalItems={tests.length}
+            />
+          </div>
+
           {tests.length === 0 && (
             <div className='py-20 text-center text-gray-400'>
               <p className='font-medium'>No tests defined in catalog.</p>

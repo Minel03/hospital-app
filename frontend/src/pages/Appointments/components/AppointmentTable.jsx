@@ -3,8 +3,6 @@ import { Icons } from '../../../context/AppContext';
 
 const AppointmentTable = ({
   appointments,
-  filters,
-  searchQuery,
   onEditAppointment,
   onCancelAppointment,
   userData,
@@ -26,44 +24,9 @@ const AppointmentTable = ({
     });
   };
 
-  // Filter appointments
-  const filteredAppointments = appointments.filter((appointment) => {
-    const query = searchQuery.toLowerCase();
-    const matchesSearch =
-      appointment.patient?.name?.toLowerCase().includes(query) ||
-      appointment.doctor?.name?.toLowerCase().includes(query) ||
-      appointment.department?.name?.toLowerCase().includes(query);
-
-    const matchesStatus =
-      filters.status.length === 0 ||
-      filters.status.includes(appointment.status);
-
-    const matchesType =
-      filters.type.length === 0 || filters.type.includes(appointment.type);
-
-    return matchesSearch && matchesStatus && matchesType;
-  });
-
-  // Sort: nearest upcoming appointment first
-  const sortedAppointments = filteredAppointments.sort((a, b) => {
-    const today = new Date();
-    const dateA = new Date(a.datetime || a.date);
-    const dateB = new Date(b.datetime || b.date);
-
-    const isAFuture = dateA >= today && a.status !== 'Cancelled';
-    const isBFuture = dateB >= today && b.status !== 'Cancelled';
-
-    // Future appointments first
-    if (isAFuture && !isBFuture) return -1;
-    if (!isAFuture && isBFuture) return 1;
-
-    // Otherwise, sort by datetime ascending
-    return dateA - dateB;
-  });
-
   return (
     <>
-      {sortedAppointments.map((appointment) => {
+      {appointments.map((appointment) => {
         const today = new Date();
         today.setSeconds(0, 0);
 

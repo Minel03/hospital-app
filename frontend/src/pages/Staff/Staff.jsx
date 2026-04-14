@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import StaffSearchFilter from './components/StaffSearchFilter';
 import StaffTable from './components/StaffTable';
 import StaffFormModal from './components/StaffFormModal';
+import Pagination from '../../components/Pagination';
 
 const Staff = () => {
   const { axios, userData } = useAppContext();
@@ -19,6 +20,9 @@ const Staff = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingStaff, setEditingStaff] = useState(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     userId: null,
     name: '',
@@ -66,6 +70,10 @@ const Staff = () => {
     fetchDepartments();
     fetchStaffUsers();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterDepartment, filterStatus]);
 
   const departmentOptions = departments.map((d) => ({
     value: d._id,
@@ -229,10 +237,19 @@ const Staff = () => {
       />
 
       <StaffTable
-        staff={filteredStaff}
+        staff={filteredStaff.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         onEdit={handleEdit}
         onDelete={handleDelete}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredStaff.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredStaff.length}
       />
 
       <StaffFormModal

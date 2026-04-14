@@ -5,6 +5,7 @@ import PageHeader from '../../components/PageHeader';
 import BedsSearchFilter from './components/BedsSearchFilter';
 import BedsList from './components/BedsList';
 import BedsModal from './components/BedsModal';
+import Pagination from '../../components/Pagination';
 
 const Beds = () => {
   const { Search, Filter, Plus, BedSingle, BedDouble, DoorOpen } = Icons;
@@ -23,6 +24,9 @@ const Beds = () => {
     occupiedBeds: 0,
     availableBeds: 0,
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // --- Room Modal ---
   const [showRoomModal, setShowRoomModal] = useState(false);
@@ -82,6 +86,10 @@ const Beds = () => {
     fetchBeds();
     fetchDepartments();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   // --- Compute Stats ---
   const computeStats = (beds) => {
@@ -272,10 +280,19 @@ const Beds = () => {
       />
 
       <BedsList
-        filteredRooms={filteredRooms}
+        filteredRooms={filteredRooms.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         openEditRoomModal={openEditRoomModal}
         openEditBedModal={openEditBedModal}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredRooms.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredRooms.length}
       />
 
       <BedsModal

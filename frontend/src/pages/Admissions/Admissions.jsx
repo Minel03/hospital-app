@@ -6,6 +6,7 @@ import SearchBar from '../../components/SearchBar';
 import AdmissionsTable from './components/AdmissionsTable';
 import AdmissionsModal from './components/AdmissionsModal';
 import AdmissionsViewModal from './components/AdmissionsViewModal';
+import Pagination from '../../components/Pagination';
 
 const Admissions = () => {
   const { axios, patients, fetchPatients, userData } = useAppContext();
@@ -22,6 +23,9 @@ const Admissions = () => {
   const [selectedAdmission, setSelectedAdmission] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     patient: '',
@@ -59,8 +63,13 @@ const Admissions = () => {
     fetchPatients();
     fetchDoctors();
     fetchDepartments();
+    fetchDepartments();
     fetchBeds();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   /* ================= ADD / UPDATE ================= */
 
@@ -249,12 +258,21 @@ const Admissions = () => {
       />
 
       <AdmissionsTable
-        filteredAdmissions={filteredAdmissions}
+        filteredAdmissions={filteredAdmissions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         openEditModal={openEditModal}
         openViewModal={openViewModal}
         deleteAdmission={deleteAdmission}
         dischargePatient={dischargePatient}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredAdmissions.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredAdmissions.length}
       />
 
       <AdmissionsModal

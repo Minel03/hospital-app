@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import DepartmentSearchFilter from './components/DepartmentSearchFilter';
 import DepartmentCardGrid from './components/DepartmentCardGrid';
 import DepartmentFormModal from './components/DepartmentFormModal';
+import Pagination from '../../components/Pagination';
 
 const Departments = () => {
   const { axios, fetchDoctors, doctors, userData } = useAppContext();
@@ -21,6 +22,9 @@ const Departments = () => {
   const [filters, setFilters] = useState({ status: [] });
   const [showFilterPopover, setShowFilterPopover] = useState(false);
   const filterRef = useRef(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Fetch departments
   const fetchDepartments = async () => {
@@ -93,6 +97,10 @@ const Departments = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
 
   const handleAddDepartment = () => {
     setMode('add');
@@ -169,11 +177,20 @@ const Departments = () => {
       />
 
       <DepartmentCardGrid
-        departments={filteredDepartments}
+        departments={filteredDepartments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         onEdit={handleEditDepartment}
         onDelete={handleDeleteDepartment}
         doctors={doctors}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredDepartments.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredDepartments.length}
       />
 
       <DepartmentFormModal

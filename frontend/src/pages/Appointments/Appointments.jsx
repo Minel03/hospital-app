@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import AppointmentSearchFilter from './components/AppointmentSearchFilter';
 import AppointmentTable from './components/AppointmentTable';
 import AppointmentFormModal from './components/AppointmentFormModal';
+import Pagination from '../../components/Pagination';
 
 const Appointments = () => {
   const { axios, patients, fetchPatients, userData } = useAppContext();
@@ -23,6 +24,9 @@ const Appointments = () => {
   const [filters, setFilters] = useState({ status: [], type: [] });
   const [showFilterPopover, setShowFilterPopover] = useState(false);
   const filterRef = useRef(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(9);
 
   const [formData, setFormData] = useState({
     patient: '',
@@ -66,6 +70,10 @@ const Appointments = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
 
   // Add / Edit Appointment
   const handleSubmit = async (e) => {
@@ -188,44 +196,67 @@ const Appointments = () => {
     return matchesSearch && matchesStatus && matchesType;
   });
 
+  const sortedAppointments = [...filteredAppointments].sort((a, b) => {
+    const today = new Date();
+    const dateA = new Date(a.datetime || a.date);
+    const dateB = new Date(b.datetime || b.date);
+
+    const isAFuture = dateA >= today && a.status !== 'Cancelled';
+    const isBFuture = dateB >= today && b.status !== 'Cancelled';
+
+    if (isAFuture && !isBFuture) return -1;
+    if (!isAFuture && isBFuture) return 1;
+
+    return dateA - dateB;
+  });
+
+  const paginatedAppointments = sortedAppointments.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  );
+
   /* ================= STATS ================= */
   const today = new Date();
   const countToday = appointments.filter(
-    (a) => new Date(a.datetime).toDateString() === today.toDateString()
+    (a) => new Date(a.datetime).toDateString() === today.toDateString(),
   ).length;
 
-  const countPending = appointments.filter(a => a.status === 'Pending').length;
-  const countTelemedicine = appointments.filter(a => a.type === 'Telemedicine' || a.meetingLink).length;
+  const countPending = appointments.filter(
+    (a) => a.status === 'Pending',
+  ).length;
+  const countTelemedicine = appointments.filter(
+    (a) => a.type === 'Telemedicine' || a.meetingLink,
+  ).length;
 
   const { Activity, Video } = Icons;
   const stats = [
-    { 
-      label: 'Total Appointments', 
-      value: appointments.length, 
+    {
+      label: 'Total Appointments',
+      value: appointments.length,
       icon: Calendar,
       bgColor: 'bg-blue-50 dark:bg-blue-900/30',
-      textColor: 'text-blue-600 dark:text-blue-400'
+      textColor: 'text-blue-600 dark:text-blue-400',
     },
-    { 
-      label: "Today's", 
-      value: countToday, 
+    {
+      label: "Today's",
+      value: countToday,
       icon: Clock,
       bgColor: 'bg-green-50 dark:bg-green-900/30',
-      textColor: 'text-green-600 dark:text-green-400'
+      textColor: 'text-green-600 dark:text-green-400',
     },
-    { 
-      label: 'Pending', 
-      value: countPending, 
+    {
+      label: 'Pending',
+      value: countPending,
       icon: Activity,
       bgColor: 'bg-orange-50 dark:bg-orange-900/30',
-      textColor: 'text-orange-600 dark:text-orange-400'
+      textColor: 'text-orange-600 dark:text-orange-400',
     },
-    { 
-      label: 'Telemedicine', 
-      value: countTelemedicine, 
+    {
+      label: 'Telemedicine',
+      value: countTelemedicine,
       icon: Video,
       bgColor: 'bg-purple-50 dark:bg-purple-900/30',
-      textColor: 'text-purple-600 dark:text-purple-400'
+      textColor: 'text-purple-600 dark:text-purple-400',
     },
   ];
 
@@ -234,8 +265,16 @@ const Appointments = () => {
       <PageHeader
         title='Appointments'
         subtitle='Schedule and manage patient visits'
-        buttonLabel={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? 'New Appointment' : null}
-        onButtonClick={['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role) ? handleAddAppointment : null}
+        buttonLabel={
+          ['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role)
+            ? 'New Appointment'
+            : null
+        }
+        onButtonClick={
+          ['admin', 'doctor', 'nurse', 'receptionist'].includes(userData.role)
+            ? handleAddAppointment
+            : null
+        }
         stats={stats}
       />
 
@@ -251,14 +290,21 @@ const Appointments = () => {
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         <AppointmentTable
-          appointments={filteredAppointments}
-          filters={filters}
-          searchQuery={searchQuery}
+          appointments={paginatedAppointments}
           onEditAppointment={handleEditAppointment}
           onCancelAppointment={handleCancelAppointment}
           userData={userData}
         />
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(sortedAppointments.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={sortedAppointments.length}
+      />
 
       <AppointmentFormModal
         showModal={showModal}

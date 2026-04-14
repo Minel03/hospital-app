@@ -7,6 +7,7 @@ import PatientSearchFilter from '../Patients/components/PatientSearchFilter';
 import PatientTable from '../Patients/components/PatientTable';
 import PatientFormModal from '../Patients/components/PatientFormModal';
 import PatientViewModal from '../Patients/components/PatientViewModal';
+import Pagination from '../../components/Pagination';
 
 const Patients = () => {
   const { axios, patients, fetchPatients, userData } = useAppContext();
@@ -23,6 +24,9 @@ const Patients = () => {
   });
   const [showFilterPopover, setShowFilterPopover] = useState(false);
   const filterRef = useRef(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -46,6 +50,10 @@ const Patients = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -235,11 +243,20 @@ const Patients = () => {
       />
 
       <PatientTable
-        patients={filteredPatients}
+        patients={filteredPatients.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         onView={handleViewPatient}
         onEdit={handleEditPatient}
         onDelete={deletePatient}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredPatients.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredPatients.length}
       />
 
       <PatientFormModal

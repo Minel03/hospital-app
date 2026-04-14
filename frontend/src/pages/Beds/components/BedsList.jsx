@@ -46,35 +46,51 @@ const BedsList = ({ filteredRooms, openEditRoomModal, openEditBedModal, userData
                 </div>
               </div>
 
-              {/* Beds Grid */}
-              <div className='grid grid-cols-2  md:grid-cols-3 lg:grid-cols-6 gap-4'>
-                {roomBeds.map((bed) => {
-                  const statusColor =
-                    bed.status === 'Available'
-                      ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800'
-                      : bed.status === 'Occupied'
-                        ? 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
-                        : 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-400 dark:border-yellow-800';
-                  return (
-                    <div
-                      key={bed._id}
-                      className={`p-4 rounded-lg border ${statusColor} hover:shadow-md transition ${userData?.role === 'admin' ? 'cursor-pointer' : 'cursor-default'}`}
-                      onClick={() => userData?.role === 'admin' && openEditBedModal(bed)}>
-                      <div className='flex items-center justify-between mb-2'>
-                        <BedSingle className='w-5 h-5' />
-                        <span className='text-xs font-medium'>
-                          {bed.status}
-                        </span>
+              {/* Beds Grid - Scrollable for many beds */}
+              <div className='max-h-[400px] overflow-y-auto pr-2 custom-scrollbar'>
+                <div 
+                  className={`grid gap-3 ${
+                    roomBeds.length > 24 
+                      ? 'grid-cols-3 md:grid-cols-5 lg:grid-cols-10' 
+                      : roomBeds.length > 12
+                        ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-8'
+                        : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6'
+                  }`}>
+                  {roomBeds.map((bed) => {
+                    const statusColor =
+                      bed.status === 'Available'
+                        ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/40 dark:text-green-400 dark:border-green-800'
+                        : bed.status === 'Occupied'
+                          ? 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-400 dark:border-red-800'
+                          : 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-400 dark:border-yellow-800';
+                    
+                    const isCompact = roomBeds.length > 12;
+
+                    return (
+                      <div
+                        key={bed._id}
+                        className={`rounded-xl border ${statusColor} hover:shadow-md transition-all duration-200 ${
+                          userData?.role === 'admin' ? 'cursor-pointer' : 'cursor-default'
+                        } ${isCompact ? 'p-3' : 'p-4'}`}
+                        onClick={() => userData?.role === 'admin' && openEditBedModal(bed)}>
+                        <div className={`flex items-center justify-between ${isCompact ? 'mb-1' : 'mb-2'}`}>
+                          <BedSingle className={`${isCompact ? 'w-4 h-4' : 'w-5 h-5'}`} />
+                          <span className={`font-bold uppercase tracking-tighter ${isCompact ? 'text-[8px]' : 'text-xs'}`}>
+                            {bed.status}
+                          </span>
+                        </div>
+                        <p className={`font-bold ${isCompact ? 'text-xs' : 'text-sm'}`}>
+                          B-{bed.bedNumber}
+                        </p>
+                        {!isCompact && (
+                          <p className='text-[10px] mt-1 opacity-80 font-medium truncate'>
+                            {bed.currentPatient?.name || 'Vacant'}
+                          </p>
+                        )}
                       </div>
-                      <p className='font-semibold text-sm'>
-                        Bed {bed.bedNumber}
-                      </p>
-                      <p className='text-xs mt-1 opacity-80'>
-                        {bed.currentPatient?.name || 'No Patient'}
-                      </p>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );

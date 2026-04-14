@@ -6,6 +6,7 @@ import PageHeader from '../../components/PageHeader';
 import DoctorSearchFilter from './components/DoctorSearchFilter';
 import DoctorTable from './components/DoctorTable';
 import DoctorFormModal from './components/DoctorFormModal';
+import Pagination from '../../components/Pagination';
 
 const Doctors = () => {
   const { axios, doctors, fetchDoctors, userData } = useAppContext();
@@ -22,6 +23,9 @@ const Doctors = () => {
   });
   const [showFilterPopover, setShowFilterPopover] = useState(false);
   const filterRef = useRef(null);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     userId: null,
@@ -53,6 +57,10 @@ const Doctors = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filters]);
 
   const fetchDepartments = async () => {
     try {
@@ -264,10 +272,19 @@ const Doctors = () => {
       />
 
       <DoctorTable
-        doctors={filteredDoctors}
+        doctors={filteredDoctors.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         onEdit={handleEditDoctor}
         onDelete={deleteDoctor}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filteredDoctors.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filteredDoctors.length}
       />
 
       <DoctorFormModal

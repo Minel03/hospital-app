@@ -4,6 +4,7 @@ import BillingTable from './components/BillingTable';
 import BillingModal from './components/BillingModal';
 import BillingViewModal from './components/BillingViewModal';
 import { Icons, useAppContext } from '../../context/AppContext';
+import Pagination from '../../components/Pagination';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
@@ -36,6 +37,9 @@ const Billing = () => {
   const [mode, setMode] = useState('add');
   const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     patient: '',
@@ -84,6 +88,10 @@ const Billing = () => {
   useEffect(() => {
     fetchAll();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const totalAmount = formData.services.reduce(
     (sum, s) => sum + (parseFloat(s.amount) || 0),
@@ -690,7 +698,7 @@ const Billing = () => {
       />
 
       <BillingTable
-        filtered={filtered}
+        filtered={filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)}
         handleDelete={handleDelete}
         handleDownload={handleDownload}
         handleMarkPaid={handleMarkPaid}
@@ -698,6 +706,15 @@ const Billing = () => {
         openView={openView}
         handlePrint={handlePrint}
         userData={userData}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(filtered.length / itemsPerPage)}
+        onPageChange={setCurrentPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={filtered.length}
       />
 
       <BillingModal
