@@ -37,7 +37,7 @@ const Login = () => {
       const res = await axios.post('/api/user/login', { email, password });
       if (res.data.success) {
         sessionStorage.setItem('token', res.data.token);
-        await fetchAllData(); 
+        await fetchAllData();
         navigate('/');
       } else {
         alert(res.data.message);
@@ -73,7 +73,7 @@ const Login = () => {
                 type='email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder='Enter your email'
+                placeholder='admin@medicare.com'
                 required
                 className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
@@ -87,7 +87,7 @@ const Login = () => {
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder='Enter your password'
+                placeholder='password123'
                 required
                 className='w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
               />
